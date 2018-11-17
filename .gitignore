@@ -1,0 +1,9 @@
+# rsync
+.rsyncignore
+
+# Mac
+.DS_Store
+
+# Private
+*.pem
+gpg/

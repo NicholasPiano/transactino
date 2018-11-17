@@ -1,0 +1,480 @@
+<h1 id="readme">README</h1>
+<p>The API is accessed by connecting a websocket to <code>/api/</code> or via GET request to the same endpoint. GET requests obviously will not be able to receive live updates.</p>
+<h2 id="requestformat">Request format</h2>
+<p>All data must be sent to the server as valid JSON. The JSON is structured as a recursive schema, where the basic type consists of a key and a value, like so:</p>
+<pre><code class="json language-json">{
+  "key": "value"
+}
+</code></pre>
+<p>The value can be any valid JSON value, such as another structure, or an array. The service will provide a list of types that map to JSON types, e.g. UUID type will map to JSON string.</p>
+<p>Each schema unit can report its verbose form when its value is set to <code>null</code>:</p>
+<pre><code class="json language-json">{
+  "key": null
+}
+</code></pre>
+<p>For the above structure, an example of the verbose reported string might be the following:</p>
+<pre><code class="json language-json">{
+  "key": {
+    "_description": "The key schema!",
+    "_types": {
+      "001": {
+        "name": "__string",
+        "_description": "A string of characters"
+      }
+    },
+    "_errors": {
+      "001": {
+        "name": "incorrect_payload_type",
+        "_description": "Type of payload must be one of the specified server types"
+      }
+    }
+  }
+}
+</code></pre>
+<p>If an incorrect type is sent for example:</p>
+<pre><code class="json language-json">{
+  "key": 0
+}
+</code></pre>
+<p>The response would be:</p>
+<pre><code class="json language-json">{
+  "key": {
+    "_errors": {
+      "001": {
+        "name": "incorrect_payload_type",
+        "_description": "Type of payload [0] must be one of [__string]"
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="recursion">Recursion</h2>
+<p>The format of the data is recursive, meaning that when a structure or an array is a value of another key, the same rules apply to each level. For example, the following schema:</p>
+<pre><code class="json language-json">{
+  "key": {
+    "key2": "value2"
+  }
+}
+</code></pre>
+<p>would have the verbose form:</p>
+<pre><code class="json language-json">{
+  "key": {
+    "_description": "The key schema!",
+    "_types": {
+      "005": {
+        "name": "__structure",
+        "_description": "A JSON object"
+      }
+    },
+    "_errors": {
+      "001": {
+        "name": "incorrect_payload_type",
+        "_description": "Type of payload must be one of the specified server types"
+      }
+    },
+    "_children": {
+      "key2": {
+        "_description": "The key 2 schema!",
+        "_types": {
+          "001": {
+            "name": "__string",
+            "_description": "A string of characters"
+          }
+        },
+        "_errors": {
+          "001": {
+            "name": "incorrect_payload_type",
+            "_description": "Type of payload must be one of the specified server types"
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<p>In large schemas, the types and errors will be reported in verbose form only at the top level, where they are aggregated from the whole, and displayed in a reduced form where they apply.</p>
+<pre><code class="json language-json">{
+  "key": {
+    "_description": "The key schema!",
+    "_types": {
+      "001": {
+        "name": "__string",
+        "_description": "A string of characters"
+      },
+      "005": {
+        "name": "__structure",
+        "_description": "A JSON object"
+      }
+    },
+    "_errors": {
+      "001": {
+        "name": "incorrect_payload_type",
+        "_description": "Type of payload must be one of the specified server types"
+      }
+    },
+    "_children": {
+      "key2": {
+        "_description": "The key 2 schema!",
+        "_types": ["002"],
+        "_errors": ["001"]
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="templates">Templates</h2>
+<p>An array or indexed schema (a JSON structure whose keys are of a consistent type, such as the UUID of a database object) will include a template schema that each member beneath it must match. For example, the following payload:</p>
+<pre><code class="json language-json">{
+  "key": [
+    {
+      "key2": "value2",
+    },
+    {
+      "key2": "value2",
+    }
+  ]
+}
+</code></pre>
+<p>Might be matched against the schema:</p>
+<pre><code class="json language-json">{
+  "key": {
+    "_description": "The key schema!",
+    "_types": {
+      "004": {
+        "name": "__array",
+        "_description": "A JSON array"
+      },
+    },
+    "_errors": {
+      "001": {
+        "name": "incorrect_payload_type",
+        "_description": "Type of payload must be one of the specified server types"
+      }
+    },
+    "_template": {
+      "_description": "The key template schema",
+      "_types": ["002"],
+      "_errors": ["001"],
+      "_children": {
+        "key2": {
+          "_description": "The key 2 schema!",
+          "_types": ["002"],
+          "_errors": ["001"]
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="clientschemas">Client schemas</h2>
+<p>The structure returned from an interaction may be different from the structure sent. This is reported initially as the <code>client</code> schema. It shows what the result will be so it can be handled at the appropriate time. Consider the following interaction:</p>
+<pre><code class="json language-json">{
+  "methods": {
+    "activate": "&lt;ID&gt;"
+  }
+}
+</code></pre>
+<p>From the server:</p>
+<pre><code class="json language-json">{
+  "methods": {
+    "activate": {
+      "has_been_activated": true
+    }
+  }
+}
+</code></pre>
+<p>The initial reported schema for this interaction would be:</p>
+<pre><code class="json language-json">{
+  "methods": {
+    "activate": {
+      "_description": "",
+      "_types": {
+
+      },
+      "_errors": {
+
+      },
+      "_client": {
+        "_description": "",
+        "_types": ["002"],
+        "_errors": ["001"],
+        "_children": {
+          "has_been_activated": {
+            "_description": "",
+            "_types": ["002"],
+            "_errors": ["001"]
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="usingtheapi">Using the API</h2>
+<p>Now that these concepts have been explained, the use of the API should be self-explanatory. Detailed descriptions of each schema, type, and error are given in place, both in human-readable and machine-readable format. Some examples of API use are given below.</p>
+<h3 id="usingthesmartwebsocketclient">Using the Smart Websocket Client</h3>
+<p>For normal use, a small application can be written, but a simple websocket client can provide the functionality needed to interact with the API. Try downloading the Smart Websocket Client Chrome extension <a href="https://chrome.google.com/webstore/detail/smart-websocket-client/omalebghpgejjiaoknljcfmglgbpocdp">here</a>.</p>
+<p>Simply enter the url <code>ws://ec2-35-178-85-150.eu-west-2.compute.amazonaws.com:8000/api/</code> into the connection box.</p>
+<p>If the schema returned is very large, it is recommended to copy the text into a text editor that supports code folding and fold portions of the schema for easier understanding.</p>
+<p>To send payloads, simply paste the JSON text into the send box and press the send button. The response and any live updates should be visible below.</p>
+<h3 id="structureoftheapplication">Structure of the application</h3>
+<p>The purpose of the application is to control access to data derived from the blockchain in the form of reports. For example, a Fee Report tracks the average transaction fee and fee density (satoshis per byte) of transactions across a range of blocks specified by the user. These values can be updated when new blocks become available.</p>
+<p>There are four states a user can be in with respect to the system:</p>
+<ol>
+<li>Anonymous: the public key of the user is unknown to the system</li>
+<li>Unsubscribed: the public key is known, but no active subscription exists for the user</li>
+<li>Subscribed: there is an active subscription</li>
+<li>Locked: either manually locked by the user, or locked by an admin due to violation of the user agreement</li>
+</ol>
+<p>Each state opens new capabilities to the user. Make a point of sending <code>null</code> to the schema to get a description of what is available in the new schema.</p>
+<h3 id="goingfromanonymoustounsubscribed">Going from anonymous to unsubscribed</h3>
+<h4 id="1createanaccountwithapublickey">1. Create an account with a public key</h4>
+<p>The value of <code>public_key</code> should be a valid GPG public key in armor format with the newlines replaced by <code>\n</code> characters.</p>
+<pre><code class="json language-json">{
+  "schema": {
+    "models": {
+      "Account": {
+        "methods": {
+          "create": {
+            "public_key": "&lt;YOUR PUBLIC KEY&gt;"
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<p>Response:</p>
+<pre><code class="json language-json">{
+  "schema": {
+    "models": {
+      "Account": {
+        "methods": {
+          "create": {
+            "disclaimer": "&lt;DISCLAIMER&gt;"
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<p>The account is now unsubscribed. This account is bound to the IP address that was originally used to connect, so it is advisable to maintain access to that public IP address.</p>
+<h3 id="goingfromunsubscribedtoanactivesubscription">Going from unsubscribed to an active subscription</h3>
+<h4 id="1verifytheaccountbyrespondingtoachallenge">1. Verify the account by responding to a challenge</h4>
+<p>a. Verify the account (methods are called with an empty object if they take no arguments):</p>
+<pre><code class="json language-json">{
+  "schema": {
+    "models": {
+      "Account": {
+        "methods": {
+          "verify": {}
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<p>b. Response (blocked by challenge):</p>
+<pre><code class="json language-json">{
+  "schema": {
+    "models": {
+      "Account": {
+        "methods": {
+          "verify": {
+            "verification_complete": false,
+            "open_challenge_id": "&lt;CHALLENGE ID&gt;"
+          }
+        }
+      },
+      "Challenge": {
+        "instances": {
+          "&lt;CHALLENGE ID&gt;": {
+            "encrypted_content": "&lt;CHALLENGE ENCRYPTED CONTENT&gt;"
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<p>c. Respond to challenge</p>
+<p>First, decrypt the armor string using GPG:</p>
+<p><code>~$ gpg --decrypt path/to/armor/file</code></p>
+<pre><code class="json language-json">{
+  "schema": {
+    "models": {
+      "Challenge": {
+        "methods": {
+          "respond": {
+            "challenge_id": "&lt;CHALLENGE ID&gt;",
+            "plaintext": "&lt;CHALLENGE DECRYPTED CONTENT&gt;"
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<p>d. Response to successful challenge</p>
+<pre><code class="json language-json">{
+  "schema": {
+    "models": {
+      "Challenge": {
+        "methods": {
+          "respond": {
+            "challenge_id": "&lt;CHALLENGE ID&gt;",
+            "is_verified": true
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<p>e. Call verify method again</p>
+<pre><code class="json language-json">{
+  "schema": {
+    "models": {
+      "Account": {
+        "methods": {
+          "verify": {}
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<p>f. Response with accepted challenge</p>
+<pre><code class="json language-json">{
+  "schema": {
+    "models": {
+      "Account": {
+        "methods": {
+          "verify": {
+            "verification_complete": true
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h4 id="2createasubscription">2. Create a subscription</h4>
+<p>a. Create subscription and respond to challenge in the same way as before. This challenge process will be repeated for every interaction that requires a challenge.</p>
+<pre><code class="json language-json">{
+  "schema": {
+    "models": {
+      "Subscription": {
+        "methods": {
+          "create": {
+            "activation_date": "&lt;DATE TO ACTIVATE SUBSCRIPTION&gt;",
+            "duration_in_days": "&lt;NUMBER OF DAYS ACTIVE&gt;"
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<p>b. Response after completing challenge</p>
+<pre><code class="json language-json">{
+  "schema": {
+    "models": {
+      "Subscription": {
+        "methods": {
+          "create": {
+            "create_complete": true,
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<p>The account is now subscribed, and has the ability to create fee reports and additional IP addresses.</p>
+<h3 id="createafeereport">Create a fee report</h3>
+<p>A fee report calculates the average transaction fee and fee density over the number of blocks specified since the latest block. This is a rolling average, and updates with each new block added to the chain. Updates are sent live through the websocket connection last opened by the user. Only active reports are updated.</p>
+<pre><code class="json language-json">{
+  "schema": {
+    "models": {
+      "FeeReport": {
+        "methods": {
+          "create": {
+            "blocks_to_include": "&lt;NUMBER OF BLOCKS SINCE LATEST&gt;",
+            "is_active": "&lt;WHETHER THE REPORT IS INITIALLY ACTIVE&gt;"
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<p>All interactions that involve creating or modifying objects will require a challenge to be solved before the action can be completed.</p>
+<h3 id="gettingobjects">Getting objects</h3>
+<p>At any time, a set of objects can be returned from the system by invoking the <code>get</code> method of the object in question. The example below lists fee reports and their parameters</p>
+<pre><code class="json language-json">{
+  "schema": {
+    "models": {
+      "FeeReport": {
+        "methods": {
+          "get": {}
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<p>Response:</p>
+<pre><code class="json language-json">{
+  "schema": {
+    "models": {
+      "FeeReport": {
+        "instances": {
+          "b6200149ffd24fa4865771a3c345015e": {
+            "attributes": {
+              "average_tx_fee_density": "16.5727891553804",
+              "date_created": "2018-10-29 20:14:16.402048+00:00",
+              "last_update_time": "2018-10-30 16:07:52.559328+00:00",
+              "blocks_to_include": 10,
+              "average_tx_fee": "8998.49411689765",
+              "is_active": true,
+              "latest_block_hash": "0000000000000000001068e998410fbd03680f346698413002e5b5d8fad11c84"
+            }
+          },
+          "80230677f4624ba199c3140dd6fae483": {
+            "attributes": {
+              "average_tx_fee_density": "16.7322089022333",
+              "date_created": "2018-10-30 06:59:13.434444+00:00",
+              "last_update_time": "2018-10-30 16:07:52.405589+00:00",
+              "blocks_to_include": 8,
+              "average_tx_fee": "9348.40518275327",
+              "is_active": true,
+              "latest_block_hash": "0000000000000000001068e998410fbd03680f346698413002e5b5d8fad11c84"
+            }
+          },
+          "8cd55dc6add949e4b5c29fb22c685fe8": {
+            "attributes": {
+              "average_tx_fee_density": "10.1728671898941",
+              "date_created": "2018-10-28 19:49:56.498778+00:00",
+              "last_update_time": "2018-10-31 07:24:52.612021+00:00",
+              "blocks_to_include": 1,
+              "average_tx_fee": "4405.4",
+              "is_active": true,
+              "latest_block_hash": "0000000000000000001068e998410fbd03680f346698413002e5b5d8fad11c84"
+            }
+          }
+        },
+        "methods": {
+          "get": {
+            "is_active": null,
+            "id": null
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<p>Note, in the <code>methods.get</code> section of the schema, the parameters used to filter the reports are both null. A single ID or the <code>is_active</code> flag can be used to filter the reports. Check the <code>get</code> schema of the object with <code>null</code> to see what filtering parameters are available.</p>
+<p>This same method will be used to report each individual active report live through the websocket if the connection is open.</p>
