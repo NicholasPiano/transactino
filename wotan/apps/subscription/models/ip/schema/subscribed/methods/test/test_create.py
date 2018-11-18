@@ -23,6 +23,9 @@ class TestContext():
   def __init__(self, account):
     self.account = account
 
+  def get_account(self):
+    return self.account
+
 class IPCreateSchemaTestCase(TestCase):
   def setUp(self):
     self.schema = IPCreateSchema(IP)

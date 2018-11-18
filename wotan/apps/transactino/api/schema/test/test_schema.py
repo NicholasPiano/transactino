@@ -32,15 +32,13 @@ class TransactinoSchemaTestCase(TestCase):
     self.public_key = settings.TEST_PUBLIC_KEY
     self.ip_value = 'ip_value'
     self.channel_name = 'channel_name'
-    self.connection = Connection.objects.bring_online(
+    self.connection, connection_created = Connection.objects.bring_online(
       name=self.channel_name,
       ip_value=self.ip_value,
       port=0,
     )
 
   def test_account_verification(self):
-    ip_value = 'ip_value'
-
     create_payload = {
       api_constants.SCHEMA: {
         api_constants.MODELS: {

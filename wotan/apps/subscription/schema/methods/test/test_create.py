@@ -21,6 +21,9 @@ class TestContext():
   def __init__(self, account):
     self.account = account
 
+  def get_account(self):
+    return self.account
+
 class AccountSuperadminSetSchemaTestCase(TestCase):
   def setUp(self):
     self.origin = uuid.uuid4().hex

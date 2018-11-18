@@ -4,6 +4,7 @@ class TransactinoContext():
     self.connection = connection
 
   def get_ip(self):
+    print(self.connection)
     return self.connection.ip
 
   def get_account(self):

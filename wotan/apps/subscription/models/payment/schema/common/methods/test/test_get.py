@@ -17,6 +17,9 @@ class TestContext():
   def __init__(self, account=None):
     self.account = account
 
+  def get_account(self):
+    return self.account
+
 class PaymentGetSchemaTestCase(TestCase):
   def setUp(self):
     self.schema = PaymentGetSchema()

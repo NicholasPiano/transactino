@@ -15,6 +15,9 @@ class TestContext():
   def __init__(self, account=None):
     self.account = account
 
+  def get_account(self):
+    return self.account
+
 class ChallengeGetSchemaTestCase(TestCase):
   def setUp(self):
     self.schema = ChallengeGetSchema()
