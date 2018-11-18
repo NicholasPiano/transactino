@@ -1,23 +1,35 @@
 
-from util.api import Schema
+from util.api import StructureSchema, types
 
-from ..context import TransactinoContext
-from .anonymous import AnonymousSchema
-from .subscribed import SubscribedSchema
-from .unsubscribed import UnsubscribedSchema
-from .superadmin import SuperadminSchema, should_enter_superadmin_schema
+from apps.subscription.models import Connection
 
-class TransactinoSchema(Schema):
-  def respond(self, connection=None, payload=None):
-    context = TransactinoContext(connection=connection)
+from .constants import proxy_constants
+from .transactino import TransactinoSchema
 
-    if should_enter_superadmin_schema(payload, context):
-      return SuperadminSchema().respond(payload=payload, context=context)
+class ProxySchema(StructureSchema):
+  def __init__(self, **kwargs):
+    super().__init__(**kwargs)
+    self.children = {
+      proxy_constants.ID: Schema(types=types.UUID()),
+      proxy_constants.IP: Schema(),
+      proxy_constants.CHANNEL: Schema(),
+      proxy_constants.TRANSACTINO: Schema(types=types.ANY()),
+    }
 
-    if context.is_anonymous():
-      return AnonymousSchema().respond(payload=payload, context=context)
+  def responds_to_valid_payload(self, payload, context):
+    super().responds_to_valid_payload(payload, context)
+    if self.active_response.has_errors():
+      return
 
-    if context.is_subscribed():
-      return SubscribedSchema().respond(payload=payload, context=context)
+    connection, connection_created = Connection.objects.bring_online(
+      name=self.active_response.get_child(proxy_constants.CHANNEL).render(),
+      ip_value=self.active_response.get(proxy_constants.IP).render(),
+    )
 
-    return UnsubscribedSchema(context=context).respond(payload=payload, context=context)
+    self.active_response.add_child(
+      proxy_constants.TRANSACTINO,
+      TransactinoSchema().respond(
+        connection=connection,
+        payload=self.active_response.get(proxy_constants.TRANSACTINO).render(),
+      )
+    )

@@ -1,0 +1,6 @@
+Data passed by Wotan to Freya to schedule the task
+
+{
+  "name": ...
+  "payload": ...
+}

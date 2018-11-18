@@ -11,7 +11,6 @@ class connection_constants:
 class connection_fields:
   IP_VALUE = 'ip_value'
   IS_ONLINE = 'is_online'
-  PORT = 'port'
   NAME = 'name'
   CLOSED_AT = 'closed_at'
   CLOSED_WITH_CODE = 'closed_with_code'

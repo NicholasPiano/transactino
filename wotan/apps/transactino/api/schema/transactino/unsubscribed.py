@@ -10,7 +10,7 @@ from apps.subscription.models import (
   Payment,
 )
 
-from ..constants import api_constants
+from .constants import transactino_constants
 from .common import CommonSchema
 
 class UnsubscribedSchema(StructureSchema):
@@ -36,9 +36,9 @@ class UnsubscribedSchema(StructureSchema):
       ),
       children=merge(
         {
-          api_constants.SCHEMA: StructureSchema(
+          transactino_constants.SCHEMA: StructureSchema(
             children={
-              api_constants.MODELS: ModelsSchemaWithExternal(
+              transactino_constants.MODELS: ModelsSchemaWithExternal(
                 children={
                   Model.__name__: Model.objects.schema(mode=mode_constants.UNSUBSCRIBED)
                   for Model

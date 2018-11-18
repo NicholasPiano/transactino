@@ -13,13 +13,12 @@ def get_ip(ip_value):
   return IP.objects.get(value=ip_value, account__isnull=False)
 
 class ConnectionManager(Manager):
-  def bring_online(self, name=None, ip_value=None, port=None):
+  def bring_online(self, name=None, ip_value=None):
     connection, connection_created = self.get_or_create(name=name)
     if connection_created:
       connection.bring_online(
         ip=get_ip(ip_value),
         ip_value=ip_value,
-        port=port,
       )
 
     return connection, connection_created
@@ -42,7 +41,6 @@ class Connection(Model):
 
   ip_value = models.CharField(max_length=255, null=True)
   is_online = models.BooleanField(default=False)
-  port = models.PositiveIntegerField(null=True)
   name = models.CharField(max_length=255, null=True)
   closed_at = models.DateTimeField(null=True)
   closed_with_code = models.PositiveIntegerField(null=True)
@@ -50,11 +48,10 @@ class Connection(Model):
   class Meta:
     app_label = APP_LABEL
 
-  def bring_online(self, ip=None, ip_value=None, port=None):
+  def bring_online(self, ip=None, ip_value=None):
     self.is_online = True
     self.ip = ip
     self.ip_value = ip_value
-    self.port = port
     self.save()
 
     if self.ip is not None:

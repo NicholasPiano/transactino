@@ -1,0 +1,18 @@
+Data from client:
+
+{
+  "id": ...
+  "schema": ...
+}
+
+Data passed to Wotan by Heimdall:
+
+{
+  "client": ...
+  "payload": {
+    "id": ...
+    "schema": ...
+  }
+}
+
+Response should be the reverse of this.

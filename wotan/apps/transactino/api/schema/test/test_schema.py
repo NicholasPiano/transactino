@@ -35,7 +35,6 @@ class TransactinoSchemaTestCase(TestCase):
     self.connection, connection_created = Connection.objects.bring_online(
       name=self.channel_name,
       ip_value=self.ip_value,
-      port=0,
     )
 
   def test_account_verification(self):
