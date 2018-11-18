@@ -64,8 +64,3 @@ LOGGING = {
     },
   }
 }
-
-if os.environ.get('RUN_MAIN', 'false') == 'true':
-  from relay.scheduler import scheduler
-  SCHEDULER = scheduler
-  SCHEDULER.remove_all_jobs()

@@ -4,8 +4,6 @@ import datetime
 
 from django.db import models
 from django.utils import timezone
-from django.conf import settings
-scheduler = settings.SCHEDULER
 
 from apps.base.models import Model, Manager, model_fields
 from apps.base.schema.constants import schema_constants
@@ -115,17 +113,3 @@ class Subscription(Model):
 
     self.last_update_time = timezone.now()
     self.save()
-
-def subscription_task():
-  if scheduler is not None:
-    for subscription in Subscription.objects.all():
-      subscription.update()
-
-if scheduler is not None:
-  scheduler.add_job(
-    subscription_task,
-    trigger='interval',
-    minutes=10,
-    id=subscription_constants.SUBSCRIPTION_TASK,
-    replace_existing=True,
-  )

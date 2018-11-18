@@ -1,10 +1,6 @@
 
 from django.db import models
-from django.conf import settings
 from django.utils import timezone
-
-from relay.constants import relay_constants
-from relay.send import send
 
 from util.bitcoin import get_latest_block_hash, get_previous_hash, Block
 
@@ -22,8 +18,6 @@ from .constants import (
 )
 from .schema.subscribed import FeeReportSubscribedModelSchema
 from .schema.superadmin import FeeReportSuperadminModelSchema
-
-scheduler = settings.SCHEDULER
 
 class FeeReportBlockWrapperPrototype(Model):
   hash = models.CharField(max_length=64)
@@ -81,26 +75,6 @@ class FeeReportBlockWrapper(Model):
     self.is_processing = False
     self.is_complete = True
     self.save()
-
-def fee_report_block_wrapper_task():
-  if scheduler is not None:
-    FeeReportBlockWrapper.objects.bulk_create([
-      FeeReportBlockWrapper(hash=prototype.hash)
-      for prototype
-      in FeeReportBlockWrapperPrototype.objects.all().distinct(
-        fee_report_block_wrapper_prototype_fields.HASH,
-      )
-    ])
-    FeeReportBlockWrapperPrototype.objects.all().delete()
-
-if scheduler is not None:
-  scheduler.add_job(
-    fee_report_block_wrapper_task,
-    trigger='interval',
-    seconds=10,
-    id=fee_report_block_wrapper_constants.FEE_REPORT_BLOCK_WRAPPER_TASK,
-    replace_existing=True,
-  )
 
 class FeeReportManager(Manager):
   def serialize(self, instance, attributes=None, relationships=None, mode=None):
@@ -227,27 +201,3 @@ class FeeReport(Model):
     self.last_update_end_time = timezone.now()
     self.has_been_run = True
     self.save()
-
-    send(self.account._id, relay_constants.FEE_REPORT, self._id)
-
-def fee_report_task():
-  if scheduler is not None:
-    latest_block_hash = get_latest_block_hash()
-
-    fee_reports = FeeReport.objects.filter(
-      is_active=True,
-      is_processing=False,
-    )
-
-    # for fee_report in fee_reports:
-      # fee_report.process(latest_block_hash=latest_block_hash)
-      # send(fee_report.account._id, relay_constants.FEE_REPORT, fee_report._id)
-
-if scheduler is not None:
-  scheduler.add_job(
-    fee_report_task,
-    trigger='interval',
-    seconds=10,
-    id=fee_report_constants.FEE_REPORT_TASK,
-    replace_existing=True,
-  )

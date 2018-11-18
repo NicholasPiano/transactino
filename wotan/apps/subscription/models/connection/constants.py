@@ -7,7 +7,6 @@ class close_codes:
 class connection_constants:
   IP_RELATED_MODEL = 'subscription.IP'
   IP_RELATED_NAME = 'connections'
-  CONNECTION_TASK = 'connection_task'
 
 class connection_fields:
   IP_VALUE = 'ip_value'

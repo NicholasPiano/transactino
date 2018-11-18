@@ -1,18 +1,12 @@
 
-from channels.layers import get_channel_layer
-
 from django.db import models
 from django.utils import timezone
 from django.apps import apps
-from django.conf import settings
 
 from apps.base.models import Model, Manager, model_fields
 
 from ...constants import mode_constants, APP_LABEL
 from .constants import close_codes, connection_constants, connection_fields
-
-channel_layer = get_channel_layer()
-scheduler = settings.SCHEDULER
 
 def get_ip(ip_value):
   IP = apps.get_model(APP_LABEL, 'IP')
@@ -74,16 +68,3 @@ class Connection(Model):
 
     if self.ip is not None:
       self.ip.take_offline()
-
-def connection_task():
-  if scheduler is not None:
-    print(channel_layer.hosts)
-
-if scheduler is not None:
-  scheduler.add_job(
-    connection_task,
-    trigger='interval',
-    seconds=10,
-    id=connection_constants.CONNECTION_TASK,
-    replace_existing=True,
-  )

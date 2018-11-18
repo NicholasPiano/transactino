@@ -63,7 +63,6 @@ DEFAULT_APPS = (
   'django.contrib.staticfiles',
 )
 THIRD_PARTY_APPS = (
-  'channels',
   'django_nose',
 )
 LOCAL_APPS = (
@@ -163,18 +162,5 @@ LOGGING = {
     },
   }
 }
-
-CHANNEL_LAYERS = {
-  'default': {
-    'BACKEND': 'relay.layer.TransactinoChannelLayer',
-    'CONFIG': {
-      'hosts': [
-        ('localhost', 6379)
-      ],
-    }
-  }
-}
-
-ASGI_APPLICATION = 'woot.routing.application'
 
 SCHEDULER = None

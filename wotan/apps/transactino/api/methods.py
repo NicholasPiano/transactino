@@ -1,6 +1,4 @@
 
-from relay.constants import socket_constants
-
 from apps.base.constants import model_fields
 from apps.base.schema.constants import schema_constants
 from apps.base.schema.methods.constants import method_constants

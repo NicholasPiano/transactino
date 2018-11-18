@@ -3,11 +3,6 @@ import uuid
 
 from django.utils import timezone
 from django.db import models
-from django.conf import settings
-scheduler = settings.SCHEDULER
-
-from relay.constants import relay_constants
-from relay.send import send
 
 from apps.base.models import Model, Manager, model_fields
 from apps.base.schema.constants import schema_constants
@@ -131,26 +126,3 @@ class Payment(Model):
       self.unique_btc_amount = self.to_address.get_open_unique_btc_amount()
       self.full_btc_amount = self.base_amount + self.unique_btc_amount
       self.save()
-
-def payment_task():
-  if scheduler is not None:
-    open_payments = Payment.objects.filter(is_open=True)
-
-    for payment in open_payments:
-      payment.update()
-
-      if not payment.is_open:
-        send(
-          payment.account.active_channel,
-          relay_constants.PAYMENT,
-          payment,
-        )
-
-if scheduler is not None:
-  scheduler.add_job(
-    payment_task,
-    trigger='interval',
-    minutes=5,
-    id=payment_constants.PAYMENT_TASK,
-    replace_existing=True,
-  )

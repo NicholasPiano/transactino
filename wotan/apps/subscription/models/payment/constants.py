@@ -9,7 +9,6 @@ class payment_constants:
   TO_ADDRESS_RELATED_NAME = 'payments_received'
   FROM_ADDRESS_RELATED_MODEL = 'subscription.Address'
   FROM_ADDRESS_RELATED_NAME = 'payments_sent'
-  PAYMENT_TASK = 'payment_task'
 
 class payment_fields:
   ACCOUNT = 'account'

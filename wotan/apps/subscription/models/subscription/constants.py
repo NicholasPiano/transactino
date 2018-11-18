@@ -5,7 +5,6 @@ class subscription_constants:
   ACCOUNT_RELATED_MODEL = 'subscription.Account'
   ACCOUNT_RELATED_NAME = 'subscriptions'
   DEFAULT_COST_PER_DAY = 40000
-  SUBSCRIPTION_TASK = 'subscription_task'
 
 class subscription_fields:
   ACCOUNT = 'account'
