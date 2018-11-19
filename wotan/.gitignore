@@ -16,4 +16,5 @@ man/
 nosetests.json
 
 # Django
+db/
 *.sqlite3

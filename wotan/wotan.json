@@ -1,0 +1,19 @@
+{
+  "version": "0.1.1",
+  "date": {
+    "description": "Log entries by date",
+    "children": {
+      "20181119": {
+        "description": "A very good, but frustrating, day for the websocket/http combo.",
+        "children": {
+          "t4": {
+            "description": "Getting the websocket server to play with the ORM server.",
+            "children": {
+              "get_token": "The CSRF token needs to be returned to be used by subsequent POST requests."
+            }
+          }
+        }
+      }
+    }
+  }
+}

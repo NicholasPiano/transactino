@@ -1,0 +1,35 @@
+{
+  "version": "0.1.1",
+  "date": {
+    "description": "Log entries by date",
+    "children": {
+      "20181118": {
+        "description": "Trying to get simple websocket proxy working",
+        "children": {
+          "t4": {
+            "description": "Combined effort from Wotan and Heimdall to make sure data can be passed between them properly.",
+            "children": {
+              "ws": "https://github.com/websockets/ws",
+              "nginx proxy": "https://www.nginx.com/blog/websocket-nginx/",
+              "get name of connection": "",
+              "get ip": "",
+              "wrap payload in proxy payload": ""
+            }
+          }
+        }
+      },
+      "20181119": {
+        "description": "Managed to get the proxy working",
+        "children": {
+          "t4": {
+            "description": "runserver. Two things to note: the headers for the csrf cookie and the content type and length",
+            "children": {
+              "csrf": "Both the 'Cookie' and 'X-CSRFToken' headers need to be included in the post request. The value is fetched by making a GET request initially.",
+              "content": "Both the 'Content-Type' and 'Content-Length' headers must be set. The content length is equal to the stringified length of the payload. The content type is obviously 'application/json', but it could be text as well for this purpose."
+            }
+          }
+        }
+      }
+    }
+  }
+}

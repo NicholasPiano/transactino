@@ -23,7 +23,7 @@ from apps.subscription.models.challenge.schema.common.methods.constants import (
 )
 from apps.subscription.models.subscription.constants import subscription_fields
 
-from ...constants import api_constants
+from ..constants import transactino_constants
 from .. import TransactinoSchema
 
 class TransactinoSchemaTestCase(TestCase):
@@ -39,8 +39,8 @@ class TransactinoSchemaTestCase(TestCase):
 
   def test_account_verification(self):
     create_payload = {
-      api_constants.SCHEMA: {
-        api_constants.MODELS: {
+      transactino_constants.SCHEMA: {
+        transactino_constants.MODELS: {
           Account.__name__: {
             schema_constants.METHODS: {
               method_constants.CREATE: {
@@ -60,8 +60,8 @@ class TransactinoSchemaTestCase(TestCase):
     self.assertTrue(Account.objects.filter(public_key=self.public_key))
 
     verify_payload = {
-      api_constants.SCHEMA: {
-        api_constants.MODELS: {
+      transactino_constants.SCHEMA: {
+        transactino_constants.MODELS: {
           Account.__name__: {
             schema_constants.METHODS: {
               account_unsubscribed_method_constants.VERIFY: {},
@@ -82,9 +82,9 @@ class TransactinoSchemaTestCase(TestCase):
 
     challenge_id = list(
       verify_response.render().get(
-        api_constants.SCHEMA
+        transactino_constants.SCHEMA
       ).get(
-        api_constants.MODELS
+        transactino_constants.MODELS
       ).get(
         Challenge.__name__
       ).get(
@@ -92,9 +92,9 @@ class TransactinoSchemaTestCase(TestCase):
       ).keys()
     )[0]
     encrypted_message = verify_response.render().get(
-      api_constants.SCHEMA
+      transactino_constants.SCHEMA
     ).get(
-      api_constants.MODELS
+      transactino_constants.MODELS
     ).get(
       Challenge.__name__
     ).get(
@@ -110,8 +110,8 @@ class TransactinoSchemaTestCase(TestCase):
     decrypted_message = gpg.decrypt_from_private(encrypted_message)
 
     respond_payload = {
-      api_constants.SCHEMA: {
-        api_constants.MODELS: {
+      transactino_constants.SCHEMA: {
+        transactino_constants.MODELS: {
           Challenge.__name__: {
             schema_constants.METHODS: {
               challenge_method_constants.RESPOND: {
@@ -137,8 +137,8 @@ class TransactinoSchemaTestCase(TestCase):
 
   def test_subscription_creation(self):
     create_account_payload = {
-      api_constants.SCHEMA: {
-        api_constants.MODELS: {
+      transactino_constants.SCHEMA: {
+        transactino_constants.MODELS: {
           Account.__name__: {
             schema_constants.METHODS: {
               method_constants.CREATE: {
@@ -164,8 +164,8 @@ class TransactinoSchemaTestCase(TestCase):
     account.save()
 
     create_subscription_payload = {
-      api_constants.SCHEMA: {
-        api_constants.MODELS: {
+      transactino_constants.SCHEMA: {
+        transactino_constants.MODELS: {
           Subscription.__name__: {
             schema_constants.METHODS: {
               method_constants.CREATE: {
@@ -189,9 +189,9 @@ class TransactinoSchemaTestCase(TestCase):
 
     challenge_id = list(
       create_response.render().get(
-        api_constants.SCHEMA
+        transactino_constants.SCHEMA
       ).get(
-        api_constants.MODELS
+        transactino_constants.MODELS
       ).get(
         Challenge.__name__
       ).get(
@@ -199,9 +199,9 @@ class TransactinoSchemaTestCase(TestCase):
       ).keys()
     )[0]
     encrypted_message = create_response.render().get(
-      api_constants.SCHEMA
+      transactino_constants.SCHEMA
     ).get(
-      api_constants.MODELS
+      transactino_constants.MODELS
     ).get(
       Challenge.__name__
     ).get(
@@ -217,8 +217,8 @@ class TransactinoSchemaTestCase(TestCase):
     decrypted_message = gpg.decrypt_from_private(encrypted_message)
 
     respond_payload = {
-      api_constants.SCHEMA: {
-        api_constants.MODELS: {
+      transactino_constants.SCHEMA: {
+        transactino_constants.MODELS: {
           Challenge.__name__: {
             schema_constants.METHODS: {
               challenge_method_constants.RESPOND: {

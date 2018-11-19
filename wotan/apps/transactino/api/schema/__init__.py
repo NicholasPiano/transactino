@@ -1,5 +1,7 @@
 
-from util.api import StructureSchema, types
+import json
+
+from util.api import Schema, StructureSchema, types
 
 from apps.subscription.models import Connection
 
@@ -23,13 +25,13 @@ class ProxySchema(StructureSchema):
 
     connection, connection_created = Connection.objects.bring_online(
       name=self.active_response.get_child(proxy_constants.CHANNEL).render(),
-      ip_value=self.active_response.get(proxy_constants.IP).render(),
+      ip_value=self.active_response.get_child(proxy_constants.IP).render(),
     )
 
     self.active_response.add_child(
       proxy_constants.TRANSACTINO,
       TransactinoSchema().respond(
         connection=connection,
-        payload=self.active_response.get(proxy_constants.TRANSACTINO).render(),
+        payload=json.loads(self.active_response.get_child(proxy_constants.TRANSACTINO).render()),
       )
     )
