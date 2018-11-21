@@ -2,9 +2,10 @@
 class TransactinoContext():
   def __init__(self, connection=None):
     self.connection = connection
+    if self.connection is not None:
+      print(self.connection.ip)
 
   def get_ip(self):
-    print(self.connection)
     return self.connection.ip
 
   def get_account(self):
@@ -28,3 +29,9 @@ class TransactinoContext():
       return False
 
     return self.get_account().is_locked
+
+  def is_superadmin(self):
+    if self.is_anonymous():
+      return False
+
+    return self.get_account().is_superadmin

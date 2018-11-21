@@ -43,7 +43,7 @@ class AttributeSchema(StructureSchema):
       response=AttributeResponse,
       children={
         attribute.name: Schema(
-          description='',
+          description='Attribute flag for {}'.format(attribute.name),
           types=types.BOOLEAN(),
         )
         for attribute in Model.objects.attributes(mode=mode)

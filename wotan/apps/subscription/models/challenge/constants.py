@@ -11,6 +11,7 @@ class challenge_fields:
   CONTENT = 'content'
   ENCRYPTED_CONTENT = 'encrypted_content'
   IS_OPEN = 'is_open'
+  HAS_BEEN_USED = 'has_been_used'
 
 account_fields.CHALLENGES = challenge_constants.ACCOUNT_RELATED_NAME
 

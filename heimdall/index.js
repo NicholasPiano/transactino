@@ -1,4 +1,5 @@
 
+const api = require('./util/api');
 const http = require('http');
 const WebSocket = require('ws');
 const uuidv4 = require('uuid/v4');

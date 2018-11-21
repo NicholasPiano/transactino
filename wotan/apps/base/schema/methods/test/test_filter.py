@@ -71,10 +71,11 @@ class FilterSchemaTestCase(TestCase):
     })
 
   def test_query_without_key_value(self):
+    key = 'name__contains'
     payload = {
       filter_constants.COMPOSITE: [
         {
-          filter_constants.KEY: 'key',
+          filter_constants.KEY: key,
         },
       ],
     }
@@ -93,10 +94,11 @@ class FilterSchemaTestCase(TestCase):
     })
 
   def test_query_with_key_value_and_or(self):
+    key = 'name__contains'
     payload = {
       filter_constants.COMPOSITE: [
         {
-          filter_constants.KEY: 'key',
+          filter_constants.KEY: key,
           filter_constants.VALUE: 'value',
           filter_constants.AND: [],
         },

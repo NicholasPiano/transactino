@@ -47,7 +47,12 @@ class Integer(Type):
     return isinstance(value, int)
 
 class Float(Type):
-  pass
+  code = '003'
+  description = 'A floating point number value'
+  type = '__float'
+
+  def validate(self, value):
+    return isinstance(value, float)
 
 class String(Type):
   code = '004'
@@ -152,6 +157,8 @@ def map_type(type_to_map):
     'UUIDField': types.UUID(),
     'TextField': types.STRING(),
     'PositiveIntegerField': types.INTEGER(),
+    'FloatField': types.FLOAT(),
+    'BigIntegerField': types.INTEGER(),
   }
 
   return type_map.get(type_to_map)

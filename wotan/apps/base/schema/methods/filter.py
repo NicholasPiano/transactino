@@ -62,16 +62,13 @@ class QuerySchema(StructureSchema):
   def passes_pre_response_checks(self, payload, context):
     if filter_constants.AND in payload and filter_constants.OR in payload:
       self.active_response.add_error(filter_errors.QUERY_AND_OR_PRESENT())
-      return False
 
     if filter_constants.KEY in payload or filter_constants.VALUE in payload:
       if filter_constants.KEY not in payload or filter_constants.VALUE not in payload:
         self.active_response.add_error(filter_errors.QUERY_KEY_VALUE_NOT_PRESENT())
-        return False
 
       if filter_constants.AND in payload or filter_constants.OR in payload:
         self.active_response.add_error(filter_errors.QUERY_AND_OR_PRESENT_WITH_KEY_VALUE())
-        return False
 
       key = payload.get(filter_constants.KEY)
       query_anomalies = self.model.objects.query_check(key)

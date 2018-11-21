@@ -11,7 +11,20 @@
             "children": {
               "get_token": "The CSRF token needs to be returned to be used by subsequent POST requests."
             }
+          },
+          "t5": {
+            "description": "filter tests to show Michal. I have discovered several problems while preparing it for him.",
+            "children": {
+              "fix non-existent types": "done. Maybe have more informative error if a type does not exist.",
+              "prevent error checking from returning on filter": "There may be more functions where I should let all errors trigger."
+            }
           }
+        }
+      },
+      "20181120": {
+        "description": "Need to think about the superadmin schema and how the superadmin will access the application. Not much has changed since before, so I should still be able to continue thinking about the 'status' schema and how it can be used to smuggle sensative data transparently. I also need to think about how to access details of the node websocket servers. I need to implement the schema system in javascript basically.",
+        "children": {
+          "status schema": "",
         }
       }
     }
