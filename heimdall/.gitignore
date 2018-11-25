@@ -2,3 +2,6 @@
 # yarn
 node_modules/
 yarn-error.log
+
+# node
+env.json

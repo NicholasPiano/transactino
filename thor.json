@@ -8,6 +8,12 @@
         "children": {
           "the lifetime of a client request": "The client wants information. How can they access that information? What kind of client are they? The client wants one of two things: (a) an immediate response to their question, or (b) a scheduled or triggered calculation that will deliver the information to them as soon as it is ready. To achieve (a), all you need is a server that responds to every question with data that can be read or calculated nearly instantly. To achieve (b), two additional servers, or at least 'concerns' are required. First, how do I get in touch with the client later when I have the information? Second, how do I know what 'later' means? All of this could be done with a single server, but it is cleaner to separate the concerns into three parts. Wotan is a synchronous web server that only stores data and responds to questions as fast as it possibly can. Heimdall is an asyncronous websocket server that maintains connections with the actual clients, but relays all incoming messages to Wotan, and relays all replies from Wotan to the correct client. If a task needs to be run on a regular basis, the first cause of that need must come from a client message to Heimdall, then to Wotan, and finally to Freya, who makes a record of the task in her database. The task encodes only a package that must be sent to Wotan when the time is right. Wotan will run the method, sending the output to Heimdall as usual, who will then relay it to the correct client.",
         }
+      },
+      "20181125": {
+        "description": "Need to prepare for 1.0 release. This needs to be the simplest version of the software. All mechanical aspects are in place. All that remains is the deployment.",
+        "children": {
+          "simplest deployment": "Probably the best way to do this is to use the setup I had before with asgi and redis using Django only. This would require some modifications to the Wotan package. I should have everything running on the same machine. I should also put the Django code behind Daphne and nginx. This can be added as a part of the yggdrasil configuration."
+        }
       }
     }
   }
