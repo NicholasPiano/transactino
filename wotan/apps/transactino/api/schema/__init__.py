@@ -32,6 +32,6 @@ class ProxySchema(StructureSchema):
       proxy_constants.TRANSACTINO,
       TransactinoSchema().respond(
         connection=connection,
-        payload=json.loads(self.active_response.get_child(proxy_constants.TRANSACTINO).render()),
+        payload=payload.get(proxy_constants.TRANSACTINO),
       )
     )

@@ -1,0 +1,1 @@
+Jormungand is a small user client meant to be run as a command-line application to access the Transactino application. Initially, it will access Wotan directly, but later version might be configured to connect to Heimdall.

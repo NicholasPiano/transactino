@@ -2,8 +2,6 @@
 class TransactinoContext():
   def __init__(self, connection=None):
     self.connection = connection
-    if self.connection is not None:
-      print(self.connection.ip)
 
   def get_ip(self):
     return self.connection.ip
