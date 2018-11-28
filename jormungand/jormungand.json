@@ -1,0 +1,23 @@
+{
+  "date": {
+    "description": "logs indexed by date",
+    "children": {
+      "20181128": {
+        "description": "Oficially making the first client for Transactino",
+        "children": {
+          "commands": {
+            "description": "Remaining commands to work on",
+            "children": {
+              "account.delete": "done",
+              "subscription.create": "done",
+              "subscription.activate": "done",
+              "payment.get": "done",
+              "fee_report.create": "",
+              "fee_report.get": "",
+            }
+          }
+        }
+      }
+    }
+  }
+}

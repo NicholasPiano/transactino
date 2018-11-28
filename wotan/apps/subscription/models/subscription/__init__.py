@@ -99,6 +99,9 @@ class Subscription(Model):
   def activate(self):
     self.is_payment_confirmed = True
     self.has_been_activated = True
+
+    current_date = timezone.now()
+    activation_date = self.activation_date if current_date < activation_date else current_date
     self.is_valid_until = self.activation_date + datetime.timedelta(days=self.duration_in_days)
     self.save()
 

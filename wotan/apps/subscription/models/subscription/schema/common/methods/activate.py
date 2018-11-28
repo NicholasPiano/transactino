@@ -1,6 +1,4 @@
 
-from django.conf import settings
-
 from util.merge import merge
 from util.api import (
   Schema, StructureSchema,

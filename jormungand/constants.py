@@ -7,6 +7,9 @@ class model_constants:
   INSTANCES = 'instances'
   ACCOUNT = 'Account'
   CHALLENGE = 'Challenge'
+  SUBSCRIPTION = 'Subscription'
+  PAYMENT = 'Payment'
+  FEE_REPORT = 'FeeReport'
 
 class method_constants:
   METHODS = 'methods'
