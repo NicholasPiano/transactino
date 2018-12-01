@@ -2,6 +2,7 @@
 import uuid
 import datetime
 
+from django.apps import apps
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
@@ -21,14 +22,14 @@ class SubscriptionManager(Manager):
       subscription_fields.ACTIVATION_DATE,
       subscription_fields.IS_VALID_UNTIL,
       subscription_fields.HAS_BEEN_ACTIVATED,
+      subscription_fields.DURATION_IN_DAYS,
+      subscription_fields.IS_ACTIVE,
+      subscription_fields.IS_PAYMENT_CONFIRMED,
+      subscription_fields.ORIGIN,
     ]
     if mode == mode_constants.SUPERADMIN:
       fields.extend([
-        subscription_fields.IS_PAYMENT_CONFIRMED,
-        subscription_fields.IS_ACTIVE,
         subscription_fields.LAST_UPDATE_TIME,
-        subscription_fields.ORIGIN,
-        subscription_fields.DURATION_IN_DAYS,
       ])
     return [
       field
@@ -107,11 +108,15 @@ class Subscription(Model):
       self.has_been_activated = True
 
       current_date = timezone.now()
-      self.activation_date = self.activation_date if current_date < activation_date else current_date
+      self.activation_date = self.activation_date if current_date < self.activation_date else current_date
       self.is_valid_until = self.activation_date + datetime.timedelta(days=self.duration_in_days)
       self.save()
 
   def update(self):
+    Payment = apps.get_model(APP_LABEL, 'Payment')
+    if Payment.objects.filter(origin=self.origin, is_open=False).exists():
+      self.confirm_payment()
+
     if self.activation_date is not None:
       if self.has_been_activated and timezone.now() > self.activation_date:
         self.is_active = True
@@ -132,7 +137,7 @@ if scheduler is not None:
   scheduler.add_job(
     subscription_task,
     trigger='interval',
-    minutes=1,
+    seconds=1,
     id=subscription_constants.SUBSCRIPTION_TASK,
     replace_existing=True,
   )

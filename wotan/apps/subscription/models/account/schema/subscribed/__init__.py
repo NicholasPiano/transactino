@@ -7,6 +7,6 @@ from .methods import AccountSubscribedModelMethodsSchema
 class AccountSubscribedModelSchema(ModelSchema):
   def __init__(self, Model, **kwargs):
     super().__init__(Model, **kwargs)
-    self.children.update({
+    self.children = {
       schema_constants.METHODS: AccountSubscribedModelMethodsSchema(Model),
-    })
+    }

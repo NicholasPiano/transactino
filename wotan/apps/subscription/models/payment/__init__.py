@@ -22,10 +22,10 @@ class PaymentManager(Manager):
     fields = [
       payment_fields.ADDRESS,
       payment_fields.FULL_BTC_AMOUNT,
+      payment_fields.ORIGIN,
     ]
     if mode == mode_constants.SUPERADMIN:
       fields.extend([
-        payment_fields.ORIGIN,
         payment_fields.IS_OPEN,
         payment_fields.HAS_BEEN_USED,
         payment_fields.BASE_AMOUNT,
@@ -111,7 +111,6 @@ class Payment(Model):
 
   def close(self, block_hash, txid):
     self.is_open = False
-    self.has_been_used = True
     self.time_confirmed = timezone.now()
     self.block_hash = block_hash
     self.txid = txid

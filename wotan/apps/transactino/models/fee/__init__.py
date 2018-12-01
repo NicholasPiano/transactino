@@ -78,25 +78,27 @@ class FeeReportBlockWrapper(Model):
     self.is_complete = True
     self.save()
 
-# def fee_report_block_wrapper_task():
-#   if scheduler is not None:
-#     FeeReportBlockWrapper.objects.bulk_create([
-#       FeeReportBlockWrapper(hash=prototype.hash)
-#       for prototype
-#       in FeeReportBlockWrapperPrototype.objects.all().distinct(
-#         fee_report_block_wrapper_prototype_fields.HASH,
-#       )
-#     ])
-#     FeeReportBlockWrapperPrototype.objects.all().delete()
-#
-# if scheduler is not None:
-#   scheduler.add_job(
-#     fee_report_block_wrapper_task,
-#     trigger='interval',
-#     seconds=10,
-#     id=fee_report_block_wrapper_constants.FEE_REPORT_BLOCK_WRAPPER_TASK,
-#     replace_existing=True,
-#   )
+def fee_report_block_wrapper_task():
+  if scheduler is not None:
+    FeeReportBlockWrapper.objects.bulk_create([
+      FeeReportBlockWrapper(hash=prototype.hash)
+      for prototype
+      in FeeReportBlockWrapperPrototype.objects.all()
+      # .distinct(
+      #   fee_report_block_wrapper_prototype_fields.HASH,
+      # )
+    ])
+    FeeReportBlockWrapperPrototype.objects.all().delete()
+
+if scheduler is not None:
+  print('here')
+  scheduler.add_job(
+    fee_report_block_wrapper_task,
+    trigger='interval',
+    seconds=10,
+    id=fee_report_block_wrapper_constants.FEE_REPORT_BLOCK_WRAPPER_TASK,
+    replace_existing=True,
+  )
 
 class FeeReportManager(Manager):
   def serialize(self, instance, attributes=None, relationships=None, mode=None):

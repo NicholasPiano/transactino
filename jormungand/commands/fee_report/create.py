@@ -18,7 +18,7 @@ def create(args):
         model_constants.FEE_REPORT: {
           method_constants.METHODS: {
             fee_report_constants.CREATE: {
-              fee_report_constants.BLOCKS_TO_INCLUDE: blocks_to_include,
+              fee_report_constants.BLOCKS_TO_INCLUDE: int(blocks_to_include),
               'is_active': True,
             },
           },
