@@ -1,6 +1,8 @@
 
 from django.db import models
 from django.utils import timezone
+from django.conf import settings
+scheduler = settings.SCHEDULER
 
 from util.bitcoin import get_latest_block_hash, get_previous_hash, Block
 
@@ -75,6 +77,26 @@ class FeeReportBlockWrapper(Model):
     self.is_processing = False
     self.is_complete = True
     self.save()
+
+# def fee_report_block_wrapper_task():
+#   if scheduler is not None:
+#     FeeReportBlockWrapper.objects.bulk_create([
+#       FeeReportBlockWrapper(hash=prototype.hash)
+#       for prototype
+#       in FeeReportBlockWrapperPrototype.objects.all().distinct(
+#         fee_report_block_wrapper_prototype_fields.HASH,
+#       )
+#     ])
+#     FeeReportBlockWrapperPrototype.objects.all().delete()
+#
+# if scheduler is not None:
+#   scheduler.add_job(
+#     fee_report_block_wrapper_task,
+#     trigger='interval',
+#     seconds=10,
+#     id=fee_report_block_wrapper_constants.FEE_REPORT_BLOCK_WRAPPER_TASK,
+#     replace_existing=True,
+#   )
 
 class FeeReportManager(Manager):
   def serialize(self, instance, attributes=None, relationships=None, mode=None):
@@ -201,3 +223,24 @@ class FeeReport(Model):
     self.last_update_end_time = timezone.now()
     self.has_been_run = True
     self.save()
+
+def fee_report_task():
+  if scheduler is not None:
+    latest_block_hash = get_latest_block_hash()
+
+    fee_reports = FeeReport.objects.filter(
+      is_active=True,
+      is_processing=False,
+    )
+
+    for fee_report in fee_reports:
+      fee_report.process(latest_block_hash=latest_block_hash)
+
+if scheduler is not None:
+  scheduler.add_job(
+    fee_report_task,
+    trigger='interval',
+    seconds=10,
+    id=fee_report_constants.FEE_REPORT_TASK,
+    replace_existing=True,
+  )

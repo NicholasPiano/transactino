@@ -24,7 +24,7 @@ def create(args):
           method_constants.METHODS: {
             subscription_constants.CREATE: {
               subscription_constants.ACTIVATION_DATE: aware_datetime.isoformat(),
-              subscription_constants.DURATION_IN_DAYS: duration_in_days,
+              subscription_constants.DURATION_IN_DAYS: int(duration_in_days),
             },
           },
         },
@@ -48,3 +48,13 @@ def create(args):
   ])
 
   print(json.dumps(create_json, indent=2))
+
+  instances_json = get_path(response_json, [
+    transactino_constants.SCHEMA,
+    model_constants.MODELS,
+    model_constants.SUBSCRIPTION,
+    model_constants.INSTANCES,
+  ])
+
+  if instances_json is not None:
+    print(json.dumps(instances_json, indent=2))

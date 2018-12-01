@@ -80,43 +80,47 @@ def get_transaction(txid):
   return json.loads(get_transaction_command.stdout.decode('utf-8'))
 
 class Delta():
-  def __init__(self, vin_json=None, vout_json=None):
+  def __init__(self, vin_json=None, vout_json=None, minimal=False, out_txid=None):
+    self.minimal = minimal
     if vin_json is not None:
       self.incoming(vin_json)
 
     if vout_json is not None:
+      self.out_txid = out_txid
       self.outgoing(vout_json)
 
   def incoming(self, vin_json):
     self.txid = vin_json.get('txid')
     self.index = vin_json.get('vout')
 
-    past_transaction_json = get_transaction(self.txid)
-    past_vout = past_transaction_json.get('vout')[self.index]
-    self.value = past_vout.get('value') * 10e8
+    if not self.minimal:
+      past_transaction_json = get_transaction(self.txid)
+      past_vout = past_transaction_json.get('vout')[self.index]
+      self.value = int(past_vout.get('value') * 10e8)
 
   def outgoing(self, vout_json):
     self.index = vout_json.get('n')
-    self.value = vout_json.get('value') * 10e8
+    self.value = int(vout_json.get('value') * 10e8)
     self.addresses = vout_json.get('scriptPubKey').get('addresses')
 
 class Transaction():
-  def __init__(self, transaction_json):
+  def __init__(self, transaction_json, minimal=False):
     self.txid = transaction_json.get('txid')
     self.hash = transaction_json.get('hash')
     self.size = transaction_json.get('size')
+    self.minimal = minimal
 
     self.create_deltas(transaction_json)
 
   def create_deltas(self, transaction_json):
     self.incoming_deltas = [
-      Delta(vin_json=vin_json)
+      Delta(vin_json=vin_json, minimal=self.minimal)
       for vin_json
       in transaction_json.get('vin')
       if 'coinbase' not in vin_json
     ]
     self.outgoing_deltas = [
-      Delta(vout_json=vout_json)
+      Delta(vout_json=vout_json, out_txid=self.txid)
       for vout_json
       in transaction_json.get('vout')
     ]
@@ -142,11 +146,23 @@ class Transaction():
 
     return 0, 0
 
+  def find_deltas_with_address(self, address):
+    return [
+      delta
+      for delta
+      in self.outgoing_deltas
+      if (
+        delta.addresses is not None
+        and address in delta.addresses
+      )
+    ]
+
 class Block():
-  def __init__(self, hash):
+  def __init__(self, hash, minimal=False):
     self.hash = hash
     block_json = get_block(hash)
 
+    self.minimal = minimal
     self.parent = block_json.get('previousblockhash')
     self.height = block_json.get('height')
     self.hash = block_json.get('hash')
@@ -155,7 +171,14 @@ class Block():
 
   def create_transactions(self, transactions_json):
     self.transactions = [
-      Transaction(transaction_json)
+      Transaction(transaction_json, minimal=self.minimal)
       for transaction_json
       in transactions_json
     ]
+
+  def find_deltas_with_address(self, address):
+    deltas = []
+    for transaction in self.transactions:
+      deltas.extend(transaction.find_deltas_with_address(address))
+
+    return deltas

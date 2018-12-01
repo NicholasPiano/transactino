@@ -41,7 +41,7 @@ class WithChallenge(Schema):
       open_challenge = context.get_account().challenges.get(origin=self.origin, is_open=True)
       if open_challenge is not None:
         self.active_response.add_error(
-          with_challenge_errors.OPEN_CHALLENGE_EXISTS_WITH_ORIGIN(origin=self.origin),
+          with_challenge_errors.OPEN_CHALLENGE_EXISTS_WITH_ORIGIN(id=open_challenge._id, origin=self.origin),
         )
         return False
 

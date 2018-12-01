@@ -26,6 +26,22 @@
         "children": {
           "status schema": "",
         }
+      },
+      "20181129": {
+        "description": "Thinking about how the subscription activation should work",
+        "children": {
+          "subscription activation": "Creating a subscription should specify a number of days and an activation date. This is to allow activation dates in the future, so time can be purchased in advance. Completing a challenge allows the user to create an inactive subscription.",
+          "payment block wrapper": "Payments need to request the block just like fee reports. The problem is, it can't be reduced.",
+          "don't need wrapper": "Just get the latest block and scan it in the loop.",
+          "address methods": "Need superadmin create and activate"
+        }
+      },
+      "20181201": {
+        "description": "Encountering some problems",
+        "children": {
+          "preserve arguments somehow": "Instead, should be able to run the method with no arguments",
+          "challenge is consumed if there is an error": "This is fine, but maybe only consume the challenge if there is no error. This shouldn't be hard."
+        }
       }
     }
   }

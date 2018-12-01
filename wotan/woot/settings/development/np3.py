@@ -3,7 +3,10 @@ import os
 from os.path import join, dirname, abspath, exists, normpath
 
 from ..scheduler import scheduler
-from .common import *
+
+from woot.settings.common import *
+
+DEBUG = False
 
 DB_PATH = join(WOOT_PATH, 'db')
 if not exists(DB_PATH):

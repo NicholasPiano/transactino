@@ -16,4 +16,6 @@ class constants:
     'BooleanField',
     'PositiveIntegerField',
     'IntegerField',
+    'BigIntegerField',
+    'FloatField',
   ]

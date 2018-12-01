@@ -4,6 +4,8 @@ import datetime
 
 from django.db import models
 from django.utils import timezone
+from django.conf import settings
+scheduler = settings.SCHEDULER
 
 from apps.base.models import Model, Manager, model_fields
 from apps.base.schema.constants import schema_constants
@@ -96,14 +98,18 @@ class Subscription(Model):
   def get_cost(self):
     return self.duration_in_days * subscription_constants.DEFAULT_COST_PER_DAY
 
-  def activate(self):
+  def confirm_payment(self):
     self.is_payment_confirmed = True
-    self.has_been_activated = True
-
-    current_date = timezone.now()
-    activation_date = self.activation_date if current_date < activation_date else current_date
-    self.is_valid_until = self.activation_date + datetime.timedelta(days=self.duration_in_days)
     self.save()
+
+  def activate(self):
+    if self.is_payment_confirmed:
+      self.has_been_activated = True
+
+      current_date = timezone.now()
+      self.activation_date = self.activation_date if current_date < activation_date else current_date
+      self.is_valid_until = self.activation_date + datetime.timedelta(days=self.duration_in_days)
+      self.save()
 
   def update(self):
     if self.activation_date is not None:
@@ -116,3 +122,17 @@ class Subscription(Model):
 
     self.last_update_time = timezone.now()
     self.save()
+
+def subscription_task():
+  if scheduler is not None:
+    for subscription in Subscription.objects.all():
+      subscription.update()
+
+if scheduler is not None:
+  scheduler.add_job(
+    subscription_task,
+    trigger='interval',
+    minutes=1,
+    id=subscription_constants.SUBSCRIPTION_TASK,
+    replace_existing=True,
+  )

@@ -12,8 +12,23 @@
               "subscription.create": "done",
               "subscription.activate": "done",
               "payment.get": "done",
-              "fee_report.create": "",
-              "fee_report.get": "",
+              "fee_report.create": "done",
+              "fee_report.get": "done",
+            }
+          },
+          "testing": {
+            "description": "Some testing needs to be done.",
+            "children": {
+              "all methods": "Run through the full process from creating an account to creating a fee report.",
+              "add scheduling for objects that need it": {
+                "description": "Add the scheduling I had before",
+                "children": {
+                  "payment": "",
+                  "subscription": "",
+                  "fee reports": "",
+                  "fee report wrappers": ""
+                }
+              }
             }
           }
         }

@@ -56,13 +56,16 @@ class SubscriptionCreateSchema(WithOrigin, WithChallenge, StructureSchema):
     )
 
   def passes_pre_response_checks(self, payload, context):
+    if not super().passes_pre_response_checks(payload, context):
+      return False
 
     if subscription_fields.DURATION_IN_DAYS not in payload:
       self.active_response.add_error(
         create_errors.DURATION_NOT_INCLUDED(),
       )
+      return False
 
-    return super().passes_pre_response_checks(payload, context)
+    return True
 
   def responds_to_valid_payload(self, payload, context):
     super().responds_to_valid_payload(payload, context)
