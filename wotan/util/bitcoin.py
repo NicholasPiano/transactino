@@ -96,11 +96,11 @@ class Delta():
     if not self.minimal:
       past_transaction_json = get_transaction(self.txid)
       past_vout = past_transaction_json.get('vout')[self.index]
-      self.value = int(past_vout.get('value') * 10e8)
+      self.value = int(past_vout.get('value') * 1e8)
 
   def outgoing(self, vout_json):
     self.index = vout_json.get('n')
-    self.value = int(vout_json.get('value') * 10e8)
+    self.value = int(vout_json.get('value') * 1e8)
     self.addresses = vout_json.get('scriptPubKey').get('addresses')
 
 class Transaction():

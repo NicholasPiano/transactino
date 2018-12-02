@@ -10,6 +10,7 @@ class model_constants:
   SUBSCRIPTION = 'Subscription'
   PAYMENT = 'Payment'
   FEE_REPORT = 'FeeReport'
+  ATTRIBUTES = 'attributes'
 
 class method_constants:
   METHODS = 'methods'

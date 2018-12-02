@@ -1,0 +1,50 @@
+{
+  "date": {
+    "description": "logs indexed by date",
+    "children": {
+      "20181202": {
+        "description": "Beginning deployment",
+        "children": {
+          "checklist": {
+            "description": "Wotan deployment and Jormungand release",
+            "children": {
+              "url": "https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04",
+              "configure nginx": {
+                "description": "Store all configuration files in Yggdrasil",
+                "children": {
+                  "install": "sudo apt-get install nginx",
+                  "allow port 8000 for testing": "sudo ufw allow 8000",
+                  "config file": "nginx/wotan",
+                  "copy configuration": "sudo cp yggdrasil/nginx/wotan /etc/nginx/sites-available/",
+                  "link": "sudo ln -s /etc/nginx/sites-available/wotan /etc/nginx/sites-enabled",
+                  "test nginx": "sudo nginx -t",
+                  "restart": "sudo systemctl restart nginx"
+                }
+              },
+              "configure gunicorn": {
+                "description": "The gunicorn server sits between nginx and django",
+                "children": {
+                  "activate virtualenv": "source bin/activate",
+                  "install": "pip install gunicorn",
+                  "test server": "gunicorn --bind 0.0.0.0:8000 woot.wsgi",
+                  "config file": "systemd/gunicorn.service",
+                  "copy configuration": "sudo cp yggdrasil/systemd/gunicorn.service /etc/systemd/system/",
+                  "start": "sudo systemctl start gunicorn",
+                  "enable": "sudo systemctl enable gunicorn",
+                  "status": "sudo systemctl status gunicorn",
+                  "reread daemon config": "sudo systemctl daemon-reload",
+                  "restart": "sudo systemctl restart gunicorn",
+                  "single redis process": "https://stackoverflow.com/questions/16053364/make-sure-only-one-worker-launches-the-apscheduler-event-in-a-pyramid-web-app-ru",
+                  "redis problem": "When running the app with gunicorn, there is no RUN_MAIN flag in the environ dictionary. For the staging settings, a solution will have to be found for accessing the shell, etc. I don't want to start another instance of the scheduler. Solved by adding SHELL environment variable."
+                }
+              },
+              "add address": {},
+              "write Jormungand readme": "",
+              "write Jormungand download page": "",
+            }
+          }
+        }
+      }
+    }
+  }
+}

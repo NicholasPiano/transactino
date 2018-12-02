@@ -3,6 +3,10 @@ import os
 
 from woot.settings.common import *
 
+if not os.environ.get('SHELL', 'false') == 'true':
+  from .scheduler import scheduler
+  SCHEDULER = scheduler
+
 DEBUG = False
 
 DATABASES = {
@@ -53,7 +57,7 @@ LOGGING = {
   },
   'loggers': {
     'django.request': {
-      'handlers': ['mail_admins', 'console'],
+      'handlers': ['mail_admins', 'console', 'file'],
       'level': 'ERROR',
       'propagate': True,
     },
@@ -64,3 +68,7 @@ LOGGING = {
     },
   }
 }
+
+ALLOWED_HOSTS = (
+  '35.178.85.150',
+)

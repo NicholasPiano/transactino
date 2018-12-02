@@ -42,6 +42,14 @@
           "preserve arguments somehow": "Instead, should be able to run the method with no arguments",
           "challenge is consumed if there is an error": "This is fine, but maybe only consume the challenge if there is no error. This shouldn't be hard."
         }
+      },
+      "20181201": {
+        "description": "Finally finished the work on connecting Jormungand to Wotan. Should be ready for deployment.",
+        "children": {
+          "deployment": "The general plan is to use an nginx proxy pointing at gunicorn application running the Wotan code. I will forego a DNS for now. Redis can be run as a service using systemd, or continue to be run within a screen as it is now for testing. For rsync, I need to be careful that certain files are not included in the deployment. It might be wise to write a separate deployment script in Yggdrasil. Deployment should upload files, run database migrations, and restart the gunicorn process.",
+          "virtualenv": "Make sure I can use virtualenv with gunicorn.",
+          "redis": "Run redis inside a service."
+        }
       }
     }
   }

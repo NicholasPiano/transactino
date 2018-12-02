@@ -40,4 +40,10 @@ def get(args):
     model_constants.INSTANCES,
   ])
 
-  print(json.dumps(instances_json, indent=2))
+  for challenge_id, attributes_json in instances_json.items():
+    print('Challenge ID: ', challenge_id, '\n')
+    encrypted_content = get_path(attributes_json, [
+      model_constants.ATTRIBUTES,
+      challenge_constants.ENCRYPTED_CONTENT,
+    ])
+    print(encrypted_content + '\n')

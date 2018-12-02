@@ -140,7 +140,7 @@ if scheduler is not None:
   scheduler.add_job(
     payment_task,
     trigger='interval',
-    minutes=1,
+    seconds=60,
     id=payment_constants.PAYMENT_TASK,
     replace_existing=True,
   )

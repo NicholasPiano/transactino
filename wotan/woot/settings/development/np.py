@@ -2,6 +2,7 @@
 import os
 from os.path import join, dirname, abspath, exists, normpath
 
+from ..scheduler import scheduler
 from .common import *
 
 DATABASES = {
@@ -14,3 +15,6 @@ DATABASES = {
     'PORT': '',
   }
 }
+
+if os.environ.get('RUN_MAIN', 'false') == 'true':
+  SCHEDULER = scheduler

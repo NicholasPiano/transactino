@@ -83,15 +83,13 @@ def fee_report_block_wrapper_task():
     FeeReportBlockWrapper.objects.bulk_create([
       FeeReportBlockWrapper(hash=prototype.hash)
       for prototype
-      in FeeReportBlockWrapperPrototype.objects.all()
-      # .distinct(
-      #   fee_report_block_wrapper_prototype_fields.HASH,
-      # )
+      in FeeReportBlockWrapperPrototype.objects.all().distinct(
+        fee_report_block_wrapper_prototype_fields.HASH,
+      )
     ])
     FeeReportBlockWrapperPrototype.objects.all().delete()
 
 if scheduler is not None:
-  print('here')
   scheduler.add_job(
     fee_report_block_wrapper_task,
     trigger='interval',
@@ -101,6 +99,33 @@ if scheduler is not None:
   )
 
 class FeeReportManager(Manager):
+  def attributes(self, mode=None):
+    fields = [
+      fee_report_fields.IS_ACTIVE,
+      fee_report_fields.IS_PROCESSING,
+      fee_report_fields.BLOCKS_TO_INCLUDE,
+      fee_report_fields.AVERAGE_TX_FEE,
+      fee_report_fields.AVERAGE_TX_FEE_DENSITY,
+      fee_report_fields.LAST_UPDATE_END_TIME,
+      fee_report_fields.LATEST_BLOCK_HASH,
+    ]
+    if mode == mode_constants.SUPERADMIN:
+      fields.extend([
+        fee_report_fields.LAST_UPDATE_START_TIME,
+        fee_report_fields.HAS_BEEN_RUN,
+        fee_report_fields.HAS_BEEN_READY,
+      ])
+
+    return [
+      field
+      for field in self.model._meta.get_fields()
+      if (
+        not field.is_relation
+        and field.name != model_fields.ID
+        and field.name in fields
+      )
+    ]
+
   def serialize(self, instance, attributes=None, relationships=None, mode=None):
     serialized = {
       schema_constants.ATTRIBUTES: self.serialize_attributes(
@@ -159,6 +184,7 @@ class FeeReport(Model):
         self.has_been_run = False
         self.latest_block_hash = latest_block_hash
         self.is_processing = True
+        self.last_update_start_time = timezone.now()
         self.save()
 
       if self.is_ready():
@@ -205,9 +231,6 @@ class FeeReport(Model):
   def run(self):
     if self.has_been_run:
       return
-
-    self.last_update_start_time = timezone.now()
-    self.save()
 
     fees = []
     densities = []

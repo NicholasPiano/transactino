@@ -32,6 +32,12 @@
             }
           }
         }
+      },
+      "20181201": {
+        "description": "Ready for deployment. I should make an expanded version of Jormungand for superadmins.",
+        "children": {
+          "display": "Might consider displaying the whole returned schema or larger parts of it rather than parsing it."
+        }
       }
     }
   }

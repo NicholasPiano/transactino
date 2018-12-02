@@ -17,7 +17,7 @@ class ProxyView(View):
       proxy_constants.ID: uuid.uuid4().hex,
       proxy_constants.IP: get_ip(request),
       proxy_constants.CHANNEL: uuid.uuid4().hex,
-      proxy_constants.TRANSACTINO: json.loads(request.body)
+      proxy_constants.TRANSACTINO: json.loads(request.body.decode('utf-8'))
     }
 
     response = ProxySchema().respond(payload=payload).get_child(proxy_constants.TRANSACTINO)

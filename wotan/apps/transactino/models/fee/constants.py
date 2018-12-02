@@ -31,6 +31,7 @@ class fee_report_fields:
   LATEST_BLOCK_HASH = 'latest_block_hash'
   HAS_BEEN_READY = 'has_been_ready'
   HAS_BEEN_RUN = 'has_been_run'
+  IS_PROCESSING = 'is_processing'
   AVERAGE_TX_FEE = 'average_tx_fee'
   AVERAGE_TX_FEE_DENSITY = 'average_tx_fee_density'
   LAST_UPDATE_START_TIME = 'last_update_start_time'
