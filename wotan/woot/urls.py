@@ -11,4 +11,5 @@ urlpatterns = [
   path('api/', ProxyView.as_view()),
   path('test/', TransactinoTestView.as_view()),
   path('readme/', TemplateView.as_view(template_name='readme.html')),
+  path('start/', TemplateView.as_view(template_name='jormungand.html'))
 ]

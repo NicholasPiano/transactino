@@ -1,4 +1,7 @@
 
+import logging
+logger = logging.getLogger('django.debug')
+
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
@@ -102,7 +105,6 @@ class FeeReportManager(Manager):
   def attributes(self, mode=None):
     fields = [
       fee_report_fields.IS_ACTIVE,
-      fee_report_fields.IS_PROCESSING,
       fee_report_fields.BLOCKS_TO_INCLUDE,
       fee_report_fields.AVERAGE_TX_FEE,
       fee_report_fields.AVERAGE_TX_FEE_DENSITY,
@@ -180,58 +182,30 @@ class FeeReport(Model):
   def process(self, latest_block_hash=None):
     if latest_block_hash is not None:
       if self.latest_block_hash != latest_block_hash:
-        self.has_been_ready = False
-        self.has_been_run = False
         self.latest_block_hash = latest_block_hash
-        self.is_processing = True
         self.last_update_start_time = timezone.now()
         self.save()
 
       if self.is_ready():
         self.run()
 
-      self.is_processing = False
       self.save()
 
   def is_ready(self):
-    if self.has_been_ready:
-      return True
-
     is_ready = True
     active_block_hash = self.latest_block_hash
 
-    total_count = 0
-    contiguous_count = 0
-    while True:
-      total_count += 1
-      if FeeReportBlockWrapper.objects.is_ready(hash=active_block_hash):
-        contiguous_count += 1
-      else:
-        contiguous_count = 0
-        self.latest_block_hash = active_block_hash
-        self.save()
-
-      over_count = total_count >= self.blocks_to_include
-      target_threshold_to_continue = contiguous_count >= 0.8 * self.blocks_to_include
-
-      if over_count and not target_threshold_to_continue:
+    block_count = 0
+    while block_count < self.blocks_to_include:
+      if not FeeReportBlockWrapper.objects.is_ready(hash=active_block_hash):
         is_ready = False
-        break
-
-      if contiguous_count == self.blocks_to_include:
-        break
 
       active_block_hash = get_previous_hash(active_block_hash)
-
-    self.has_been_ready = is_ready
-    self.save()
+      block_count += 1
 
     return is_ready
 
   def run(self):
-    if self.has_been_run:
-      return
-
     fees = []
     densities = []
     active_block_hash = self.latest_block_hash
@@ -253,10 +227,7 @@ def fee_report_task():
   if scheduler is not None:
     latest_block_hash = get_latest_block_hash()
 
-    fee_reports = FeeReport.objects.filter(
-      is_active=True,
-      is_processing=False,
-    )
+    fee_reports = FeeReport.objects.filter(is_active=True)
 
     for fee_report in fee_reports:
       fee_report.process(latest_block_hash=latest_block_hash)

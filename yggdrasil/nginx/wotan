@@ -3,8 +3,8 @@ server {
     server_name 35.178.85.150;
 
     location = /favicon.ico { access_log off; log_not_found off; }
-    location /static/ {
-        root /home/ubuntu/thor/wotan/woot/static;
+    location /static {
+        alias /home/ubuntu/thor/wotan/woot/static;
     }
 
     location / {

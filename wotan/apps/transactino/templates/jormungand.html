@@ -1,43 +1,31 @@
-{% load static %}
-
-# JORMUNGAND
-
-Named for the Norse World-serpent that brings about Ragnarok, Jormungand is the first user client for the Transactino application. This document contains releases and documentation for its use.
-
-## ACCESS DETAILS
-
-```
-URL: http://35.178.85.150/api/
-```
-
-## Releases
-
-<a href="{% static 'jormungand_1.0.0.zip' %}">1.0.0</a>
-
-## Usage
-### Setup
-
-1. Unzip the release into DIR
-2. Create env.json in DIR with the following contents:
-
-```json
-{
+<p>{% load static %}</p>
+<h1 id="jormungand">JORMUNGAND</h1>
+<p>Named for the Norse World-serpent that brings about Ragnarok, Jormungand is the first user client for the Transactino application. This document contains releases and documentation for its use.</p>
+<h2 id="accessdetails">ACCESS DETAILS</h2>
+<pre><code>URL: http://35.178.85.150/api/
+</code></pre>
+<h2 id="releases">Releases</h2>
+<p><a href="{% static 'jormungand_1.0.0.zip' %}">1.0.0</a></p>
+<h2 id="usage">Usage</h2>
+<h3 id="setup">Setup</h3>
+<ol>
+<li>Unzip the release into DIR</li>
+<li>Create env.json in DIR with the following contents:</li>
+</ol>
+<pre><code class="json language-json">{
   "url": "http://35.178.85.150/api/",
   "public_key": "/path/to/public_key.asc"
 }
-```
-
-3. Install Python3.5+
-4. Create virtualenv `~$ python3.5 -m venv .`
-5. Activate virtualenv `~$ source bin/activate`
-6. Run script with arguments `~$ python jormungand.py arg1 arg2`
-
-### Commands
-
-The order of the arguments does not matter `account verify == verify account`
-
-```
-schema
+</code></pre>
+<ol start="3">
+<li>Install Python3.5+</li>
+<li>Create virtualenv <code>~$ python3.5 -m venv .</code></li>
+<li>Activate virtualenv <code>~$ source bin/activate</code></li>
+<li>Run script with arguments <code>~$ python jormungand.py arg1 arg2</code></li>
+</ol>
+<h3 id="commands">Commands</h3>
+<p>The order of the arguments does not matter <code>account verify == verify account</code></p>
+<pre><code>schema
 schema reduced
 account create
 account verify
@@ -51,16 +39,13 @@ subscription get
 subscription get inactive
 fee_report create
 fee_report get
-```
-
-### Example series of commands from creating an account to checking a fee report
-
-1. Look at the schema to see available commands:
-
-`~$ python jormungand.py schema reduced`
-
-```json
-{
+</code></pre>
+<h3 id="exampleseriesofcommandsfromcreatinganaccounttocheckingafeereport">Example series of commands from creating an account to checking a fee report</h3>
+<ol>
+<li>Look at the schema to see available commands:</li>
+</ol>
+<p><code>~$ python jormungand.py schema reduced</code></p>
+<pre><code class="json language-json">{
   "schema": {
     "models": {
       "Account": {
@@ -73,14 +58,12 @@ fee_report get
     }
   }
 }
-```
-
-2. Create account (`env.json` points to valid gpg public key):
-
-`~$ python jormungand.py create account`
-
-```
-    #### Disclaimer ####
+</code></pre>
+<ol start="2">
+<li>Create account (<code>env.json</code> points to valid gpg public key):</li>
+</ol>
+<p><code>~$ python jormungand.py create account</code></p>
+<pre><code>    #### Disclaimer ####
 
     Your account has been created with the IP address 93.176.134.16 and long key
     id 5F2201FF, but you should be aware of the following matters:
@@ -100,25 +83,21 @@ fee_report get
        other external sources. The information is drawn from a single common
        source (The Blockchain), allowing the reported data to be easily
        corroborated.
-```
-
-3. Verify account (no challenge):
-
-`~$ python jormungand.py verify account`
-
-```json
-{
+</code></pre>
+<ol start="3">
+<li>Verify account (no challenge):</li>
+</ol>
+<p><code>~$ python jormungand.py verify account</code></p>
+<pre><code class="json language-json">{
   "open_challenge_id": "f5368309256f4394b44803539f309aa0",
   "verification_complete": false
 }
-```
-
-4. Look for challenge with corresponding ID:
-
-`~$ python jormungand.py get challenge`
-
-```
-Challenge ID:  f5368309256f4394b44803539f309aa0
+</code></pre>
+<ol start="4">
+<li>Look for challenge with corresponding ID:</li>
+</ol>
+<p><code>~$ python jormungand.py get challenge</code></p>
+<pre><code>Challenge ID:  f5368309256f4394b44803539f309aa0
 
 -----BEGIN PGP MESSAGE-----
 Version: GnuPG v1
@@ -145,49 +124,37 @@ tcLzE0isT71eCpBpVhqOlC668eKnedPqfr4M3JMAUH3L6nb1zn9j9cVHQWlHn/ZB
 +3VS
 =FFmP
 -----END PGP MESSAGE-----
-```
-
-Copy this into a file and decrypt (assuming private key has been added to GPG):
-
-`~$ gpg --decrypt file_with_challenge > output`
-
-The string needed to respond to the challenge can be found in `output`:
-
-```
-9DA54E27F0AC496A7F6853B11B2D2FEB5D51767F3DA7C8B482EDFABE5D20D99A88A494BACEC00FBDD92F6DD994AC9923ED50F5DC2BCF94774A83AA5625A3ED9D9AC47B8F8F991A874D97C01F1E98196C1342049EAE865120F328E9603EA0E6EE289061D6D96FBC85CC6C32CE7A9C57BEA31C122BB8E2ED80BED41D55146395159FD31CB2418E0597B46FC62A25FF2041C4DF623B9ADA5123B82C7BCF7F85DDE2E1FC9BB298D824025C7BE69E3A3FF6EF484C5153B94E0E9AA3341489841E41AA5A0A8C2CC115E00432E18AD9DF13857A500A2FA6441DE0EC0678FC6BDE7EF1D7432461625068402BBE164A7BFFCF810BA5726CFB861B6D88450966149FB13E48
-```
-
-5. Respond to the challenge:
-
-`~$ python jormungand.py respond challenge`
-
-```
-Please enter a challenge ID: f5368309256f4394b44803539f309aa0
+</code></pre>
+<p>Copy this into a file and decrypt (assuming private key has been added to GPG):</p>
+<p><code>~$ gpg --decrypt file_with_challenge &gt; output</code></p>
+<p>The string needed to respond to the challenge can be found in <code>output</code>:</p>
+<pre><code>9DA54E27F0AC496A7F6853B11B2D2FEB5D51767F3DA7C8B482EDFABE5D20D99A88A494BACEC00FBDD92F6DD994AC9923ED50F5DC2BCF94774A83AA5625A3ED9D9AC47B8F8F991A874D97C01F1E98196C1342049EAE865120F328E9603EA0E6EE289061D6D96FBC85CC6C32CE7A9C57BEA31C122BB8E2ED80BED41D55146395159FD31CB2418E0597B46FC62A25FF2041C4DF623B9ADA5123B82C7BCF7F85DDE2E1FC9BB298D824025C7BE69E3A3FF6EF484C5153B94E0E9AA3341489841E41AA5A0A8C2CC115E00432E18AD9DF13857A500A2FA6441DE0EC0678FC6BDE7EF1D7432461625068402BBE164A7BFFCF810BA5726CFB861B6D88450966149FB13E48
+</code></pre>
+<ol start="5">
+<li>Respond to the challenge:</li>
+</ol>
+<p><code>~$ python jormungand.py respond challenge</code></p>
+<pre><code>Please enter a challenge ID: f5368309256f4394b44803539f309aa0
 Please enter the decrypted string: 9DA54E27F0AC496A7F6853B11B2D2FEB5D51767F3DA7C8B482EDFABE5D20D99A88A494BACEC00FBDD92F6DD994AC9923ED50F5DC2BCF94774A83AA5625A3ED9D9AC47B8F8F991A874D97C01F1E98196C1342049EAE865120F328E9603EA0E6EE289061D6D96FBC85CC6C32CE7A9C57BEA31C122BB8E2ED80BED41D55146395159FD31CB2418E0597B46FC62A25FF2041C4DF623B9ADA5123B82C7BCF7F85DDE2E1FC9BB298D824025C7BE69E3A3FF6EF484C5153B94E0E9AA3341489841E41AA5A0A8C2CC115E00432E18AD9DF13857A500A2FA6441DE0EC0678FC6BDE7EF1D7432461625068402BBE164A7BFFCF810BA5726CFB861B6D88450966149FB13E48
-```
-```json
-{
+</code></pre>
+<pre><code class="json language-json">{
   "is_verified": true,
   "challenge_id": "f5368309256f4394b44803539f309aa0"
 }
-```
-
-6. Run `verify account` again now that the challenge has been solved:
-
-`~$ python jormungand.py verify account`
-
-```json
-{
+</code></pre>
+<ol start="6">
+<li>Run <code>verify account</code> again now that the challenge has been solved:</li>
+</ol>
+<p><code>~$ python jormungand.py verify account</code></p>
+<pre><code class="json language-json">{
   "verification_complete": true
 }
-```
-
-7. Check schema again to see changes:
-
-`~$ python jormungand.py reduced schema`
-
-```json
-{
+</code></pre>
+<ol start="7">
+<li>Check schema again to see changes:</li>
+</ol>
+<p><code>~$ python jormungand.py reduced schema</code></p>
+<pre><code class="json language-json">{
   "schema": {
     "models": {
       "Payment": {
@@ -237,33 +204,27 @@ Please enter the decrypted string: 9DA54E27F0AC496A7F6853B11B2D2FEB5D51767F3DA7C
     }
   }
 }
-```
-
-8. Create subscription:
-
-`~$ python jormungand.py create subscription`
-
-```
-Enter the number of days the subscription will be active: 10
+</code></pre>
+<ol start="8">
+<li>Create subscription:</li>
+</ol>
+<p><code>~$ python jormungand.py create subscription</code></p>
+<pre><code>Enter the number of days the subscription will be active: 10
 Enter the activation date: 2/12/2018
-```
-```json
-{
+</code></pre>
+<pre><code class="json language-json">{
   "create_complete": false,
   "open_challenge_id": "dea4dc47bad74a85aeda4fca47cdf3ab"
 }
-```
-
-9. Repeat steps 4 and 5, then run the command again:
-
-`~$ python jormungand.py create subscription`
-
-```
-Enter the number of days the subscription will be active: 10
+</code></pre>
+<ol start="9">
+<li>Repeat steps 4 and 5, then run the command again:</li>
+</ol>
+<p><code>~$ python jormungand.py create subscription</code></p>
+<pre><code>Enter the number of days the subscription will be active: 10
 Enter the activation date: 2/12/2018
-```
-```json
-{
+</code></pre>
+<pre><code class="json language-json">{
   "create_complete": true
 }
 {
@@ -279,30 +240,24 @@ Enter the activation date: 2/12/2018
     }
   }
 }
-```
-
-10. Activate the subscription
-
-`~$ python jormungand.py activate subscription`
-
-```
-Enter a subscription ID: 051daa7553134f2db5aa1f8178d6e2af
-```
-```json
-{
+</code></pre>
+<ol start="10">
+<li>Activate the subscription</li>
+</ol>
+<p><code>~$ python jormungand.py activate subscription</code></p>
+<pre><code>Enter a subscription ID: 051daa7553134f2db5aa1f8178d6e2af
+</code></pre>
+<pre><code class="json language-json">{
   "open_payment_id": "f741940a260d4241832fb080727a4f8c",
   "activation_complete": false
 }
-```
-
-A payment functions like a challenge, but there is no respond function.
-
-11. View the payment to get the relevant details
-
-`~$ python jormungand.py get payment`
-
-```json
-{
+</code></pre>
+<p>A payment functions like a challenge, but there is no respond function.</p>
+<ol start="11">
+<li>View the payment to get the relevant details</li>
+</ol>
+<p><code>~$ python jormungand.py get payment</code></p>
+<pre><code class="json language-json">{
   "f741940a260d4241832fb080727a4f8c": {
     "attributes": {
       "address": "example_address",
@@ -311,18 +266,14 @@ A payment functions like a challenge, but there is no respond function.
     }
   }
 }
-```
-
-The amount shown is a combination of a base amount, in this case `40000` satoshi, and `6734` satoshi, the randomly generated amount meant to identify the payment.
-
-Create a transaction with this amount to the address specified at the top of this document. Once the transaction has been mined, the payment will be closed, and any action blocked by the payment can be run successfully.
-
-12. The payment can also be checked by running the get subscription command with inactive:
-
-`~$ python jormungand.py get subscription inactive`
-
-```json
-{
+</code></pre>
+<p>The amount shown is a combination of a base amount, in this case <code>40000</code> satoshi, and <code>6734</code> satoshi, the randomly generated amount meant to identify the payment.</p>
+<p>Create a transaction with this amount to the address specified at the top of this document. Once the transaction has been mined, the payment will be closed, and any action blocked by the payment can be run successfully.</p>
+<ol start="12">
+<li>The payment can also be checked by running the get subscription command with inactive:</li>
+</ol>
+<p><code>~$ python jormungand.py get subscription inactive</code></p>
+<pre><code class="json language-json">{
   "051daa7553134f2db5aa1f8178d6e2af": {
     "attributes": {
       "activation_date": "2018-02-12 00:00:00+00:00",
@@ -335,26 +286,21 @@ Create a transaction with this amount to the address specified at the top of thi
     }
   }
 }
-```
-
-`is_payment_confirmed` will read `true` when the payment has gone through.
-
-13. Once the payment has been closed, activate the subscription.
-
-`~$ python jormungand.py activate subscription`
-
-```json
-{
+</code></pre>
+<p><code>is_payment_confirmed</code> will read <code>true</code> when the payment has gone through.</p>
+<ol start="13">
+<li>Once the payment has been closed, activate the subscription.</li>
+</ol>
+<p><code>~$ python jormungand.py activate subscription</code></p>
+<pre><code class="json language-json">{
   "activation_complete": true
 }
-```
-
-14. Check the subscription again:
-
-`~$ python jormungand.py get subscription`
-
-```json
-{
+</code></pre>
+<ol start="14">
+<li>Check the subscription again:</li>
+</ol>
+<p><code>~$ python jormungand.py get subscription</code></p>
+<pre><code class="json language-json">{
   "051daa7553134f2db5aa1f8178d6e2af": {
     "attributes": {
       "activation_date": "2018-12-02 20:59:59.559503+00:00",
@@ -367,16 +313,13 @@ Create a transaction with this amount to the address specified at the top of thi
     }
   }
 }
-```
-
-Note that `is_active` is set to `true`. It will now possible to create a Fee report.
-
-15. Check the available schema again:
-
-`~$ python jormungand.py reduced schema`
-
-```json
-{
+</code></pre>
+<p>Note that <code>is_active</code> is set to <code>true</code>. It will now possible to create a Fee report.</p>
+<ol start="15">
+<li>Check the available schema again:</li>
+</ol>
+<p><code>~$ python jormungand.py reduced schema</code></p>
+<pre><code class="json language-json">{
   "schema": {
     "models": {
       "Account": {
@@ -453,40 +396,31 @@ Note that `is_active` is set to `true`. It will now possible to create a Fee rep
     }
   }
 }
-```
-
-Fee report methods are now available.
-
-16. Create a Fee report
-
-`~$ python jormungand.py create fee_report`
-```
-Enter the number of blocks to include in the report: 1
-```
-```json
-{
+</code></pre>
+<p>Fee report methods are now available.</p>
+<ol start="16">
+<li>Create a Fee report</li>
+</ol>
+<p><code>~$ python jormungand.py create fee_report</code></p>
+<pre><code>Enter the number of blocks to include in the report: 1
+</code></pre>
+<pre><code class="json language-json">{
   "create_complete": false,
   "open_challenge_id": "20e2f57049ad439787d061a76ac3499a"
 }
-```
-
-Complete the challenge following steps 4 and 5. Finally:
-
-```
-Enter the number of blocks to include in the report: 1
-```
-```json
-{
+</code></pre>
+<p>Complete the challenge following steps 4 and 5. Finally:</p>
+<pre><code>Enter the number of blocks to include in the report: 1
+</code></pre>
+<pre><code class="json language-json">{
   "create_complete": true,
 }
-```
-
-16. The fee report will begin processing immediately. Run the get method to check it's status.
-
-`~$ python jormungand.py get fee_report`
-
-```json
-Enter fee report ID or leave blank for all:
+</code></pre>
+<ol start="16">
+<li>The fee report will begin processing immediately. Run the get method to check it's status.</li>
+</ol>
+<p><code>~$ python jormungand.py get fee_report</code></p>
+<pre><code class="json language-json">Enter fee report ID or leave blank for all:
 {
   "45977183ea644ad4969d50e24c4400d1": {
     "attributes": {
@@ -500,12 +434,9 @@ Enter fee report ID or leave blank for all:
     }
   }
 }
-```
-
-Finally, the result should be similar to:
-
-```json
-Enter fee report ID or leave blank for all:
+</code></pre>
+<p>Finally, the result should be similar to:</p>
+<pre><code class="json language-json">Enter fee report ID or leave blank for all:
 {
   "45977183ea644ad4969d50e24c4400d1": {
     "attributes": {
@@ -519,4 +450,4 @@ Enter fee report ID or leave blank for all:
     }
   }
 }
-```
+</code></pre>

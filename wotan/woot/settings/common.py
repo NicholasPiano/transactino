@@ -18,7 +18,7 @@ WOOT_PATH = dirname(dirname(abspath(__file__)))
 MEDIA_PATH = join(WOOT_PATH, 'media')
 MEDIA_URL = '/media/'
 
-STATIC_PATH = join(WOOT_PATH, 'static')
+STATIC_ROOT = join(WOOT_PATH, 'static')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
   normpath(join(WOOT_PATH, 'assets')),
