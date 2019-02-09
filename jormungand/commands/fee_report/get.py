@@ -36,6 +36,7 @@ def get(args):
   )
 
   response_json = json.loads(response.text)
+
   get_json = get_path(response_json, [
     transactino_constants.SCHEMA,
     model_constants.MODELS,

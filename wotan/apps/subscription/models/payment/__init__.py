@@ -6,7 +6,7 @@ from django.db import models
 from django.conf import settings
 scheduler = settings.SCHEDULER
 
-from util.bitcoin import get_latest_block_hash, Block
+from util.blockchaininfo import get_latest_block_hash, Block
 
 from apps.base.models import Model, Manager, model_fields
 from apps.base.schema.constants import schema_constants
@@ -128,7 +128,7 @@ def payment_task():
 
     if active_address is not None:
       latest_block_hash = get_latest_block_hash()
-      block = Block(latest_block_hash, minimal=True)
+      block = Block(latest_block_hash)
       deltas = block.find_deltas_with_address(active_address.value)
 
       for payment in Payment.objects.filter(is_open=True):

@@ -50,6 +50,19 @@
           "virtualenv": "Make sure I can use virtualenv with gunicorn.",
           "redis": "Run redis inside a service."
         }
+      },
+      "20190209": {
+        "description": "Moving to using the blockchaininfo API until I can afford to run my own node (about $300/month).",
+        "children": {
+          "t8": {
+            "description": "blockchaininfo modifications",
+            "children": {
+              "activate redis": "~$ redis-server",
+              "restart postgres": "If in doubt, '~$ brew services restart postgresql'",
+              "convert util file": "Similar to requests made to node, but slightly different keywords, and, fingers crossed, I won't need to request past transactions individually."
+            }
+          }
+        }
       }
     }
   }

@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.conf import settings
 scheduler = settings.SCHEDULER
 
-from util.bitcoin import get_latest_block_hash, get_previous_hash, Block
+from util.blockchaininfo import get_latest_block_hash, get_previous_hash, Block
 
 from apps.base.constants import model_fields
 from apps.base.schema.constants import schema_constants
@@ -81,6 +81,8 @@ class FeeReportBlockWrapper(Model):
     self.is_complete = True
     self.save()
 
+    return True
+
 def fee_report_block_wrapper_task():
   if scheduler is not None:
     FeeReportBlockWrapper.objects.bulk_create([
@@ -105,6 +107,7 @@ class FeeReportManager(Manager):
   def attributes(self, mode=None):
     fields = [
       fee_report_fields.IS_ACTIVE,
+      fee_report_fields.IS_PROCESSING,
       fee_report_fields.BLOCKS_TO_INCLUDE,
       fee_report_fields.AVERAGE_TX_FEE,
       fee_report_fields.AVERAGE_TX_FEE_DENSITY,
@@ -168,6 +171,7 @@ class FeeReport(Model):
   blocks_to_include = models.PositiveIntegerField(default=1)
 
   latest_block_hash = models.CharField(max_length=64, default='')
+  pending_block_hash = models.CharField(max_length=64, default='')
   has_been_ready = models.BooleanField(default=False)
   has_been_run = models.BooleanField(default=False)
   is_processing = models.BooleanField(default=False)
@@ -179,11 +183,13 @@ class FeeReport(Model):
   class Meta:
     app_label = APP_LABEL
 
-  def process(self, latest_block_hash=None):
-    if latest_block_hash is not None:
-      if self.latest_block_hash != latest_block_hash:
-        self.latest_block_hash = latest_block_hash
+  def process(self, pending_block_hash=None):
+    if pending_block_hash is not None:
+      if self.pending_block_hash != pending_block_hash:
+        self.pending_block_hash = pending_block_hash
         self.last_update_start_time = timezone.now()
+        self.is_processing = True
+        self.has_been_run = False
         self.save()
 
       if self.is_ready():
@@ -193,7 +199,7 @@ class FeeReport(Model):
 
   def is_ready(self):
     is_ready = True
-    active_block_hash = self.latest_block_hash
+    active_block_hash = self.pending_block_hash
 
     block_count = 0
     while block_count < self.blocks_to_include:
@@ -206,21 +212,25 @@ class FeeReport(Model):
     return is_ready
 
   def run(self):
-    fees = []
-    densities = []
-    active_block_hash = self.latest_block_hash
+    if not self.has_been_run:
+      fees = []
+      densities = []
+      active_block_hash = self.pending_block_hash
 
-    for index_to_add in range(self.blocks_to_include):
-      block_wrapper = FeeReportBlockWrapper.objects.get(hash=active_block_hash)
-      fees.append(block_wrapper.average_tx_fee)
-      densities.append(block_wrapper.average_tx_fee_density)
+      for index_to_add in range(self.blocks_to_include):
+        block_wrapper = FeeReportBlockWrapper.objects.get(hash=active_block_hash)
+        fees.append(block_wrapper.average_tx_fee)
+        densities.append(block_wrapper.average_tx_fee_density)
 
-      active_block_hash = get_previous_hash(active_block_hash)
+        active_block_hash = get_previous_hash(active_block_hash)
 
-    self.average_tx_fee = (sum(fees) / len(fees)) if fees else 0
-    self.average_tx_fee_density = (sum(densities) / len(densities)) if densities else 0
+      self.average_tx_fee = (sum(fees) / len(fees)) if fees else 0
+      self.average_tx_fee_density = (sum(densities) / len(densities)) if densities else 0
+      self.latest_block_hash = self.pending_block_hash
+      self.has_been_run = True
+
     self.last_update_end_time = timezone.now()
-    self.has_been_run = True
+    self.is_processing = False
     self.save()
 
 def fee_report_task():
@@ -230,13 +240,13 @@ def fee_report_task():
     fee_reports = FeeReport.objects.filter(is_active=True)
 
     for fee_report in fee_reports:
-      fee_report.process(latest_block_hash=latest_block_hash)
+      fee_report.process(pending_block_hash=latest_block_hash)
 
 if scheduler is not None:
   scheduler.add_job(
     fee_report_task,
     trigger='interval',
-    seconds=10,
+    seconds=120,
     id=fee_report_constants.FEE_REPORT_TASK,
     replace_existing=True,
   )

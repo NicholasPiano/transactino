@@ -29,6 +29,7 @@ class fee_report_fields:
   IS_ACTIVE = 'is_active'
   BLOCKS_TO_INCLUDE = 'blocks_to_include'
   LATEST_BLOCK_HASH = 'latest_block_hash'
+  PENDING_BLOCK_HASH = 'pending_block_hash'
   HAS_BEEN_READY = 'has_been_ready'
   HAS_BEEN_RUN = 'has_been_run'
   IS_PROCESSING = 'is_processing'

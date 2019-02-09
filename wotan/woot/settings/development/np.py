@@ -5,6 +5,8 @@ from os.path import join, dirname, abspath, exists, normpath
 from ..scheduler import scheduler
 from .common import *
 
+DEBUG = False
+
 DATABASES = {
   'default': {
     'ENGINE': 'django.db.backends.postgresql_psycopg2',

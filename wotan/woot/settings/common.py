@@ -67,7 +67,6 @@ THIRD_PARTY_APPS = (
 )
 LOCAL_APPS = (
   'apps.base',
-  'apps.bitcoin',
   'apps.subscription',
   'apps.transactino',
 )
