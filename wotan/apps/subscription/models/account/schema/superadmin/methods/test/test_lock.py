@@ -30,7 +30,6 @@ class AccountSuperadminLockSchemaTestCase(TestCase):
     self.context = TestContext(self.account)
 
   def test_lock(self):
-
     payload = {
       lock_constants.LOCK: True,
       lock_constants.ACCOUNT: self.account._id,
@@ -45,7 +44,6 @@ class AccountSuperadminLockSchemaTestCase(TestCase):
     })
 
   def test_lock_without_account(self):
-
     payload = {
       lock_constants.LOCK: True,
     }
@@ -61,7 +59,6 @@ class AccountSuperadminLockSchemaTestCase(TestCase):
     self.assertFalse(Challenge.objects.filter(origin=lock_constants.ORIGIN, is_open=True))
 
   def test_lock_open_challenge_exists(self):
-
     payload = {
       lock_constants.LOCK: True,
       lock_constants.ACCOUNT: self.account._id,
@@ -70,7 +67,12 @@ class AccountSuperadminLockSchemaTestCase(TestCase):
     response = self.schema.respond(payload=payload, context=self.context)
     second_response = self.schema.respond(payload=payload, context=self.context)
 
-    open_challenge_exists_with_origin = with_challenge_errors.OPEN_CHALLENGE_EXISTS_WITH_ORIGIN(origin=lock_constants.ORIGIN)
+    challenge = Challenge.objects.get(origin=lock_constants.ORIGIN)
+
+    open_challenge_exists_with_origin = with_challenge_errors.OPEN_CHALLENGE_EXISTS_WITH_ORIGIN(
+      id=challenge._id,
+      origin=lock_constants.ORIGIN,
+    )
     self.assertEqual(second_response.render(), {
       constants.ERRORS: {
         open_challenge_exists_with_origin.code: open_challenge_exists_with_origin.render(),
@@ -80,7 +82,6 @@ class AccountSuperadminLockSchemaTestCase(TestCase):
     self.assertFalse(self.account.is_superadmin_locked)
 
   def test_lock_with_solved_challenge(self):
-
     payload = {
       lock_constants.LOCK: True,
       lock_constants.ACCOUNT: self.account._id,

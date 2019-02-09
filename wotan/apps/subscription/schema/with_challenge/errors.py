@@ -2,7 +2,7 @@
 from util.api import Error
 
 class OpenChallengeExistsWithOriginError(Error):
-  code = '625'
+  code = '629'
   name = 'open_challenge_exists_with_origin'
   description = 'Open challenge exists with the given origin'
   description_with_arguments = 'Open challenge {} exists with origin {}'

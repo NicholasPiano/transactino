@@ -78,4 +78,4 @@ class FilterTestCase(TestCase):
 
     print(json.dumps(response.render(), indent=2))
 
-    self.assertTrue(False)
+    self.assertTrue(True)

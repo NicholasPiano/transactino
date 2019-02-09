@@ -50,7 +50,12 @@ class AccountSubscribedLockSchemaTestCase(TestCase):
     response = self.schema.respond(payload=payload, context=self.context)
     second_response = self.schema.respond(payload=payload, context=self.context)
 
-    open_challenge_exists_with_origin = with_challenge_errors.OPEN_CHALLENGE_EXISTS_WITH_ORIGIN(origin=lock_constants.ORIGIN)
+    challenge = Challenge.objects.get(origin=lock_constants.ORIGIN)
+
+    open_challenge_exists_with_origin = with_challenge_errors.OPEN_CHALLENGE_EXISTS_WITH_ORIGIN(
+      id=challenge._id,
+      origin=lock_constants.ORIGIN,
+    )
     self.assertEqual(second_response.render(), {
       constants.ERRORS: {
         open_challenge_exists_with_origin.code: open_challenge_exists_with_origin.render(),

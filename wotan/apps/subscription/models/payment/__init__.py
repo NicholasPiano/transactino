@@ -32,7 +32,7 @@ class PaymentManager(Manager):
         payment_fields.UNIQUE_BTC_AMOUNT,
         payment_fields.TIME_CONFIRMED,
         payment_fields.BLOCK_HASH,
-        payment_fields.TX_HASH,
+        payment_fields.TXID,
       ])
     return [
       field
