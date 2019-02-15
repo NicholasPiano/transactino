@@ -60,7 +60,12 @@
         "description": "Slightly update deployment process",
         "children": {
           "ubuntu": "This process is currently only for the Ubuntu AMI",
-          "nginx": "Everything works and is still the same",
+          "nginx": {
+            "description": "Update server name",
+            "children": {
+              "server name": "35.178.162.251",
+            }
+          },
           "postgres": {
             "description": "",
             "children": {
@@ -93,7 +98,15 @@
               "start virtualenv": "source bin/activate",
               "install requirements with pip": "pip install -r requirements/staging.txt",
               "create env.json file": "nano env.json",
-              "run tests": "python manage.py test"
+              "run tests": "sh scripts/test.sh",
+              "run database migrations": "sh scripts/migrate.sh",
+              "test server": "gunicorn --bind 0.0.0.0:8000 woot.wsgi",
+              "copy configuration (parent dir)": "sudo cp yggdrasil/systemd/gunicorn.service /etc/systemd/system/",
+              "start": "sudo systemctl start gunicorn",
+              "enable": "sudo systemctl enable gunicorn",
+              "status": "sudo systemctl status gunicorn",
+              "reread daemon config": "sudo systemctl daemon-reload",
+              "restart": "sudo systemctl restart gunicorn"
             }
           }
         }
