@@ -55,6 +55,48 @@
             }
           }
         }
+      },
+      "20190215": {
+        "description": "Slightly update deployment process",
+        "children": {
+          "ubuntu": "This process is currently only for the Ubuntu AMI",
+          "nginx": "Everything works and is still the same",
+          "postgres": {
+            "description": "",
+            "children": {
+              "install": "sudo apt install postgresql postgresql-contrib",
+              "test": "sudo -u postgres psql",
+              "create superuser 'db'": "sudo -u postgres createuser --interactive",
+              "enter shell and create transactino user": "create user transactino with password '7737d16e80d744b984b17c1918b81cee';",
+              "set encoding": "alter role transactino set client_encoding TO 'utf8';",
+              "set transaction isolation": "alter role transactino set default_transaction_isolation TO 'read committed';",
+              "set timezone": "alter role transactino set timezone TO 'UTC';",
+              "grant privileges": "grant all privileges on database db to transactino;",
+              "allow test database creation": "alter role transactino createdb;",
+              "prevent public connections": "revoke connect on database db from public;",
+              "prevent test connections": "revoke connect on database test_db from public;"
+            }
+          },
+          "redis": {
+            "description": "set up redis-server as a daemon",
+            "children": {
+              "install": "sudo apt-get install redis redis-server",
+              "already present": "redis appears to be installed and running from when the machine starts. I will test this on an identical instance."
+            }
+          },
+          "gunicorn": {
+            "description": "Include instructions for installing python",
+            "children": {
+              "install python 3.6": "sudo apt-get install python3",
+              "install python venv extension": "sudo apt-get install python3-venv",
+              "create virtualenv inside wotan": "python3.6 -m venv .",
+              "start virtualenv": "source bin/activate",
+              "install requirements with pip": "pip install -r requirements/staging.txt",
+              "create env.json file": "nano env.json",
+              "run tests": "python manage.py test"
+            }
+          }
+        }
       }
     }
   }

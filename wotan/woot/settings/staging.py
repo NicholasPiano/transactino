@@ -3,7 +3,7 @@ import os
 
 from woot.settings.common import *
 
-if not os.environ.get('SHELL', 'false') == 'true':
+if not os.environ.get('IN_SHELL', 'false') == 'true':
   from .scheduler import scheduler
   SCHEDULER = scheduler
 
@@ -14,7 +14,7 @@ DATABASES = {
     'ENGINE': 'django.db.backends.postgresql_psycopg2',
     'NAME': 'db',
     'USER': 'transactino',
-    'PASSWORD': '3b12e2660df54da2985c3e9e7ef89c43',
+    'PASSWORD': '7737d16e80d744b984b17c1918b81cee',
     'HOST': 'localhost',
     'PORT': '',
   }
@@ -70,5 +70,5 @@ LOGGING = {
 }
 
 ALLOWED_HOSTS = (
-  '35.178.85.150',
+  '35.178.162.251',
 )

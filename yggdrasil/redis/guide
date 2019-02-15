@@ -1,0 +1,25 @@
+sudo vim /etc/redis/redis.conf
+
+Change the following lines
+
+daemonize yes
+bind 127.0.0.1
+dir /var/lib/redis
+
+wget https://gist.github.com/nightfox/8153193/raw/553c375424866e8d0d0bd5b48d23578c93031bce/redis-server
+
+sudo mv redis-server /etc/init.d/redis-server
+sudo chmod +x /etc/init.d/redis-server
+
+Create New User
+
+sudo useradd -r -s /bin/false redis
+sudo mkdir -p /var/lib/redis
+sudo mkdir -p /var/log/redis
+sudo chown redis.redis /var/lib/redis
+sudo update-rc.d redis-server defaults
+
+Now you can start and stop redis:
+
+sudo service redis-server start
+sudo service redis-server stop
