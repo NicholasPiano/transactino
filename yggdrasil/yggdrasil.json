@@ -127,6 +127,18 @@
             "children": {
               "link": "https://docs.gunicorn.org/en/latest/deploy.html",
               "updating nginx file": "done",
+              "copy configuration": "sudo cp yggdrasil/nginx/wotan /etc/nginx/sites-available/",
+              "test nginx": "sudo nginx -t",
+              "default configuration": "Had to remove default sites-enabled config",
+              "restart": "sudo systemctl restart nginx"
+            }
+          },
+          "gunicorn": {
+            "description": "Moving new config into place",
+            "children": {
+              "copy configuration": "sudo cp yggdrasil/gunicorn/gunicorn.service /etc/systemd/system/",
+              "reread daemon config": "sudo systemctl daemon-reload",
+              "start": "sudo systemctl start gunicorn",
             }
           }
         }

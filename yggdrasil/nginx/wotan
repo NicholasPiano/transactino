@@ -1,30 +1,28 @@
-http {
-  upstream app_server {
-    server unix:/home/ubuntu/thor/wotan/wotan.sock fail_timeout=0;
+upstream app_server {
+  server unix:/home/ubuntu/thor/wotan/wotan.sock fail_timeout=0;
+}
+
+server {
+  listen 80 default_server;
+  return 444;
+}
+
+server {
+  listen 80;
+  server_name 35.178.162.251;
+
+  location = /favicon.ico {
+    access_log off;
+    log_not_found off;
   }
 
-  server {
-    listen 80 default_server;
-    return 444;
+  location /static {
+    alias /home/ubuntu/thor/wotan/woot/static;
   }
 
-  server {
-    listen 80;
-    server_name 35.178.162.251;
-
-    location = /favicon.ico {
-      access_log off;
-      log_not_found off;
-    }
-
-    location /static {
-      alias /home/ubuntu/thor/wotan/woot/static;
-    }
-
-    location / {
-      include proxy_params;
-      proxy_redirect off;
-      proxy_pass http://app_server;
-    }
+  location / {
+    include proxy_params;
+    proxy_redirect off;
+    proxy_pass http://app_server;
   }
 }
