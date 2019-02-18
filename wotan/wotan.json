@@ -63,6 +63,14 @@
             }
           }
         }
+      },
+      "20190215": {
+        "description": "Updated to 1.1 release, but a few more changes have to be made.",
+        "children": {
+          "action before challenge": "An action that requires a challenge should be partially completed if possible and provide an id or reference to complete the action in one go.",
+          "encrypted challenges": "Challenges should be re-encrypted to the public key of the system",
+          "public key": "There should be an endpoint to access the public key of the system"
+        }
       }
     }
   }

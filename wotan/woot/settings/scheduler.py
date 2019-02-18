@@ -31,4 +31,3 @@ scheduler = BackgroundScheduler(
 )
 
 scheduler.start()
-scheduler.remove_all_jobs()

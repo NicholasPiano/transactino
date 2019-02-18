@@ -28,6 +28,7 @@ class SubscriptionCreateClientSchema(WithChallengeClientSchema):
       response=SubscriptionCreateClientResponse,
       children={
         create_constants.CREATE_COMPLETE: Schema(types=types.BOOLEAN()),
+        # create_constants.ID_FOR_COMPLETION: Schema(types=types.UUID()),
       },
     )
 
@@ -52,6 +53,8 @@ class SubscriptionCreateSchema(WithOrigin, WithChallenge, StructureSchema):
       super().get_available_errors(),
       {
         create_errors.DURATION_NOT_INCLUDED(),
+        # invalid subscription id
+        # too many arguments
       },
     )
 
@@ -73,18 +76,6 @@ class SubscriptionCreateSchema(WithOrigin, WithChallenge, StructureSchema):
     if self.active_response.has_errors():
       return
 
-    if not self.challenge_accepted:
-      self.active_response = self.client.respond(
-        payload=merge(
-          {
-            create_constants.CREATE_COMPLETE: False,
-          },
-          self.get_challenge_client_response(),
-        ),
-      )
-      self.active_response.add_external_queryset(self.active_challenge_queryset)
-      return
-
     duration_in_days = self.active_response.get_child(subscription_fields.DURATION_IN_DAYS).render()
     activation_date = self.active_response.force_get_child(subscription_fields.ACTIVATION_DATE).render()
 
@@ -93,6 +84,20 @@ class SubscriptionCreateSchema(WithOrigin, WithChallenge, StructureSchema):
       activation_date=activation_date,
     )
 
+    if not self.challenge_accepted:
+      self.active_response = self.client.respond(
+        payload=merge(
+          {
+            create_constants.CREATE_COMPLETE: False,
+            # create_constants.ID_FOR_COMPLETION: subscription._id,
+          },
+          self.get_challenge_client_response(),
+        ),
+      )
+      self.active_response.add_external_queryset(self.active_challenge_queryset)
+      return
+
+    # subscription.complete_creation()
     self.active_response = self.client.respond(
       payload={
         create_constants.CREATE_COMPLETE: True,

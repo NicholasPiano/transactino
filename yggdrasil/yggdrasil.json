@@ -110,6 +110,26 @@
             }
           }
         }
+      },
+      "20190217": {
+        "description": "Some problems with redis",
+        "children": {
+          "log messages from gunicorn": "journalctl -u gunicorn",
+          "redis": "",
+          "workers": "Currently, every worker calls remove_all_jobs when starting. This is not good.",
+        }
+      },
+      "20190218": {
+        "description": "Updating deployment process",
+        "children": {
+          "nginx": {
+            "description": "Some updates from the gunicorn deployment instructions",
+            "children": {
+              "link": "https://docs.gunicorn.org/en/latest/deploy.html",
+              "updating nginx file": "done",
+            }
+          }
+        }
       }
     }
   }
