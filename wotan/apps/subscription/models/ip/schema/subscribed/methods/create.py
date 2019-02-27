@@ -77,19 +77,17 @@ class IPCreateSchema(WithOrigin, WithChallenge, WithPayment, StructureSchema):
   def passes_pre_response_checks(self, payload, context):
     if ip_fields.VALUE not in payload:
       self.active_response.add_error(create_errors.VALUE_NOT_INCLUDED())
-      return False
 
-    ip_value = payload.get(ip_fields.VALUE)
-    if self.model.objects.filter(value=ip_value).exclude(account=None).exists():
-      self.active_response.add_error(create_errors.IP_ALREADY_BOUND(value=ip_value))
-      return False
+    if ip_fields.VALUE in payload:
+      ip_value = payload.get(ip_fields.VALUE)
+      if self.model.objects.filter(value=ip_value).exclude(account=None).exists():
+        self.active_response.add_error(create_errors.IP_ALREADY_BOUND(value=ip_value))
+        return False
 
     return super().passes_pre_response_checks(payload, context)
 
   def responds_to_valid_payload(self, payload, context):
     super().responds_to_valid_payload(payload, context)
-    if self.active_response.has_errors():
-      return
 
     if not self.challenge_accepted or not self.payment_accepted:
       self.active_response = self.client.respond(
@@ -103,6 +101,9 @@ class IPCreateSchema(WithOrigin, WithChallenge, WithPayment, StructureSchema):
       )
       self.active_response.add_external_queryset(self.active_challenge_queryset)
       self.active_response.add_external_queryset(self.active_payment_queryset)
+      return
+
+    if self.active_response.has_errors():
       return
 
     ip_value = self.active_response.get_child(ip_fields.VALUE).render()

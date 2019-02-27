@@ -168,10 +168,7 @@ class TransactinoSchemaTestCase(TestCase):
         transactino_constants.MODELS: {
           Subscription.__name__: {
             schema_constants.METHODS: {
-              method_constants.CREATE: {
-                subscription_fields.DURATION_IN_DAYS: 365,
-                subscription_fields.ACTIVATION_DATE: str(timezone.now()),
-              },
+              method_constants.CREATE: {},
             },
           },
         },
@@ -235,8 +232,24 @@ class TransactinoSchemaTestCase(TestCase):
       payload=respond_payload,
       connection=self.connection,
     )
+
+    second_create_subscription_payload = {
+      transactino_constants.SCHEMA: {
+        transactino_constants.MODELS: {
+          Subscription.__name__: {
+            schema_constants.METHODS: {
+              method_constants.CREATE: {
+                subscription_fields.DURATION_IN_DAYS: 365,
+                subscription_fields.ACTIVATION_DATE: str(timezone.now()),
+              },
+            },
+          },
+        },
+      },
+    }
+
     second_create_response = self.schema.respond(
-      payload=create_subscription_payload,
+      payload=second_create_subscription_payload,
       connection=self.connection,
     )
 

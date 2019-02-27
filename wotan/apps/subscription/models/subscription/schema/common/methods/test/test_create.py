@@ -30,6 +30,18 @@ class SubscriptionCreateSchemaTestCase(TestCase):
     self.account.import_public_key()
     self.context = TestContext(self.account)
 
+  def test_create_no_arguments(self):
+    payload = {}
+
+    response = self.schema.respond(payload=payload, context=self.context)
+    challenge = Challenge.objects.get(origin=self.schema.origin)
+
+    self.assertEqual(Challenge.objects.filter(origin=self.schema.origin, is_open=True).count(), 1)
+    self.assertEqual(response.render(), {
+      create_constants.CREATE_COMPLETE: False,
+      with_challenge_constants.OPEN_CHALLENGE_ID: challenge._id,
+    })
+
   def test_create(self):
     payload = {
       subscription_fields.DURATION_IN_DAYS: 31536000,
@@ -51,6 +63,13 @@ class SubscriptionCreateSchemaTestCase(TestCase):
     })
 
   def test_duration_not_included(self):
+    first_response = self.schema.respond(payload={}, context=self.context)
+
+    challenge = Challenge.objects.get(origin=self.schema.origin)
+
+    challenge.is_open = False
+    challenge.save()
+
     payload = {
       subscription_fields.ACTIVATION_DATE: str(timezone.now()),
     }

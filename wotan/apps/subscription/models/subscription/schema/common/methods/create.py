@@ -28,7 +28,6 @@ class SubscriptionCreateClientSchema(WithChallengeClientSchema):
       response=SubscriptionCreateClientResponse,
       children={
         create_constants.CREATE_COMPLETE: Schema(types=types.BOOLEAN()),
-        # create_constants.ID_FOR_COMPLETION: Schema(types=types.UUID()),
       },
     )
 
@@ -53,25 +52,31 @@ class SubscriptionCreateSchema(WithOrigin, WithChallenge, StructureSchema):
       super().get_available_errors(),
       {
         create_errors.DURATION_NOT_INCLUDED(),
-        # invalid subscription id
-        # too many arguments
       },
     )
 
   def passes_pre_response_checks(self, payload, context):
-    if not super().passes_pre_response_checks(payload, context):
-      return False
-
     if subscription_fields.DURATION_IN_DAYS not in payload:
       self.active_response.add_error(
         create_errors.DURATION_NOT_INCLUDED(),
       )
-      return False
 
-    return True
+    return super().passes_pre_response_checks(payload, context)
 
   def responds_to_valid_payload(self, payload, context):
     super().responds_to_valid_payload(payload, context)
+
+    if not self.challenge_accepted:
+      self.active_response = self.client.respond(
+        payload=merge(
+          {
+            create_constants.CREATE_COMPLETE: False,
+          },
+          self.get_challenge_client_response(),
+        ),
+      )
+      self.active_response.add_external_queryset(self.active_challenge_queryset)
+      return
 
     if self.active_response.has_errors():
       return
@@ -84,20 +89,6 @@ class SubscriptionCreateSchema(WithOrigin, WithChallenge, StructureSchema):
       activation_date=activation_date,
     )
 
-    if not self.challenge_accepted:
-      self.active_response = self.client.respond(
-        payload=merge(
-          {
-            create_constants.CREATE_COMPLETE: False,
-            # create_constants.ID_FOR_COMPLETION: subscription._id,
-          },
-          self.get_challenge_client_response(),
-        ),
-      )
-      self.active_response.add_external_queryset(self.active_challenge_queryset)
-      return
-
-    # subscription.complete_creation()
     self.active_response = self.client.respond(
       payload={
         create_constants.CREATE_COMPLETE: True,

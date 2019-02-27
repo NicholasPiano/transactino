@@ -33,6 +33,18 @@ class IPCreateSchemaTestCase(TestCase):
     self.account.import_public_key()
     self.context = TestContext(self.account)
 
+  def test_create_no_arguments(self):
+    payload = {}
+
+    response = self.schema.respond(payload=payload, context=self.context)
+    challenge = Challenge.objects.get(origin=create_constants.ORIGIN)
+
+    self.assertEqual(Challenge.objects.filter(origin=create_constants.ORIGIN, is_open=True).count(), 1)
+    self.assertEqual(response.render(), {
+      create_constants.CREATE_COMPLETE: False,
+      with_challenge_constants.OPEN_CHALLENGE_ID: challenge._id,
+    })
+
   def test_create(self):
     ip_value = 'ip-value'
 
@@ -58,9 +70,15 @@ class IPCreateSchemaTestCase(TestCase):
     payload = {}
 
     response = self.schema.respond(payload=payload, context=self.context)
+    challenge = Challenge.objects.get(origin=create_constants.ORIGIN)
+
+    challenge.is_open = False
+    challenge.save()
+
+    second_response = self.schema.respond(payload=payload, context=self.context)
 
     value_not_included = create_errors.VALUE_NOT_INCLUDED()
-    self.assertEqual(response.render(), {
+    self.assertEqual(second_response.render(), {
       constants.ERRORS: {
         value_not_included.code: value_not_included.render(),
       },

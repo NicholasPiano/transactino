@@ -1,0 +1,6 @@
+This file contains a summary of the Yggdrasil deployment process. It is not a log.
+
+1. Create a new instance: Ubuntu 18.04, 4GB RAM, t2.medium, peanuts4.pem
+2. ssh -i "peanuts4.pem" ubuntu@ec2-35-178-206-19.eu-west-2.compute.amazonaws.com
+3. Public IP: 35.178.206.19
+4. 
