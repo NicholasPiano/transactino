@@ -27,6 +27,9 @@ class AccountDeleteClientSchema(WithChallengeClientSchema):
   def __init__(self, **kwargs):
     super().__init__(
       **kwargs,
+      description=(
+        'The deletion response.'
+      ),
       response=AccountDeleteClientResponse,
       children={
         delete_constants.DELETION_COMPLETE: Schema(types=types.BOOLEAN()),
@@ -37,6 +40,11 @@ class AccountDeleteSchema(WithOrigin, WithChallenge):
   def __init__(self, **kwargs):
     super().__init__(
       **kwargs,
+      description=(
+        'The schema for the Account delete method.'
+        ' This method takes no arguments, but does'
+        ' require a challenge to be solved.'
+      ),
       types=types.STRUCTURE(),
       client=AccountDeleteClientSchema(),
       origin=delete_constants.ORIGIN,

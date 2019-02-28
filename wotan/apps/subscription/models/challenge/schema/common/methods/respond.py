@@ -17,6 +17,10 @@ class ChallengeRespondClientSchema(StructureSchema):
   def __init__(self, **kwargs):
     super().__init__(
       **kwargs,
+      description=(
+        'The schema for the challenge result. Contains the'
+        ' outcome of the evaluation.'
+      ),
       children={
         respond_constants.CHALLENGE_ID: Schema(types=types.UUID()),
         respond_constants.IS_VERIFIED: Schema(types=types.BOOLEAN()),
@@ -27,11 +31,28 @@ class ChallengeRespondSchema(StructureSchema):
   def __init__(self, **kwargs):
     super().__init__(
       **kwargs,
+      description=(
+        'The schema for the Challenge respond method.'
+        ' Processes a request based on the ID of the challenge,'
+        ' returning the result of the challenge evaluation.'
+      ),
       client=ChallengeRespondClientSchema(),
       children={
-        respond_constants.CHALLENGE_ID: Schema(types=types.UUID()),
-        respond_constants.PLAINTEXT: Schema(),
-        respond_constants.ARMOR: Schema(),
+        respond_constants.CHALLENGE_ID: Schema(
+          description='The ID of the challenge in question',
+          types=types.UUID(),
+        ),
+        respond_constants.PLAINTEXT: Schema(
+          description=(
+            'The decrypted text of the challenge in plaintext format.'
+          ),
+        ),
+        respond_constants.ARMOR: Schema(
+          description=(
+            'The decrypted text of the challenge in ascii armor format,'
+            ' having been re-encrypted to the public key of the service.'
+          ),
+        ),
       },
     )
 

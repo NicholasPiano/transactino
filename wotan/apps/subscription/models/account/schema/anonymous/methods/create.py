@@ -34,7 +34,7 @@ def disclaimer(ip=None, long_key_id=None):
     3. Although the system guarantees the integrity of the information provided
        via this interface, it is prudent to regularly check the results against
        other external sources. The information is drawn from a single common
-       source (The Blockchain), allowing the reported data to be easily
+       source (The Bitcoin Blockchain), allowing the reported data to be easily
        corroborated.
   '''.format(ip=ip, long_key_id=long_key_id)
 

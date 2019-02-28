@@ -39,6 +39,11 @@ class FeeReportDeleteSchema(WithOrigin, WithChallenge):
     self.model = Model
     super().__init__(
       **kwargs,
+      description=(
+        'The schema for the FeeReport delete method. The'
+        ' value given to this function is the ID of the'
+        ' FeeReport to delete.'
+      ),
       types=types.UUID(),
       client=FeeReportDeleteClientSchema(),
       origin=delete_constants.ORIGIN,

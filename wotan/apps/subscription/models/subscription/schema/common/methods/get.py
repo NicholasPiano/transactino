@@ -19,10 +19,25 @@ class SubscriptionGetSchema(StructureSchema):
   def __init__(self, **kwargs):
     super().__init__(
       **kwargs,
+      description=(
+        'The schema for the Subscription get method.'
+        ' Filters can be applied for the active status'
+        ' and the ID of the subscription.'
+      ),
       response=SubscriptionGetResponse,
       children={
-        model_fields.ID: Schema(types=types.UUID()),
-        subscription_fields.IS_ACTIVE: Schema(types=types.BOOLEAN()),
+        model_fields.ID: Schema(
+          description=(
+            'The subscription ID'
+          ),
+          types=types.UUID(),
+        ),
+        subscription_fields.IS_ACTIVE: Schema(
+          description=(
+            'The subscription active status'
+          ),
+          types=types.BOOLEAN(),
+        ),
       },
     )
 

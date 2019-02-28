@@ -20,10 +20,21 @@ class FeeReportGetSchema(StructureSchema):
     self.model = Model
     super().__init__(
       **kwargs,
+      description=(
+        'The schema for the FeeReport get method.'
+        ' Basic filters are available for the ID and'
+        ' active status of the FeeReport.'
+      ),
       response=FeeReportGetResponse,
       children={
-        model_fields.ID: Schema(types=types.UUID()),
-        fee_report_fields.IS_ACTIVE: Schema(types=types.BOOLEAN()),
+        model_fields.ID: Schema(
+          description='The ID of the FeeReport in question.',
+          types=types.UUID(),
+        ),
+        fee_report_fields.IS_ACTIVE: Schema(
+          description='The active status of the FeeReport.',
+          types=types.BOOLEAN(),
+        ),
       },
     )
 

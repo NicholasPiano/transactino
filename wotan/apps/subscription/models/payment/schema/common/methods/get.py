@@ -20,10 +20,21 @@ class PaymentGetSchema(StructureSchema):
   def __init__(self, **kwargs):
     super().__init__(
       **kwargs,
+      description=(
+        'The schema for the Payment get method.'
+        ' It can be filtered by the open status of'
+        ' the payment and the payment ID'
+      ),
       response=PaymentGetResponse,
       children={
-        model_fields.ID: Schema(types=types.UUID()),
-        payment_fields.IS_OPEN: Schema(types=types.BOOLEAN()),
+        model_fields.ID: Schema(
+          description='The payment ID',
+          types=types.UUID(),
+        ),
+        payment_fields.IS_OPEN: Schema(
+          description='The payment open status',
+          types=types.BOOLEAN(),
+        ),
       },
     )
 
@@ -37,7 +48,7 @@ class PaymentGetSchema(StructureSchema):
       queryset = context.get_account().payments.filter(id=id)
     else:
       is_open = self.active_response.force_get_child(payment_fields.IS_OPEN).render()
-      
+
       if is_open is None:
         queryset = context.get_account().payments.all()
       else:

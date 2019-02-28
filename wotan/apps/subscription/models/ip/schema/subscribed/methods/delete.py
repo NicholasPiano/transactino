@@ -39,6 +39,9 @@ class IPDeleteSchema(WithOrigin, WithChallenge):
     self.model = Model
     super().__init__(
       **kwargs,
+      description=(
+        'The schema for the IP delete method.'
+      ),
       client=IPDeleteClientSchema(),
       origin=delete_constants.ORIGIN,
     )

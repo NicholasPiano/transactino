@@ -17,7 +17,7 @@ class TransactinoSchema(Schema):
     if context.is_anonymous():
       return AnonymousSchema().respond(payload=payload, context=context)
 
-    if context.is_subscribed():
-      return SubscribedSchema().respond(payload=payload, context=context)
+    # if context.is_subscribed():
+    return SubscribedSchema().respond(payload=payload, context=context)
 
-    return UnsubscribedSchema(context=context).respond(payload=payload, context=context)
+    # return UnsubscribedSchema(context=context).respond(payload=payload, context=context)

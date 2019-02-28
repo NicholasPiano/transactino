@@ -8,7 +8,16 @@ from .instances import SubscriptionInstancesClosedSchema
 
 class SubscriptionModelSchema(ModelSchema):
   def __init__(self, Model, mode=None, **kwargs):
-    super().__init__(Model, mode=mode, **kwargs)
+    super().__init__(
+      Model,
+      mode=mode,
+      **kwargs,
+      description=(
+        'The schema for the Subscription model.'
+        ' Subscriptions log time-related aspects of'
+        ' a user\'s access to the application.'
+      ),
+    )
     self.children = {
       schema_constants.METHODS: SubscriptionModelMethodsSchema(),
       schema_constants.INSTANCES: SubscriptionInstancesClosedSchema(Model, mode=mode),

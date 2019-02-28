@@ -39,11 +39,24 @@ class FeeReportCreateSchema(WithOrigin, WithChallenge, StructureSchema):
     self.model = Model
     super().__init__(
       **kwargs,
+      description=(
+        'The schema for the FeeReport create method.'
+      ),
       client=FeeReportCreateClientSchema(),
       origin=create_constants.ORIGIN,
       children={
-        fee_report_fields.BLOCKS_TO_INCLUDE: Schema(types=types.INTEGER()),
-        fee_report_fields.IS_ACTIVE: Schema(types=types.BOOLEAN()),
+        fee_report_fields.BLOCKS_TO_INCLUDE: Schema(
+          description=(
+            'The number of blocks over which to calculate the average.'
+          ),
+          types=types.INTEGER(),
+        ),
+        fee_report_fields.IS_ACTIVE: Schema(
+          description=(
+            'Whether or not the report should be initially active.'
+          ),
+          types=types.BOOLEAN(),
+        ),
       },
     )
     self.response = FeeReportCreateResponse

@@ -44,10 +44,17 @@ class IPCreateSchema(WithOrigin, WithChallenge, WithPayment, StructureSchema):
     self.model = Model
     super().__init__(
       **kwargs,
+      description=(
+        'The schema for the IP create method.'
+      ),
       client=IPCreateClientSchema(),
       origin=create_constants.ORIGIN,
       children={
-        ip_fields.VALUE: Schema(),
+        ip_fields.VALUE: Schema(
+          description=(
+            'Must be a valid IPv4 address.'
+          ),
+        ),
       }
     )
     self.response = IPCreateResponse

@@ -40,11 +40,23 @@ class FeeReportActivateSchema(WithOrigin, WithChallenge, StructureSchema):
     self.model = Model
     super().__init__(
       **kwargs,
+      description=(
+        'The schema for the FeeReport activate method.'
+      ),
       client=FeeReportActivateClientSchema(),
       origin=activate_constants.ORIGIN,
       children={
-        activate_constants.FEE_REPORT_ID: Schema(types=types.UUID()),
-        fee_report_fields.IS_ACTIVE: Schema(types=types.BOOLEAN()),
+        activate_constants.FEE_REPORT_ID: Schema(
+          description='The ID of the FeeReport is question.',
+          types=types.UUID(),
+        ),
+        fee_report_fields.IS_ACTIVE: Schema(
+          description=(
+            'A boolean value that designates whether'
+            ' the report should be active.'
+          ),
+          types=types.BOOLEAN(),
+        ),
       },
     )
     self.response = FeeReportActivateResponse

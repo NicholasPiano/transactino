@@ -28,6 +28,9 @@ class AccountVerifyClientSchema(WithChallengeClientSchema):
   def __init__(self, **kwargs):
     super().__init__(
       **kwargs,
+      description=(
+        'The verification response'
+      ),
       response=AccountVerifyClientResponse,
       children={
         verify_constants.VERIFICATION_COMPLETE: Schema(types=types.BOOLEAN()),
@@ -38,6 +41,11 @@ class AccountVerifySchema(WithOrigin, WithChallenge):
   def __init__(self, **kwargs):
     super().__init__(
       **kwargs,
+      description=(
+        'The schema for the Account verify method.'
+        ' This method takes no arguments, but does require'
+        ' a challenge to be solved.'
+      ),
       types=types.STRUCTURE(),
       client=AccountVerifyClientSchema(),
       origin=verify_constants.ORIGIN,

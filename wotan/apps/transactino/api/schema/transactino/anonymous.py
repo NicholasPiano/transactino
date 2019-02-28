@@ -20,7 +20,7 @@ class AnonymousSchema(StructureSchema):
       children=merge(
         {
           transactino_constants.SCHEMA: StructureSchema(
-            description='The schema accepts data in plaintext JSON',
+            description='The schema accepts data in plaintext JSON and interacts with the API',
             children={
               transactino_constants.MODELS: StructureSchema(
                 description='Models available to the user',

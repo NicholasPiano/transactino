@@ -26,8 +26,10 @@ class SubscribedSchema(StructureSchema):
       children=merge(
         {
           transactino_constants.SCHEMA: StructureSchema(
+            description='The schema accepts data in plaintext JSON and interacts with the API',
             children={
               transactino_constants.MODELS: ModelsSchemaWithExternal(
+                description='Models available to the user',
                 children={
                   Model.__name__: Model.objects.schema(mode=mode_constants.SUBSCRIBED) for Model in [
                     Account,

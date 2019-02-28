@@ -8,7 +8,6 @@ class AccountSubscribedModelMethodsSchema(StructureSchema):
   def __init__(self, Model, **kwargs):
     super().__init__(
       **kwargs,
-      description='',
       children={
         account_subscribed_method_constants.LOCK: AccountSubscribedLockSchema(Model),
       },

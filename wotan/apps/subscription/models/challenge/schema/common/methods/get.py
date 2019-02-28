@@ -19,9 +19,21 @@ class ChallengeGetSchema(StructureSchema):
   def __init__(self, **kwargs):
     super().__init__(
       **kwargs,
+      description=(
+        'The schema for the Challenge get method.'
+        ' Returns instances of the Challenge class and'
+        ' includes a simple filter for the open status'
+        ' of each object.'
+      ),
       response=ChallengeGetResponse,
       children={
-        challenge_fields.IS_OPEN: Schema(types=types.BOOLEAN()),
+        challenge_fields.IS_OPEN: Schema(
+          description=(
+            'A value intended to filter the list of challenges'
+            ' by its open state.'
+          ),
+          types=types.BOOLEAN(),
+        ),
       },
     )
 

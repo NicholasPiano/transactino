@@ -38,11 +38,31 @@ class SubscriptionCreateSchema(WithOrigin, WithChallenge, StructureSchema):
   def __init__(self, **kwargs):
     super().__init__(
       **kwargs,
+      description=(
+        'The schema for the Subscription create method.'
+        ' This method can be run without arguments to create a challenge'
+        ' originating from the method. When run with arguments, a duration'
+        ' is required.'
+      ),
       origin=create_constants.ORIGIN,
       client=SubscriptionCreateClientSchema(),
       children={
-        subscription_fields.DURATION_IN_DAYS: Schema(types=types.INTEGER()),
-        subscription_fields.ACTIVATION_DATE: Schema(types=types.TIME()),
+        subscription_fields.DURATION_IN_DAYS: Schema(
+          description=(
+            'The duration, measured in periods of 24 hours'
+            ' from the date of activation.'
+          ),
+          types=types.INTEGER(),
+        ),
+        subscription_fields.ACTIVATION_DATE: Schema(
+          description=(
+            'The activation date. This can be given as any valid date string.'
+            ' Once this date is passed, a process will run that verifies and activates'
+            ' the subscription. From this point, a request made from any IP address'
+            ' associated with the account will be responded to accordingly.'
+          ),
+          types=types.TIME(),
+        ),
       },
     )
     self.response = SubscriptionCreateResponse

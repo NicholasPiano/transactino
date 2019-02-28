@@ -39,6 +39,9 @@ class IPGetSchema(WithOrigin, WithChallenge):
     self.model = Model
     super().__init__(
       **kwargs,
+      description=(
+        'The schema for the IP get method.'
+      ),
       types=types.STRUCTURE(),
       client=IPGetClientSchema(),
       origin=get_constants.ORIGIN,

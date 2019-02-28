@@ -17,6 +17,11 @@ class InstanceSchema(StructureSchema):
     self.mode = mode
     super().__init__(
       **kwargs,
+      description=(
+        'The schema for reporting a single instance of the {} model.'
+      ).format(
+        Model.__name__,
+      ),
       children={
         schema_constants.ATTRIBUTES: InstanceAttributeSchema(Model, mode=mode),
         schema_constants.RELATIONSHIPS: InstanceRelationshipSchema(Model, mode=mode),
@@ -68,5 +73,12 @@ class InstancesClosedSchema(ClosedSchema):
   def __init__(self, Model, mode=None, **kwargs):
     super().__init__(
       **kwargs,
+      description=(
+        'The schema for reporting details of instances of the'
+        ' {} model. This schema takes no input and does not trigger'
+        ' any methods or any interaction with the API.'
+      ).format(
+        Model.__name__,
+      ),
       client=InstancesSchema(Model, mode=mode),
     )

@@ -39,7 +39,12 @@ class SubscriptionActivateSchema(WithOrigin, WithPayment, StructureSchema):
       **kwargs,
       client=SubscriptionActivateClientSchema(),
       children={
-        activate_constants.SUBSCRIPTION_ID: Schema(types=types.UUID()),
+        activate_constants.SUBSCRIPTION_ID: Schema(
+          description=(
+            'The ID of the subscription in question'
+          ),
+          types=types.UUID(),
+        ),
       }
     )
     self.response = SubscriptionActivateResponse
