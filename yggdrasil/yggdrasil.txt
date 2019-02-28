@@ -3,4 +3,64 @@ This file contains a summary of the Yggdrasil deployment process. It is not a lo
 1. Create a new instance: Ubuntu 18.04, 4GB RAM, t2.medium, peanuts4.pem
 2. ssh -i "peanuts4.pem" ubuntu@ec2-35-178-206-19.eu-west-2.compute.amazonaws.com
 3. Public IP: 35.178.206.19
-4. 
+
+Update apt-get packages
+4. ~$ sudo apt-get update
+
+This will install and start redis-server by default and on boot.
+5. ~$ sudo apt install redis-server
+
+Upload source files
+6. Change IP in scripts/sync.sh to 35.178.206.19
+7. [Local/thor] ~$ sh scripts/sync.sh
+
+Install and configure nginx
+8. ~$ sudo apt-get install nginx
+9. ~$ sudo ufw allow 8000 (allows port 8000 for testing)
+10. ~$ cd thor
+11. ~$ sudo cp yggdrasil/nginx/wotan /etc/nginx/sites-available/
+12. ~$ sudo rm -rf /etc/nginx/sites-enabled/default (remove default configuration)
+13. ~$ sudo ln -s /etc/nginx/sites-available/wotan /etc/nginx/sites-enabled
+14. ~$ sudo nginx -t (test nginx configuration)
+
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+
+15. ~$ sudo systemctl restart nginx
+16. ~$ sudo systemctl status nginx
+
+Install and configure postgres
+17. ~$ sudo apt-get install postgresql postgresql-contrib
+18. ~$ sudo -u postgres psql
+19. =# create user transactino with password '7737d16e80d744b984b17c1918b81cee';
+20. =# alter role transactino set client_encoding TO 'utf8';
+21. =# alter role transactino set default_transaction_isolation TO 'read committed';
+22. =# alter role transactino set timezone TO 'UTC';
+23. =# create database db;
+24. =# grant all privileges on database db to transactino;
+25. =# alter role transactino createdb;
+26. =# revoke connect on database db from public;
+27. =# create database test_db;
+28. =# revoke connect on database test_db from public;
+
+Install and configure gunicorn
+29. ~$ sudo apt-get install python3 python3-venv
+30. ~$ cd wotan
+31. ~$ python3.6 -m venv .
+32. ~$ source bin/activate
+33. ~$ pip install -r requirements/staging.txt
+34. ~$ nano env.json
+
+{
+  "settings": "woot.settings.production",
+  "gpg_binary": "/usr/bin/gpg"
+}
+
+35. ~$ sh scripts/test.sh
+36. ~$ sh scripts/migrate.sh
+37. ~$ gunicorn --bind 0.0.0.0:8000 woot.wsgi (test server)
+38. ~$ cd ..
+39. ~$ sudo cp yggdrasil/gunicorn/gunicorn.service /etc/systemd/system/
+40. ~$ sudo systemctl start gunicorn
+41. ~$ sudo systemctl enable gunicorn
+42. ~$ sudo systemctl status gunicorn

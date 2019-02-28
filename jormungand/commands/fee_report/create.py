@@ -12,15 +12,19 @@ from .constants import fee_report_constants
 def create(args):
   blocks_to_include = input('Enter the number of blocks to include in the report: ')
 
+  create_request_json = {}
+  if blocks_to_include:
+    create_request_json = {
+      fee_report_constants.BLOCKS_TO_INCLUDE: int(blocks_to_include),
+      'is_active': True,
+    }
+
   payload = {
     transactino_constants.SCHEMA: {
       model_constants.MODELS: {
         model_constants.FEE_REPORT: {
           method_constants.METHODS: {
-            fee_report_constants.CREATE: {
-              fee_report_constants.BLOCKS_TO_INCLUDE: int(blocks_to_include),
-              'is_active': True,
-            },
+            fee_report_constants.CREATE: create_request_json,
           },
         },
       },

@@ -9,7 +9,7 @@ server {
 
 server {
   listen 80;
-  server_name 35.178.162.251;
+  server_name 35.178.206.19;
 
   location = /favicon.ico {
     access_log off;

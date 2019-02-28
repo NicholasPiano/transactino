@@ -24,7 +24,7 @@ def disclaimer(ip=None, long_key_id=None):
     1. Until you have an active subscription, your account will be bound to
        the current IP address. Any user with access to this IP address will
        be treated equally with respect to this account. For this reason, it
-       is reccommended to secure access to an IP address that is restricted
+       is recommended to secure access to an IP address that is restricted
        to your use only.
     2. This interface is provided with a guarantee on behalf of the published
        public key. Please refer to this guarantee for more information, but
@@ -82,13 +82,13 @@ class AccountCreateSchema(StructureSchema):
       **kwargs,
       description=(
         'This method can be used to create an account on the system with the'
-        'specified public key. This account will be bound to the public key'
-        'From which the request or connection originates.'
+        ' specified public key. This account will be bound to the public key'
+        ' from which the request or connection originates.'
       ),
       client=Schema(
         description=(
           'If successful, the create function will return an acknowledgement'
-          'of the created account and a disclaimer.'
+          ' of the created account and a disclaimer.'
         ),
       ),
       children={

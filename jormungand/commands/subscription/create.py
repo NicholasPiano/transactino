@@ -14,18 +14,22 @@ def create(args):
   duration_in_days = input('Enter the number of days the subscription will be active: ')
   activation_date = input('Enter the activation date: ')
 
-  unaware_datetime = parser.parse(activation_date)
-  aware_datetime = unaware_datetime.replace(tzinfo=tz.gettz())
+  create_request_json = {}
+  if duration_in_days:
+    unaware_datetime = parser.parse(activation_date)
+    aware_datetime = unaware_datetime.replace(tzinfo=tz.gettz())
+
+    create_request_json = {
+      subscription_constants.ACTIVATION_DATE: aware_datetime.isoformat(),
+      subscription_constants.DURATION_IN_DAYS: int(duration_in_days),
+    }
 
   payload = {
     transactino_constants.SCHEMA: {
       model_constants.MODELS: {
         model_constants.SUBSCRIPTION: {
           method_constants.METHODS: {
-            subscription_constants.CREATE: {
-              subscription_constants.ACTIVATION_DATE: aware_datetime.isoformat(),
-              subscription_constants.DURATION_IN_DAYS: int(duration_in_days),
-            },
+            subscription_constants.CREATE: create_request_json,
           },
         },
       },

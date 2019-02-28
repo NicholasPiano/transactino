@@ -7,12 +7,13 @@ Named for the Norse World-serpent that brings about Ragnarok, Jormungand is the 
 ## ACCESS DETAILS
 
 ```
-URL: http://35.178.85.150/api/
+URL: http://35.178.206.19/api/
 ```
 
 ## Releases
 
 <a href="{% static 'jormungand_1.0.0.zip' %}">1.0.0</a>
+<a href="{% static 'jormungand_1.2.0.zip' %}">1.2.0</a>
 
 ## Usage
 ### Setup
@@ -22,7 +23,7 @@ URL: http://35.178.85.150/api/
 
 ```json
 {
-  "url": "http://35.178.85.150/api/",
+  "url": "http://35.178.206.19/api/",
   "public_key": "/path/to/public_key.asc"
 }
 ```
@@ -82,13 +83,13 @@ fee_report get
 ```
     #### Disclaimer ####
 
-    Your account has been created with the IP address 93.176.134.16 and long key
-    id 5F2201FF, but you should be aware of the following matters:
+    Your account has been created with the IP address xx.xxx.xxx.xx and long key
+    id XXXXXXXX, but you should be aware of the following matters:
 
     1. Until you have an active subscription, your account will be bound to
        the current IP address. Any user with access to this IP address will
        be treated equally with respect to this account. For this reason, it
-       is reccommended to secure access to an IP address that is restricted
+       is recommended to secure access to an IP address that is restricted
        to your use only.
     2. This interface is provided with a guarantee on behalf of the published
        public key. Please refer to this guarantee for more information, but
@@ -243,10 +244,8 @@ Please enter the decrypted string: 9DA54E27F0AC496A7F6853B11B2D2FEB5D51767F3DA7C
 
 `~$ python jormungand.py create subscription`
 
-```
-Enter the number of days the subscription will be active: 10
-Enter the activation date: 2/12/2018
-```
+Run initially without arguments until a challenge has been solved.
+
 ```json
 {
   "create_complete": false,
@@ -315,7 +314,7 @@ A payment functions like a challenge, but there is no respond function.
 
 The amount shown is a combination of a base amount, in this case `40000` satoshi, and `6734` satoshi, the randomly generated amount meant to identify the payment.
 
-Create a transaction with this amount to the address specified at the top of this document. Once the transaction has been mined, the payment will be closed, and any action blocked by the payment can be run successfully.
+Create a transaction with this amount to the address specified at the top of this document. Once the transaction has been added to a block, the payment will be closed, and any action blocked by the payment can be run successfully.
 
 12. The payment can also be checked by running the get subscription command with inactive:
 
@@ -460,9 +459,9 @@ Fee report methods are now available.
 16. Create a Fee report
 
 `~$ python jormungand.py create fee_report`
-```
-Enter the number of blocks to include in the report: 1
-```
+
+Run initially without arguments until a challenge has been solved.
+
 ```json
 {
   "create_complete": false,
