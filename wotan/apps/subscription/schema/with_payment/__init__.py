@@ -42,7 +42,7 @@ class WithPayment(Schema):
     return self.origin
 
   def get_btc_amount(self):
-    raise NotImplementedError()
+    raise NotImplementedError('Define a cost for making a payment')
 
   def get_payment_client_response(self):
     if self.active_payment is not None and not self.active_payment.has_been_used:
@@ -70,8 +70,11 @@ class WithPayment(Schema):
 
   def responds_to_valid_payload(self, payload, context):
     super().responds_to_valid_payload(payload, context)
-    if self.should_check_payment(payload, context):
 
+    if self.active_response.has_errors():
+      return
+
+    if self.should_check_payment(payload, context):
       origin = self.get_origin(context)
 
       open_payment = context.get_account().payments.get(origin=origin, is_open=True)
@@ -79,8 +82,6 @@ class WithPayment(Schema):
         self.active_response.add_error(
           with_payment_errors.OPEN_PAYMENT_EXISTS_WITH_ORIGIN(origin=origin),
         )
-
-      if self.active_response.has_errors():
         return
 
       self.active_payment = context.get_account().payments.get(
@@ -90,11 +91,17 @@ class WithPayment(Schema):
       )
 
       if self.active_payment is None:
-        base_amount = self.get_discount() or self.get_btc_amount(context)
         to_address = Address.objects.get_active_address()
+
+        if not to_address:
+          self.active_response.add_error(
+            with_payment_errors.PAYMENTS_UNAVAILABLE(),
+          )
+          return
+
+        base_amount = self.get_discount() or self.get_btc_amount(context)
         self.active_payment = context.get_account().payments.create(
           to_address=to_address,
-          address=to_address.value if to_address is not None else '',
           origin=origin,
           base_amount=base_amount,
         )

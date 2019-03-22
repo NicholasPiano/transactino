@@ -6,8 +6,10 @@ from django.db import models
 from django.test import TestCase
 from django.conf import settings
 
+from util.gpg import GPG
 from util.api.constants import constants
 
+from ......system import System
 from ......account import Account
 from ..constants import respond_constants
 from ..errors import respond_errors
@@ -23,6 +25,10 @@ class TestContext():
 class ChallengeRespondSchemaTestCase(TestCase):
   def setUp(self):
     self.schema = ChallengeRespondSchema()
+    self.gpg = GPG(binary=settings.GPG_BINARY, path=settings.GPG_PATH)
+    self.system = System.objects.create(public_key=settings.TEST_SYSTEM_PUBLIC_KEY)
+    self.system.import_public_key()
+    self.gpg.import_key(settings.TEST_SYSTEM_PRIVATE_KEY)
     self.account = Account.objects.create(public_key=settings.TEST_PUBLIC_KEY)
     self.account.import_public_key()
     self.challenge = self.account.challenges.create()
@@ -30,9 +36,14 @@ class ChallengeRespondSchemaTestCase(TestCase):
     self.context = TestContext(account=self.account)
 
   def test_respond(self):
+    reencrypted_content = self.gpg.encrypt_to_public_with_long_key_id(
+      self.challenge.content,
+      self.system.long_key_id,
+    )
+
     payload = {
       respond_constants.CHALLENGE_ID: self.challenge._id,
-      respond_constants.PLAINTEXT: self.challenge.content,
+      respond_constants.CONTENT: reencrypted_content,
     }
 
     response = self.schema.respond(payload=payload, context=self.context)
@@ -44,7 +55,7 @@ class ChallengeRespondSchemaTestCase(TestCase):
 
   def test_id_not_included(self):
     payload = {
-      respond_constants.PLAINTEXT: self.challenge.content,
+      respond_constants.CONTENT: 'content',
     }
 
     response = self.schema.respond(payload=payload, context=self.context)
@@ -56,11 +67,25 @@ class ChallengeRespondSchemaTestCase(TestCase):
       },
     })
 
+  def test_content_not_included(self):
+    payload = {
+      respond_constants.CHALLENGE_ID: self.challenge._id,
+    }
+
+    response = self.schema.respond(payload=payload, context=self.context)
+
+    content_not_included = respond_errors.CONTENT_NOT_INCLUDED()
+    self.assertEqual(response.render(), {
+      constants.ERRORS: {
+        content_not_included.code: content_not_included.render(),
+      },
+    })
+
   def test_challenge_does_not_exist(self):
     test_id = uuid.uuid4().hex
     payload = {
       respond_constants.CHALLENGE_ID: test_id,
-      respond_constants.PLAINTEXT: self.challenge.content,
+      respond_constants.CONTENT: 'content',
     }
 
     response = self.schema.respond(payload=payload, context=self.context)
@@ -78,7 +103,7 @@ class ChallengeRespondSchemaTestCase(TestCase):
 
     payload = {
       respond_constants.CHALLENGE_ID: self.challenge._id,
-      respond_constants.PLAINTEXT: self.challenge.content,
+      respond_constants.CONTENT: 'content',
     }
 
     response = self.schema.respond(payload=payload, context=self.context)
@@ -90,40 +115,10 @@ class ChallengeRespondSchemaTestCase(TestCase):
       },
     })
 
-  def test_armor_and_plaintext_included(self):
-    payload = {
-      respond_constants.CHALLENGE_ID: self.challenge._id,
-      respond_constants.PLAINTEXT: self.challenge.content,
-      respond_constants.ARMOR: 'armor',
-    }
-
-    response = self.schema.respond(payload=payload, context=self.context)
-
-    armor_and_plaintext_included = respond_errors.ARMOR_AND_PLAINTEXT_INCLUDED()
-    self.assertEqual(response.render(), {
-      constants.ERRORS: {
-        armor_and_plaintext_included.code: armor_and_plaintext_included.render(),
-      },
-    })
-
-  def test_armor_or_plaintext_not_included(self):
-    payload = {
-      respond_constants.CHALLENGE_ID: self.challenge._id,
-    }
-
-    response = self.schema.respond(payload=payload, context=self.context)
-
-    armor_or_plaintext_not_included = respond_errors.ARMOR_OR_PLAINTEXT_NOT_INCLUDED()
-    self.assertEqual(response.render(), {
-      constants.ERRORS: {
-        armor_or_plaintext_not_included.code: armor_or_plaintext_not_included.render(),
-      },
-    })
-
   def test_content_mismatch(self):
     payload = {
       respond_constants.CHALLENGE_ID: self.challenge._id,
-      respond_constants.PLAINTEXT: 'bad-content',
+      respond_constants.CONTENT: 'bad-content',
     }
 
     response = self.schema.respond(payload=payload, context=self.context)

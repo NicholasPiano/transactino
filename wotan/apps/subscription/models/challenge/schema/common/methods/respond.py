@@ -42,12 +42,7 @@ class ChallengeRespondSchema(StructureSchema):
           description='The ID of the challenge in question',
           types=types.UUID(),
         ),
-        respond_constants.PLAINTEXT: Schema(
-          description=(
-            'The decrypted text of the challenge in plaintext format.'
-          ),
-        ),
-        respond_constants.ARMOR: Schema(
+        respond_constants.CONTENT: Schema(
           description=(
             'The decrypted text of the challenge in ascii armor format,'
             ' having been re-encrypted to the public key of the service.'
@@ -61,6 +56,11 @@ class ChallengeRespondSchema(StructureSchema):
 
     if respond_constants.CHALLENGE_ID not in payload:
       self.active_response.add_error(respond_errors.CHALLENGE_ID_NOT_INCLUDED())
+
+    if respond_constants.CONTENT not in payload:
+      self.active_response.add_error(respond_errors.CONTENT_NOT_INCLUDED())
+
+    if self.active_response.has_errors():
       return False
 
     challenge_id = payload.get(respond_constants.CHALLENGE_ID)
@@ -78,14 +78,6 @@ class ChallengeRespondSchema(StructureSchema):
       )
       return False
 
-    if respond_constants.PLAINTEXT in payload and respond_constants.ARMOR in payload:
-      self.active_response.add_error(respond_errors.ARMOR_AND_PLAINTEXT_INCLUDED())
-      return False
-
-    if respond_constants.PLAINTEXT not in payload and respond_constants.ARMOR not in payload:
-      self.active_response.add_error(respond_errors.ARMOR_OR_PLAINTEXT_NOT_INCLUDED())
-      return False
-
     return passes_pre_response_checks
 
   def responds_to_valid_payload(self, payload, context):
@@ -94,12 +86,7 @@ class ChallengeRespondSchema(StructureSchema):
     if self.active_response.has_errors():
       return
 
-    content_to_verify = None
-    if respond_constants.ARMOR in payload:
-      content_to_verify = None
-    else:
-      content_to_verify = self.active_response.get_child(respond_constants.PLAINTEXT).render()
-
+    content_to_verify = self.active_response.get_child(respond_constants.CONTENT).render()
     challenge_id = self.active_response.get_child(respond_constants.CHALLENGE_ID).render()
     challenge = context.get_account().challenges.get(id=challenge_id)
 

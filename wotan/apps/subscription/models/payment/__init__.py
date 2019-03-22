@@ -19,50 +19,47 @@ from .schema.superadmin import PaymentSuperadminModelSchema
 
 class PaymentManager(Manager):
   def attributes(self, mode=None):
+    attributes = super().attributes(mode=mode)
+
     fields = [
-      payment_fields.ADDRESS,
       payment_fields.FULL_BTC_AMOUNT,
       payment_fields.ORIGIN,
+      payment_fields.IS_OPEN,
+      payment_fields.TIME_CONFIRMED,
+      payment_fields.BLOCK_HASH,
+      payment_fields.TXID,
     ]
+
     if mode == mode_constants.SUPERADMIN:
       fields.extend([
-        payment_fields.IS_OPEN,
         payment_fields.HAS_BEEN_USED,
         payment_fields.BASE_AMOUNT,
         payment_fields.UNIQUE_BTC_AMOUNT,
-        payment_fields.TIME_CONFIRMED,
-        payment_fields.BLOCK_HASH,
-        payment_fields.TXID,
       ])
+
     return [
-      field
-      for field in self.model._meta.get_fields()
-      if (
-        not field.is_relation
-        and field.name != model_fields.ID
-        and field.name in fields
-      )
+      attribute
+      for attribute in attributes
+      if attribute.name in fields
     ]
 
-  def serialize(self, instance, attributes=None, relationships=None, mode=None):
-    serialized = {
-      schema_constants.ATTRIBUTES: self.serialize_attributes(
-        instance,
-        attributes=attributes,
-        mode=mode,
-      ),
-    }
+  def relationships(self, mode=None):
+    relationships = super().relationships(mode=mode)
+
+    fields = [
+      payment_fields.ADDRESS,
+    ]
 
     if mode == mode_constants.SUPERADMIN:
-      serialized.update({
-        schema_constants.RELATIONSHIPS: self.serialize_relationships(
-          instance,
-          relationships=relationships,
-          mode=mode,
-        ),
-      })
+      fields.extend([
+        payment_fields.ACCOUNT,
+      ])
 
-    return serialized
+    return [
+      relationship
+      for relationship in relationships
+      if relationship.name in fields
+    ]
 
   def schema(self, mode=None):
     if mode == mode_constants.SUPERADMIN:
@@ -79,20 +76,13 @@ class Payment(Model):
     related_name=payment_constants.ACCOUNT_RELATED_NAME,
     on_delete=models.CASCADE,
   )
-  to_address = models.ForeignKey(
-    payment_constants.TO_ADDRESS_RELATED_MODEL,
-    related_name=payment_constants.TO_ADDRESS_RELATED_NAME,
-    on_delete=models.CASCADE,
-    null=True,
-  )
-  from_address = models.ForeignKey(
-    payment_constants.FROM_ADDRESS_RELATED_MODEL,
-    related_name=payment_constants.FROM_ADDRESS_RELATED_NAME,
+  address = models.ForeignKey(
+    payment_constants.ADDRESS_RELATED_MODEL,
+    related_name=payment_constants.ADDRESS_RELATED_NAME,
     on_delete=models.CASCADE,
     null=True,
   )
 
-  address = models.CharField(max_length=255, default='')
   origin = models.UUIDField(default=uuid.uuid4)
 
   is_open = models.BooleanField(default=True)
@@ -117,8 +107,8 @@ class Payment(Model):
     self.save()
 
   def prepare(self):
-    if self.to_address is not None:
-      self.unique_btc_amount = self.to_address.get_open_unique_btc_amount()
+    if self.address is not None:
+      self.unique_btc_amount = self.address.get_open_unique_btc_amount()
       self.full_btc_amount = self.base_amount + self.unique_btc_amount
       self.save()
 

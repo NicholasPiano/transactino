@@ -1,6 +1,6 @@
 
 from django.test import TestCase
-from util.force_array import force_array
+from ..force_array import force_array
 
 class ForceArrayTestCase(TestCase):
   def setUp(self):

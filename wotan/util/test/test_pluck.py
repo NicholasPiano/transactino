@@ -1,6 +1,6 @@
 
 from django.test import TestCase
-from util.pluck import pluck
+from ..pluck import pluck
 
 class keys:
   key1 = 'key1'

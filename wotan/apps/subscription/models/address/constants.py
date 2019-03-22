@@ -4,5 +4,5 @@ class address_constants:
 
 class address_fields:
   VALUE = 'value'
-  IS_EXTERNAL = 'is_external'
   IS_ACTIVE = 'is_active'
+  IS_FLAGGED_FOR_SATURATION = 'is_flagged_for_saturation'

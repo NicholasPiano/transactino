@@ -2,7 +2,7 @@
 import uuid
 
 from django.test import TestCase
-from util.is_valid_uuid import is_valid_uuid
+from ..is_valid_uuid import is_valid_uuid
 
 class IsValidUUIDTestCase(TestCase):
   def setUp(self):

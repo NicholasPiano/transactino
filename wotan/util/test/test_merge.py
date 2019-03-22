@@ -1,6 +1,6 @@
 
 from django.test import TestCase
-from util.merge import merge
+from ..merge import merge
 
 class keys:
   integer = 'integer'

@@ -38,6 +38,7 @@ KEY_PATH = join(WOOT_PATH, 'keys')
 PUBLIC_KEY_TEMPLATE = '{}_public_key.asc'
 PRIVATE_KEY_TEMPLATE = '{}_private_key.asc'
 TEST_KEY = 'test'
+TEST_SYSTEM_KEY = 'test_system'
 
 with open(join(KEY_PATH, TEST_KEY, PUBLIC_KEY_TEMPLATE.format(TEST_KEY)), 'r') as public_key_file:
   test_public_key = public_key_file.read()
@@ -47,6 +48,15 @@ with open(join(KEY_PATH, TEST_KEY, PRIVATE_KEY_TEMPLATE.format(TEST_KEY)), 'r') 
 
 TEST_PUBLIC_KEY = test_public_key
 TEST_PRIVATE_KEY = test_private_key
+
+with open(join(KEY_PATH, TEST_KEY, PUBLIC_KEY_TEMPLATE.format(TEST_SYSTEM_KEY)), 'r') as public_key_file:
+  test_system_public_key = public_key_file.read()
+
+with open(join(KEY_PATH, TEST_KEY, PRIVATE_KEY_TEMPLATE.format(TEST_SYSTEM_KEY)), 'r') as private_key_file:
+  test_system_private_key = private_key_file.read()
+
+TEST_SYSTEM_PUBLIC_KEY = test_system_public_key
+TEST_SYSTEM_PRIVATE_KEY = test_system_private_key
 
 SECRET_KEY = 'p%1xdl29wd5k=(%g$4h18$-7xroe-4s944(nf=by!(5i8p8vmf'
 

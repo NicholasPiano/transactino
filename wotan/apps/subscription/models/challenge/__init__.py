@@ -92,7 +92,10 @@ class Challenge(Model):
     self.save()
 
   def verify_content(self, content):
-    if self.content == content:
+    gpg = GPG(binary=settings.GPG_BINARY, path=settings.GPG_PATH)
+    decrypted_content = gpg.decrypt_from_private(content)
+
+    if self.content == decrypted_content:
       self.is_open = False
       self.save()
       return True

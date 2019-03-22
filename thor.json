@@ -14,6 +14,29 @@
         "children": {
           "simplest deployment": "Probably the best way to do this is to use the setup I had before with asgi and redis using Django only. This would require some modifications to the Wotan package. I should have everything running on the same machine. I should also put the Django code behind Daphne and nginx. This can be added as a part of the yggdrasil configuration."
         }
+      },
+      "20190301": {
+        "description": "As I think of what is needed to move into production, I think about the state of the application compared to that in my work. In my work, I see low-cost incremental changes made in favour of large, breaking changes. This makes sense, but passes over much needed refactoring. I see the same thing in this project, since it has now grown large enough that any change is daunting, or at least changes that would change fundamentally how the application works. I have questions in my mind about continuous deployment, database migrations, multiple backends and frontends, etc. If I were to construct a huge web of nodes, then things would inevitably slow down. Talking with SJ, I realise that in order to have any record of changes that is without error, a system such as a blockchain that enforces order is necessary. The further you decentralise, the more you need an enforcement mechanism for changes in order to remain in sync. The source of truth must be singular.",
+        "children": {
+          "sources of truth": "It seems foolish, but it might be worth considering how something would work with many sources of truth, or at least deal with a fragmentation of the truth. For example, a web application might rely on a backend server for data, but at what point could it consider its own local data store as most truthy? A real-world example is the web application that I am building in my work. Data is polled every ten seconds, but if a change is made locally, what is true? If a user toggles a value, they should expect to see that change immediately, and for it to stay that way, despite a possible incoming update from the backend. Maybe applications should learn to deal with multiple sources of truth, rather than asymptotically approaching the blockchain model.",
+          "superadmin": "",
+          "more complex data from the blockchain": "",
+        }
+      },
+      "20190302": {
+        "description": "Thinking about what needs to be done to show this to a company. It must be polished and usable enough on the surface that it can immediately form a crucial part of a larger application without jeapordising security, assuming my ideas about security are good at all. There are some things I will not do, like use tokens or usernames and passwords in some web 2.0 interface.",
+        "children": {
+          "email": "It's possible, like the company in the JBS, that any client I do find will want the values emailed to them directly. I don't need to do this now, but it would be an easy changes to make; adding an Email object to the database and adding a trigger to a task. This can be done quickly if needed.",
+          "encrypt solved challenge": "A solved challenge should be re-encrypted to the public key of the system.",
+          "admin backdoor": "The problem with adding a backdoor, is that despite any precaution taken to prevent an intruder from discovering it, its chance of discovery is still proportional to how easy it is to use. It will be found, especially if any part of the source code is shared. What might make more sense is to simply create an admin account and follow the path to fully encrypted communications.",
+          "encrypted channel": "Just like the 'schema' section of the schema, there should be an 'encrypted' section fo the schema that takes only a string input. It assumes this string is an encrypted blob of data representing the same JSON structure that would have been sent to the 'schema' section, but instead encrypted to the public key of the system and signed by the private key of the user. This should be accepted from any IP address or source, and would return an encrypted blob of data with exactly the same structure as would have been returned as the response to a normal request, except that it will appear only as a single string."
+        }
+      },
+      "20190316": {
+        "description": "",
+        "children": {
+
+        }
       }
     }
   }

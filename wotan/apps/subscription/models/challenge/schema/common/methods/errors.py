@@ -32,19 +32,13 @@ class ClosedChallengeHasBeenUsedError(Error):
       else self.description
     )
 
-class ArmorAndPlaintextIncludedError(Error):
-  code = '627'
-  name = 'armor_and_plaintext_included'
-  description = 'Armor and plaintext included together'
-
-class ArmorOrPlaintextNotIncludedError(Error):
+class ContentNotIncludedError(Error):
   code = '628'
-  name = 'armor_or_plaintext_not_included'
-  description = 'Armor or plaintext not included'
+  name = 'content_not_included'
+  description = 'Content not included'
 
 class respond_errors:
   CHALLENGE_ID_NOT_INCLUDED = ChallengeIDNotIncludedError
   CHALLENGE_DOES_NOT_EXIST = ChallengeDoesNotExistError
   CLOSED_CHALLENGE_HAS_BEEN_USED = ClosedChallengeHasBeenUsedError
-  ARMOR_AND_PLAINTEXT_INCLUDED = ArmorAndPlaintextIncludedError
-  ARMOR_OR_PLAINTEXT_NOT_INCLUDED = ArmorOrPlaintextNotIncludedError
+  CONTENT_NOT_INCLUDED = ContentNotIncludedError

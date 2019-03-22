@@ -118,8 +118,6 @@ class GPG:
       encrypt_path,
     )
 
-    print(output)
-
     encrypted_message = None
     with open(encrypted_path, 'rb') as encrypted_file:
       encrypted_message = encrypted_file.read().decode()
@@ -139,6 +137,13 @@ class GPG:
       command_constants.DECRYPT,
       decrypt_path,
     )
+
+    error_state = (
+      'no valid OpenPGP data found' in output
+    )
+
+    if error_state:
+      return None
 
     decrypted_message = None
     with open(decrypted_path, 'r') as decrypted_file:

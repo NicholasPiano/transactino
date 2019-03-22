@@ -14,5 +14,11 @@ class OpenPaymentExistsWithOriginError(Error):
       else self.description
     )
 
+class PaymentsUnavailableError(Error):
+  code = '727'
+  name = 'payments_unavailable'
+  description = 'Payments are temporarily unavailable'
+
 class with_payment_errors:
   OPEN_PAYMENT_EXISTS_WITH_ORIGIN = OpenPaymentExistsWithOriginError
+  PAYMENTS_UNAVAILABLE = PaymentsUnavailableError
