@@ -1,4 +1,5 @@
 
+import uuid
 import json
 
 from django.db import models
@@ -10,6 +11,7 @@ from util.api.constants import constants
 from ......account import Account
 from .....constants import address_fields
 from ..... import Address
+from ..constants import get_constants
 from ..errors import get_errors
 from ..get import AddressGetSchema
 
@@ -27,36 +29,42 @@ class AddressGetSchemaTestCase(TestCase):
     self.account.import_public_key()
     self.context = TestContext(account=self.account)
 
-  def test_get_no_address(self):
+  def test_get_with_no_id(self):
     payload = {}
 
     response = self.schema.respond(payload=payload, context=self.context)
 
-    no_address = get_errors.NO_ADDRESS()
+    address_id_not_included = get_errors.ADDRESS_ID_NOT_INCLUDED()
     self.assertEqual(response.render(), {
       constants.ERRORS: {
-        no_address.code: no_address.render(),
+        address_id_not_included.code: address_id_not_included.render(),
       },
     })
 
-  def test_get_with_input(self):
+  def test_get_address_does_not_exist(self):
+    address_id = uuid.uuid4()
     payload = {
-      'input': True,
+      get_constants.ADDRESS_ID: address_id,
     }
 
     response = self.schema.respond(payload=payload, context=self.context)
 
-    address_get_takes_no_arguments = get_errors.ADDRESS_GET_TAKES_NO_ARGUMENTS()
+    address_does_not_exist = get_errors.ADDRESS_DOES_NOT_EXIST(id=address_id)
     self.assertEqual(response.render(), {
       constants.ERRORS: {
-        address_get_takes_no_arguments.code: address_get_takes_no_arguments.render(),
+        address_does_not_exist.code: address_does_not_exist.render(),
       },
     })
 
   def test_get(self):
     address_value = 'value'
     address = Address.objects.create(is_active=True, value=address_value)
-    response = self.schema.respond(payload={}, context=self.context)
+
+    payload = {
+      get_constants.ADDRESS_ID: address._id,
+    }
+
+    response = self.schema.respond(payload=payload, context=self.context)
 
     self.assertEqual(
       list(response.internal_queryset),

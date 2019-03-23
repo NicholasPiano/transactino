@@ -32,12 +32,6 @@
           "encrypted channel": "Just like the 'schema' section of the schema, there should be an 'encrypted' section fo the schema that takes only a string input. It assumes this string is an encrypted blob of data representing the same JSON structure that would have been sent to the 'schema' section, but instead encrypted to the public key of the system and signed by the private key of the user. This should be accepted from any IP address or source, and would return an encrypted blob of data with exactly the same structure as would have been returned as the response to a normal request, except that it will appear only as a single string."
         }
       },
-      "20190316": {
-        "description": "",
-        "children": {
-
-        }
-      },
       "20190322": {
         "description": "Getting very close to a release-worthy product. After adding a couple things, such as a System object for access to the system public key and a modified Address get method that returns an address for a specific ID referenced in a payment, it becomes usuable as a stand-alone service. The backend will still point at other APIs for now, but hopefully, will soon point at its own node backend.",
         "children": {
@@ -48,7 +42,7 @@
             }
           },
           "t12.3": {
-            "description": "",
+            "description": "Modify address get method to allow filtering by ID",
             "children": {
               "modify address get": "Should be able to fetch address by ID. This will allow payments to be made at any time by fetching the required address value from the ID stored in the payment object.",
             }

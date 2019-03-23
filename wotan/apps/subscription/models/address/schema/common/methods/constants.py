@@ -1,3 +1,3 @@
 
-class address_method_constants:
-  GET = 'get'
+class get_constants:
+  ADDRESS_ID = 'address_id'

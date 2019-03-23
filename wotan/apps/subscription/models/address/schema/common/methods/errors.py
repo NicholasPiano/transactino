@@ -1,16 +1,24 @@
 
 from util.api import Error
 
-class AddressGetTakesNoArgumentsError(Error):
+class AddressIdNotIncludedError(Error):
   code = '7252'
-  name = 'address_get_takes_no_arguments'
-  description = 'Address get takes no arguments'
+  name = 'address_id_not_included'
+  description = 'The Address ID must be included in the request'
 
-class NoAddressError(Error):
+class AddressDoesNotExistError(Error):
   code = '9223'
-  name = 'no_address'
-  description = 'No active address for making payments'
+  name = 'address_does_not_exist'
+  description = 'The Address does not exist'
+  description_with_arguments = 'The Address with ID [{}] does not exist'
+
+  def __init__(self, id=None):
+    self.description = (
+      self.description_with_arguments.format(id)
+      if id is not None
+      else self.description
+    )
 
 class get_errors:
-  ADDRESS_GET_TAKES_NO_ARGUMENTS = AddressGetTakesNoArgumentsError
-  NO_ADDRESS = NoAddressError
+  ADDRESS_ID_NOT_INCLUDED = AddressIdNotIncludedError
+  ADDRESS_DOES_NOT_EXIST = AddressDoesNotExistError

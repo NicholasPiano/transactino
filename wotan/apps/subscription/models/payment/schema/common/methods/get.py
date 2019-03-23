@@ -12,6 +12,7 @@ from apps.base.schema.constants import schema_constants
 from apps.base.schema.methods.base import ResponseWithInternalQuerySet
 
 from ....constants import payment_fields
+from .constants import get_constants
 
 class PaymentGetResponse(StructureResponse, ResponseWithInternalQuerySet):
   pass
@@ -27,7 +28,7 @@ class PaymentGetSchema(StructureSchema):
       ),
       response=PaymentGetResponse,
       children={
-        model_fields.ID: Schema(
+        get_constants.PAYMENT_ID: Schema(
           description='The payment ID',
           types=types.UUID(),
         ),
@@ -41,7 +42,7 @@ class PaymentGetSchema(StructureSchema):
   def responds_to_valid_payload(self, payload, context):
     super().responds_to_valid_payload(payload, context)
 
-    id = self.active_response.force_get_child(model_fields.ID).render()
+    id = self.active_response.force_get_child(get_constants.PAYMENT_ID).render()
 
     queryset = []
     if id is not None:

@@ -7,10 +7,9 @@ from django.conf import settings
 
 from util.api.constants import constants
 
-from apps.base.constants import model_fields
-
 from ......account import Account
 from .....constants import payment_fields
+from ..constants import get_constants
 from ..get import PaymentGetSchema
 
 class TestContext():
@@ -44,7 +43,7 @@ class PaymentGetSchemaTestCase(TestCase):
 
   def test_get_id(self):
     payload = {
-      model_fields.ID: self.open_payment._id,
+      get_constants.PAYMENT_ID: self.open_payment._id,
     }
 
     response = self.schema.respond(payload=payload, context=self.context)
@@ -56,7 +55,7 @@ class PaymentGetSchemaTestCase(TestCase):
 
   def test_get_id_with_open(self):
     payload = {
-      model_fields.ID: self.open_payment._id,
+      get_constants.PAYMENT_ID: self.open_payment._id,
       payment_fields.IS_OPEN: False,
     }
 
