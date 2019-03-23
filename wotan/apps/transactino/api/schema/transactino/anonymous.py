@@ -3,7 +3,7 @@ from util.merge import merge
 from util.api import StructureSchema
 
 from apps.subscription.constants import mode_constants
-from apps.subscription.models import Account, Challenge
+from apps.subscription.models import Account, System
 
 from .constants import transactino_constants
 from .common import CommonSchema
@@ -25,7 +25,12 @@ class AnonymousSchema(StructureSchema):
               transactino_constants.MODELS: StructureSchema(
                 description='Models available to the user',
                 children={
-                  Account.__name__: Account.objects.schema(mode=mode_constants.ANONYMOUS),
+                  Model.__name__: Model.objects.schema(mode=mode_constants.ANONYMOUS)
+                  for Model
+                  in [
+                    Account,
+                    System,
+                  ]
                 },
               ),
             },

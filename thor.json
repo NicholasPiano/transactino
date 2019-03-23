@@ -37,6 +37,23 @@
         "children": {
 
         }
+      },
+      "20190322": {
+        "description": "Getting very close to a release-worthy product. After adding a couple things, such as a System object for access to the system public key and a modified Address get method that returns an address for a specific ID referenced in a payment, it becomes usuable as a stand-alone service. The backend will still point at other APIs for now, but hopefully, will soon point at its own node backend.",
+        "children": {
+          "t12.2": {
+            "description": "Add system schema",
+            "children": {
+              "add system schema": "Should only need a simple get method. Perhaps the ability to filter the properties returned, such as public key and signed disclaimer."
+            }
+          },
+          "t12.3": {
+            "description": "",
+            "children": {
+              "modify address get": "Should be able to fetch address by ID. This will allow payments to be made at any time by fetching the required address value from the ID stored in the payment object.",
+            }
+          }
+        }
       }
     }
   }

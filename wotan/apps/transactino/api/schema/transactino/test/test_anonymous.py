@@ -8,8 +8,9 @@ from util.extract_schema_paths import extract_schema_paths
 
 from apps.base.schema.constants import schema_constants
 from apps.base.schema.methods.constants import method_constants
-from apps.subscription.models import Connection, Account
+from apps.subscription.models import Connection, Account, System
 from apps.subscription.models.account.constants import account_fields
+from apps.subscription.models.system.constants import system_fields
 
 from ..constants import transactino_constants
 from .. import TransactinoSchema
@@ -43,6 +44,19 @@ class AnonymousTestCase(TestCase):
           method_constants.CREATE,
           account_fields.PUBLIC_KEY,
         ],
+        [
+          transactino_constants.SCHEMA,
+          transactino_constants.MODELS,
+          System.__name__,
+          schema_constants.METHODS,
+          method_constants.GET,
+        ],
+        [
+          transactino_constants.SCHEMA,
+          transactino_constants.MODELS,
+          System.__name__,
+          schema_constants.INSTANCES,
+        ],
       ],
     )
 
@@ -67,3 +81,54 @@ class AnonymousTestCase(TestCase):
     )
 
     self.assertTrue(Account.objects.filter(public_key=self.public_key))
+
+  def test_system_get(self):
+    system = System.objects.create(public_key=settings.TEST_SYSTEM_PUBLIC_KEY)
+    get_payload = {
+      transactino_constants.SCHEMA: {
+        transactino_constants.MODELS: {
+          System.__name__: {
+            schema_constants.METHODS: {
+              method_constants.GET: {},
+            },
+          },
+        },
+      },
+    }
+
+    get_response = self.schema.respond(
+      payload=get_payload,
+      connection=self.connection,
+    )
+
+    paths = extract_schema_paths(get_response.render(), null=False)
+
+    self.assertEqual(
+      paths,
+      [
+        [
+          transactino_constants.SCHEMA,
+          transactino_constants.MODELS,
+          System.__name__,
+          schema_constants.METHODS,
+        ],
+        [
+          transactino_constants.SCHEMA,
+          transactino_constants.MODELS,
+          System.__name__,
+          schema_constants.INSTANCES,
+          system._id,
+          schema_constants.ATTRIBUTES,
+          system_fields.PUBLIC_KEY,
+        ],
+        [
+          transactino_constants.SCHEMA,
+          transactino_constants.MODELS,
+          System.__name__,
+          schema_constants.INSTANCES,
+          system._id,
+          schema_constants.ATTRIBUTES,
+          system_fields.LONG_KEY_ID,
+        ],
+      ],
+    )

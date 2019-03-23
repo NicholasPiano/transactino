@@ -94,6 +94,19 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
           Challenge.__name__,
           schema_constants.INSTANCES,
         ],
+        [
+          transactino_constants.SCHEMA,
+          transactino_constants.MODELS,
+          System.__name__,
+          schema_constants.METHODS,
+          method_constants.GET,
+        ],
+        [
+          transactino_constants.SCHEMA,
+          transactino_constants.MODELS,
+          System.__name__,
+          schema_constants.INSTANCES,
+        ],
       ],
     )
 

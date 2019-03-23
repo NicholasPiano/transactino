@@ -12,5 +12,5 @@ class NoAddressError(Error):
   description = 'No active address for making payments'
 
 class get_errors:
-  NO_ADDRESS = NoAddressError
   ADDRESS_GET_TAKES_NO_ARGUMENTS = AddressGetTakesNoArgumentsError
+  NO_ADDRESS = NoAddressError
