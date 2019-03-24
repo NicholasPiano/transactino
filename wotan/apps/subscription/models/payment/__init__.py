@@ -12,7 +12,6 @@ from apps.base.models import Model, Manager, model_fields
 from apps.base.schema.constants import schema_constants
 
 from ...constants import mode_constants, APP_LABEL
-from ..address import Address
 from .constants import payment_constants, payment_fields
 from .schema.common import PaymentModelSchema
 from .schema.superadmin import PaymentSuperadminModelSchema
@@ -111,26 +110,3 @@ class Payment(Model):
       self.unique_btc_amount = self.address.get_open_unique_btc_amount()
       self.full_btc_amount = self.base_amount + self.unique_btc_amount
       self.save()
-
-def payment_task():
-  if scheduler is not None:
-    active_address = Address.objects.get_active_address()
-
-    if active_address is not None:
-      latest_block_hash = get_latest_block_hash()
-      block = Block(latest_block_hash)
-      deltas = block.find_deltas_with_address(active_address.value)
-
-      for payment in Payment.objects.filter(is_open=True):
-        for delta in deltas:
-          if delta.value == payment.full_btc_amount:
-            payment.close(latest_block_hash, delta.out_txid)
-
-if scheduler is not None:
-  scheduler.add_job(
-    payment_task,
-    trigger='interval',
-    seconds=60,
-    id=payment_constants.PAYMENT_TASK,
-    replace_existing=True,
-  )

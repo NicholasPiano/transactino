@@ -1,0 +1,87 @@
+
+from django.db import models
+from django.utils import timezone
+from django.conf import settings
+scheduler = settings.SCHEDULER
+
+from apps.base.models import Model, Manager
+from apps.subscription.models import Account
+
+from ...constants import APP_LABEL
+from .constants import (
+  transaction_report_constants,
+)
+
+class TransactionReportManager(Manager):
+  pass
+
+class TransactionReport(Model):
+  objects = TransactionReportManager()
+
+  account = models.ForeignKey(
+    transaction_report_constants.ACCOUNT_RELATED_MODEL,
+    related_name=transaction_report_constants.ACCOUNT_RELATED_NAME,
+    on_delete=models.CASCADE,
+  )
+
+  is_active = models.BooleanField(default=False)
+  target_address = models.CharField(max_length=255)
+  value_equal_to = models.PositiveIntegerField(null=True)
+  value_greater_than = models.PositiveIntegerField(default=0)
+  value_less_than = models.PositiveIntegerField(null=True)
+  latest_block_hash = models.CharField(max_length=64, default='')
+  last_update_time = models.DateTimeField(auto_now_add=False, null=True)
+
+  class Meta:
+    app_label = APP_LABEL
+
+  def match(self, value):
+    if self.value_equal_to is not None:
+      if value == self.value_equal_to:
+        return True
+
+      return False
+
+    greater_than = value > self.value_greater_than
+
+    if self.value_less_than is None:
+      return greater_than
+
+    less_than = value < self.value_less_than
+
+    return greater_than and less_than
+
+  def process(self, pending_block_hash=None, block=None):
+    if pending_block_hash is None or pending_block_hash == self.latest_block_hash:
+      return
+
+    self.latest_block_hash = pending_block_hash
+    deltas = block.find_deltas_with_address(self.target_address)
+
+    for delta in deltas:
+      if self.match(value):
+        self.matches.create(
+          block_hash=block.hash,
+          txid=delta.out_txid,
+          index=delta.index,
+          value=value,
+        )
+
+def transaction_report_task():
+  if scheduler is not None:
+    latest_block_hash = get_latest_block_hash()
+    block = Block(latest_block_hash)
+
+    transaction_reports = TransactionReport.objects.filter(is_active=True)
+
+    for transaction_report in transaction_reports:
+      transaction_report.process(pending_block_hash=latest_block_hash, block=block)
+
+if scheduler is not None:
+  scheduler.add_job(
+    transaction_report_task,
+    trigger='interval',
+    seconds=120,
+    id=transaction_report_constants.TRANSACTION_REPORT_TASK,
+    replace_existing=True,
+  )

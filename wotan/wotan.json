@@ -71,6 +71,59 @@
           "encrypted challenges": "Challenges should be re-encrypted to the public key of the system",
           "public key": "There should be an endpoint to access the public key of the system"
         }
+      },
+      "20190322": {
+        "description": "Getting very close to a release-worthy product. After adding a couple things, such as a System object for access to the system public key and a modified Address get method that returns an address for a specific ID referenced in a payment, it becomes usuable as a stand-alone service. The backend will still point at other APIs for now, but hopefully, will soon point at its own node backend.",
+        "children": {
+          "t12.2": {
+            "description": "Add system schema",
+            "children": {
+              "add system schema": "Should only need a simple get method. Perhaps the ability to filter the properties returned, such as public key and signed disclaimer."
+            }
+          },
+          "t12.3": {
+            "description": "Modify address get method to allow filtering by ID",
+            "children": {
+              "modify address get": "Should be able to fetch address by ID. This will allow payments to be made at any time by fetching the required address value from the ID stored in the payment object.",
+            }
+          }
+        }
+      },
+      "20190323": {
+        "description": "I'm not putting a lot of effort into a superadmin schema yet, because most of those functions can be done with careful manual work. To release the product, payments need to be separated from transactions reports and schema tests need to be completed for the subscribed schema.",
+        "children": {
+          "t12.4": {
+            "description": "Add transaction report",
+            "children": {
+              "copy fee report": "Shares many of the same fields and is mechanically similar.",
+              "cannibalise payment": "Not much of interest, but there are some things worth taking."
+            }
+          },
+          "move models": {
+            "description": "I think Address should be moved to Transactino. Payment and Discount should be moved to their own app, for future reference to a TransactionReport backend. Challenge should be moved to its own app for future reference to the identity backend that is to come. Account will be updated in the future to reflect a connection to this backend.",
+            "children": {
+              "address": "Move Address to Transactino",
+              "payment and discount": "Move to Payment app. Should call out to Transactino backend.",
+              "challenge": "Move to Challenge app. Should eventually call out to identity backend.",
+              "account": "Modify to include identity backend connection."
+            }
+          }
+        }
+      },
+      "20190324": {
+        "description": "Some ideas for payments and transaction reports",
+        "children": {
+          "tx reports": "Add 'has_been_viewed' flag, or something to that effect to give users 'new' information.",
+          "payment app": "Maybe move Payment object and Address object. They both are relevant to tracking payments for subscriptions. Address is used by the sysadmin to control payments.",
+          "fee report": "Move block wrapper and block wrapper prototypes to their own directories.",
+          "t12.4": {
+            "description": "Add transaction report",
+            "children": {
+              "add transaction report schema": "",
+              "add transaction match schema": ""
+            }
+          }
+        }
       }
     }
   }
