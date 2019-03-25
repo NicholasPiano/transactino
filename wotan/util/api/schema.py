@@ -100,7 +100,19 @@ class ClosedSchema(Schema):
     self.active_response = super().get_response()
     return super().responds_to_none(context)
 
-class StructureSchema(Schema):
+class SupportsAddition():
+  def add_to_response(self, payload, context):
+    if not self.passes_type_validation(payload, context):
+      return self.active_response
+
+    if not self.passes_pre_response_checks(payload, context):
+      return self.active_response
+
+    self.responds_to_valid_payload(payload, context)
+
+    return self.active_response
+
+class StructureSchema(Schema, SupportsAddition):
   default_types = [
     types.STRUCTURE(),
   ]
@@ -143,7 +155,10 @@ class StructureSchema(Schema):
           ),
         )
 
-class ArraySchema(Schema):
+  def get_child_value(self, child_key):
+    return self.active_response.force_get_child(child_key).render()
+
+class ArraySchema(Schema, SupportsAddition):
   default_types = [
     types.ARRAY(),
   ]
@@ -161,6 +176,17 @@ class ArraySchema(Schema):
           context=context,
         ),
       )
+
+  def add_to_response(self, payload, context):
+    if not self.passes_type_validation(payload, context):
+      return self.active_response
+
+    if not self.passes_pre_response_checks(payload, context):
+      return self.active_response
+
+    self.responds_to_valid_payload(payload, context)
+
+    return self.active_response
 
 class TemplateSchema(Schema):
   def respond(self, key=None, payload=None, context=None):
@@ -196,7 +222,7 @@ class TemplateSchema(Schema):
   def responds_to_valid_payload(self, key, payload, context):
     super().responds_to_valid_payload(payload, context)
 
-class IndexedSchema(Schema):
+class IndexedSchema(Schema, SupportsAddition):
   default_types = [
     types.STRUCTURE(),
   ]

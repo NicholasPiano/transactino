@@ -109,11 +109,6 @@ class FeeReportActivateSchema(WithOrigin, WithChallenge, StructureSchema):
     fee_report.is_active = is_active if is_active is not None else True
     fee_report.save()
 
-    if fee_report.is_active:
-      fee_report.schedule_process()
-    else:
-      fee_report.unschedule()
-
     self.active_response = self.client.respond(
       payload={
         activate_constants.ACTIVATE_COMPLETE: True,

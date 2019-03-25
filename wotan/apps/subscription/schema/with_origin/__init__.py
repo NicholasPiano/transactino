@@ -18,9 +18,9 @@ class WithOriginResponse(Response):
     return self.rendered
 
 class WithOrigin(Schema):
-  def __init__(self, origin=None, **kwargs):
+  def __init__(self, origin=None, response=WithOriginResponse, **kwargs):
     self.origin = origin
     super().__init__(
       **kwargs,
-      response=WithOriginResponse,
+      response=response,
     )

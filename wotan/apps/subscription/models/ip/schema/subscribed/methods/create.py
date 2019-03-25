@@ -69,14 +69,22 @@ class IPCreateSchema(WithOrigin, WithChallenge, WithPayment, StructureSchema):
     )
 
   def should_check_challenge(self, payload, context):
-    return not context.get_account().payments.filter(
+    closed_payment_exists = context.get_account().payments.filter(
       origin=self.origin,
       is_open=False,
       has_been_used=False,
-    ).count()
+    ).exists()
+
+    if closed_payment_exists:
+      return False
+
+    return super().should_check_challenge(payload, context)
 
   def should_check_payment(self, payload, context):
-    return context.get_account().ips.count() >= create_constants.MAX_IPS
+    if context.get_account().ips.count() >= create_constants.MAX_IPS:
+      return True
+
+    return super().should_check_payment(payload, context)
 
   def get_btc_amount(self, context):
     return create_constants.BEYOND_MAX_COST_PER_IP

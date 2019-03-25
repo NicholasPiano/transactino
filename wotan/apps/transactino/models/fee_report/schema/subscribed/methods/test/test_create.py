@@ -17,8 +17,6 @@ from ..create import FeeReportCreateSchema
 from ..constants import create_constants
 
 FeeReport.process = lambda self: 'mock'
-FeeReport.schedule_process = lambda self: 'mock'
-FeeReport.unschedule = lambda self: 'mock'
 
 class TestContext():
   def __init__(self, account):

@@ -120,9 +120,20 @@
             "description": "Add transaction report",
             "children": {
               "add transaction report schema": "",
-              "add transaction match schema": ""
+              "add transaction match schema": "",
+              "tests": {
+                "description": "Some changes from the FeeReport schema other than name, obviously.",
+                "children": {
+                  "delete": "Should test that all TransactionMatch objects are also deleted.",
+                  "create": "Different properties than FeeReport."
+                }
+              }
             }
-          }
+          },
+          "challenge and payment checking depend on errors and arguments": "To improve user experience, I tried to remove the need to add arguments when running a method without a completed challenge. This would allow the user to hit the challenge block without wasting time putting arguments in the request. Before, I tried to delay the error checking until after the challenge had been accepted, but it seems better to do two things: first, do not check any challenges or payments if any errors occur earlier in the pipeline, and second, incorporate a check for a closed, unused challenge into the decision for whether or not to require arguments to be included.",
+          "subscription create method and tests": "",
+          "subscription activate method and tests": "",
+          "ip create method and tests": "",
         }
       }
     }

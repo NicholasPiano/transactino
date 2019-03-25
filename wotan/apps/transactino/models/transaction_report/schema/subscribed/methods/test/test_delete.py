@@ -30,14 +30,58 @@ class TransactionReportDeleteSchemaTestCase(TestCase):
     self.account.import_public_key()
     self.context = TestContext(self.account)
 
-  def test_delete(self):
-    transaction_report = self.account.transaction_reports.create()
-
-    payload = transaction_report._id
+  def test_without_report_id(self):
+    challenge = self.account.challenges.create(origin=delete_constants.ORIGIN, is_open=False, has_been_used=False)
+    payload = {}
 
     response = self.schema.respond(payload=payload, context=self.context)
 
-    self.assertTrue(TransactionReport.objects.filter(id=payload))
+    transaction_report_id_not_included = delete_errors.TRANSACTION_REPORT_ID_NOT_INCLUDED()
+    self.assertEqual(
+      response.render(),
+      {
+        constants.ERRORS: {
+          transaction_report_id_not_included.code: transaction_report_id_not_included.render(),
+        },
+      },
+    )
+
+  def test_report_does_not_exist(self):
+    challenge = self.account.challenges.create(origin=delete_constants.ORIGIN, is_open=False, has_been_used=False)
+    transaction_report_id = uuid.uuid4().hex
+    payload = {
+      delete_constants.TRANSACTION_REPORT_ID: transaction_report_id,
+    }
+
+    response = self.schema.respond(payload=payload, context=self.context)
+
+    transaction_report_does_not_exist = delete_errors.TRANSACTION_REPORT_DOES_NOT_EXIST(id=transaction_report_id)
+    self.assertEqual(
+      response.render(),
+      {
+        constants.ERRORS: {
+          transaction_report_does_not_exist.code: transaction_report_does_not_exist.render(),
+        },
+      },
+    )
+
+  def test_no_arguments(self):
+    payload = {}
+
+    response = self.schema.respond(payload=payload, context=self.context)
+
+    self.assertTrue(self.account.challenges.filter(origin=delete_constants.ORIGIN).exists())
+
+  def test_delete(self):
+    transaction_report = self.account.transaction_reports.create()
+
+    payload = {
+      delete_constants.TRANSACTION_REPORT_ID: transaction_report._id,
+    }
+
+    response = self.schema.respond(payload=payload, context=self.context)
+
+    self.assertTrue(TransactionReport.objects.get(id=transaction_report._id))
 
     challenge = Challenge.objects.get(origin=delete_constants.ORIGIN)
 
@@ -46,16 +90,4 @@ class TransactionReportDeleteSchemaTestCase(TestCase):
 
     second_response = self.schema.respond(payload=payload, context=self.context)
 
-    self.assertFalse(TransactionReport.objects.filter(id=payload))
-
-  def test_delete_does_not_exist(self):
-    payload = uuid.uuid4().hex
-
-    response = self.schema.respond(payload=payload, context=self.context)
-
-    transaction_report_does_not_exist = delete_errors.TRANSACTION_REPORT_DOES_NOT_EXIST(id=payload)
-    self.assertEqual(response.render(), {
-      constants.ERRORS: {
-        transaction_report_does_not_exist.code: transaction_report_does_not_exist.render(),
-      },
-    })
+    self.assertFalse(TransactionReport.objects.get(id=transaction_report._id))

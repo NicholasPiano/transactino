@@ -76,10 +76,11 @@ class SubscriptionCreateSchema(WithOrigin, WithChallenge, StructureSchema):
     )
 
   def passes_pre_response_checks(self, payload, context):
-    if subscription_fields.DURATION_IN_DAYS not in payload:
+    if self.closed_unused_challenge_exists() and subscription_fields.DURATION_IN_DAYS not in payload:
       self.active_response.add_error(
         create_errors.DURATION_NOT_INCLUDED(),
       )
+      return False
 
     return super().passes_pre_response_checks(payload, context)
 
@@ -96,9 +97,6 @@ class SubscriptionCreateSchema(WithOrigin, WithChallenge, StructureSchema):
         ),
       )
       self.active_response.add_external_queryset(self.active_challenge_queryset)
-      return
-
-    if self.active_response.has_errors():
       return
 
     duration_in_days = self.active_response.get_child(subscription_fields.DURATION_IN_DAYS).render()

@@ -46,8 +46,16 @@ class Integer(Type):
   def validate(self, value):
     return isinstance(value, int)
 
-class Float(Type):
+class PositiveInteger(Type):
   code = '003'
+  description = 'A whole number value greater than zero'
+  type = '__positiveinteger'
+
+  def validate(self, value):
+    return isinstance(value, int) and value >= 0
+
+class Float(Type):
+  code = '004'
   description = 'A floating point number value'
   type = '__float'
 
@@ -55,7 +63,7 @@ class Float(Type):
     return isinstance(value, float)
 
 class String(Type):
-  code = '004'
+  code = '005'
   description = 'A string of characters'
   type = '__string'
 
@@ -63,7 +71,7 @@ class String(Type):
     return isinstance(value, str)
 
 class Structure(Type):
-  code = '005'
+  code = '006'
   description = 'A JSON object'
   type = '__structure'
 
@@ -71,7 +79,7 @@ class Structure(Type):
     return isinstance(value, dict)
 
 class Array(Type):
-  code = '006'
+  code = '007'
   description = 'A JSON array'
   type = '__array'
 
@@ -79,7 +87,7 @@ class Array(Type):
     return isinstance(value, list)
 
 class UUID(Type):
-  code = '007'
+  code = '008'
   description = 'A valid UUID'
   type = '__uuid'
 
@@ -87,7 +95,7 @@ class UUID(Type):
     return is_valid_uuid(value)
 
 class Time(Type):
-  code = '008'
+  code = '009'
   description = 'A valid timestamp'
   type = '__datetime'
 
@@ -98,7 +106,7 @@ class Model(Type):
   pass
 
 class Ref(Type):
-  code = '010'
+  code = '011'
   description = 'A string composed of a model name and uuid separated by a point'
   type = '__ref'
 
@@ -118,7 +126,7 @@ class Immutable(Type):
   pass
 
 class Any(Type):
-  code = '013'
+  code = '014'
   description = 'Any value'
   type = '__any'
 
@@ -126,7 +134,7 @@ class Any(Type):
     return True
 
 class Null(Type):
-  code = '014'
+  code = '015'
   description = 'Null value'
   type = '__null'
 
@@ -139,6 +147,7 @@ class types:
   STRUCTURE = Structure
   ARRAY = Array
   INTEGER = Integer
+  POSITIVE_INTEGER = PositiveInteger
   FLOAT = Float
   STRING = String
   UUID = UUID
@@ -156,7 +165,7 @@ def map_type(type_to_map):
     'BooleanField': types.BOOLEAN(),
     'UUIDField': types.UUID(),
     'TextField': types.STRING(),
-    'PositiveIntegerField': types.INTEGER(),
+    'PositiveIntegerField': types.POSITIVE_INTEGER(),
     'FloatField': types.FLOAT(),
     'BigIntegerField': types.INTEGER(),
   }

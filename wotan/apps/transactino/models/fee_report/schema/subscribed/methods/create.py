@@ -87,7 +87,6 @@ class FeeReportCreateSchema(WithOrigin, WithChallenge, StructureSchema):
       fee_report.is_active = is_active
 
     fee_report.save()
-    fee_report.process()
 
     self.active_response = self.client.respond(
       payload={
