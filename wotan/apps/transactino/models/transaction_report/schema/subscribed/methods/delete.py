@@ -70,7 +70,7 @@ class TransactionReportDeleteSchema(WithOrigin, WithChallenge, StructureSchema):
     if self.active_response.has_errors():
       return
 
-    transaction_report_id = self.active_response.force_get_child(delete_constants.TRANSACTION_REPORT_ID).render()
+    transaction_report_id = self.get_child_value(delete_constants.TRANSACTION_REPORT_ID)
 
     transaction_report = context.get_account().transaction_reports.get(id=transaction_report_id)
     if transaction_report is None:

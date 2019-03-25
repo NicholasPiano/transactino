@@ -32,30 +32,26 @@ class FeeReportCreateSchemaTestCase(TestCase):
     self.account.import_public_key()
     self.context = TestContext(self.account)
 
-  def test_create(self):
-    blocks_to_include = 5
-    is_active = True
-
-    payload = {
-      fee_report_fields.BLOCKS_TO_INCLUDE: blocks_to_include,
-      fee_report_fields.IS_ACTIVE: is_active,
-    }
+  def test_no_arguments(self):
+    payload = {}
 
     response = self.schema.respond(payload=payload, context=self.context)
 
-    self.assertFalse(FeeReport.objects.filter(
-      blocks_to_include=blocks_to_include,
-      is_active=is_active,
-    ))
+    self.assertTrue(self.account.challenges.filter(origin=create_constants.ORIGIN).exists())
+    self.assertFalse(FeeReport.objects.exists())
+
+  def test_create(self):
+    response = self.schema.respond(payload={}, context=self.context)
+
+    self.assertFalse(FeeReport.objects.exists())
 
     challenge = Challenge.objects.get(origin=create_constants.ORIGIN)
 
     challenge.is_open = False
     challenge.save()
 
+    payload = {}
+
     second_response = self.schema.respond(payload=payload, context=self.context)
 
-    self.assertTrue(FeeReport.objects.filter(
-      blocks_to_include=blocks_to_include,
-      is_active=is_active,
-    ))
+    self.assertTrue(FeeReport.objects.filter(blocks_to_include=1, is_active=True).exists())

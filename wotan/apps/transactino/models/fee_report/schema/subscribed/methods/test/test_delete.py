@@ -30,14 +30,58 @@ class FeeReportDeleteSchemaTestCase(TestCase):
     self.account.import_public_key()
     self.context = TestContext(self.account)
 
-  def test_delete(self):
-    fee_report = self.account.fee_reports.create()
-
-    payload = fee_report._id
+  def test_without_report_id(self):
+    challenge = self.account.challenges.create(origin=delete_constants.ORIGIN, is_open=False, has_been_used=False)
+    payload = {}
 
     response = self.schema.respond(payload=payload, context=self.context)
 
-    self.assertTrue(FeeReport.objects.filter(id=payload))
+    fee_report_id_not_included = delete_errors.FEE_REPORT_ID_NOT_INCLUDED()
+    self.assertEqual(
+      response.render(),
+      {
+        constants.ERRORS: {
+          fee_report_id_not_included.code: fee_report_id_not_included.render(),
+        },
+      },
+    )
+
+  def test_report_does_not_exist(self):
+    challenge = self.account.challenges.create(origin=delete_constants.ORIGIN, is_open=False, has_been_used=False)
+    fee_report_id = uuid.uuid4().hex
+    payload = {
+      delete_constants.FEE_REPORT_ID: fee_report_id,
+    }
+
+    response = self.schema.respond(payload=payload, context=self.context)
+
+    fee_report_does_not_exist = delete_errors.FEE_REPORT_DOES_NOT_EXIST(id=fee_report_id)
+    self.assertEqual(
+      response.render(),
+      {
+        constants.ERRORS: {
+          fee_report_does_not_exist.code: fee_report_does_not_exist.render(),
+        },
+      },
+    )
+
+  def test_no_arguments(self):
+    payload = {}
+
+    response = self.schema.respond(payload=payload, context=self.context)
+
+    self.assertTrue(self.account.challenges.filter(origin=delete_constants.ORIGIN).exists())
+
+  def test_delete(self):
+    fee_report = self.account.fee_reports.create()
+
+    payload = {
+      delete_constants.FEE_REPORT_ID: fee_report._id,
+    }
+
+    response = self.schema.respond(payload=payload, context=self.context)
+
+    self.assertTrue(FeeReport.objects.get(id=fee_report._id))
 
     challenge = Challenge.objects.get(origin=delete_constants.ORIGIN)
 
@@ -46,16 +90,4 @@ class FeeReportDeleteSchemaTestCase(TestCase):
 
     second_response = self.schema.respond(payload=payload, context=self.context)
 
-    self.assertFalse(FeeReport.objects.filter(id=payload))
-
-  def test_delete_does_not_exist(self):
-    payload = uuid.uuid4().hex
-
-    response = self.schema.respond(payload=payload, context=self.context)
-
-    fee_report_does_not_exist = delete_errors.FEE_REPORT_DOES_NOT_EXIST(id=payload)
-    self.assertEqual(response.render(), {
-      constants.ERRORS: {
-        fee_report_does_not_exist.code: fee_report_does_not_exist.render(),
-      },
-    })
+    self.assertFalse(FeeReport.objects.get(id=fee_report._id))

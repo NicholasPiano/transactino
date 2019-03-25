@@ -3,16 +3,12 @@ from util.merge import merge
 from util.api import (
   Schema, StructureSchema,
   StructureResponse,
-  types, map_type,
-  constants,
+  types,
 )
 
 from apps.base.schema.constants import schema_constants
 from apps.subscription.schema.with_origin import WithOrigin, WithOriginResponse
-from apps.subscription.schema.with_challenge import (
-  WithChallenge,
-  WithChallengeClientSchema,
-)
+from apps.subscription.schema.with_challenge import WithChallenge
 
 from ....constants import transaction_report_fields
 from .constants import create_constants

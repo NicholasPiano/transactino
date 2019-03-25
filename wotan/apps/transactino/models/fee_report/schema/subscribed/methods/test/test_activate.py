@@ -31,17 +31,60 @@ class FeeReportActivateSchemaTestCase(TestCase):
     self.account.import_public_key()
     self.context = TestContext(self.account)
 
-  def test_activate(self):
-    fee_report = self.account.fee_reports.create()
+  def test_without_report_id(self):
+    challenge = self.account.challenges.create(origin=activate_constants.ORIGIN, is_open=False, has_been_used=False)
+    payload = {}
 
+    response = self.schema.respond(payload=payload, context=self.context)
+
+    fee_report_id_not_included = activate_errors.FEE_REPORT_ID_NOT_INCLUDED()
+    self.assertEqual(
+      response.render(),
+      {
+        constants.ERRORS: {
+          fee_report_id_not_included.code: fee_report_id_not_included.render(),
+        },
+      },
+    )
+
+  def test_report_does_not_exist(self):
+    challenge = self.account.challenges.create(origin=activate_constants.ORIGIN, is_open=False, has_been_used=False)
+    fee_report_id = uuid.uuid4().hex
     payload = {
-      activate_constants.FEE_REPORT_ID: fee_report._id,
-      fee_report_fields.IS_ACTIVE: True,
+      activate_constants.FEE_REPORT_ID: fee_report_id,
     }
 
     response = self.schema.respond(payload=payload, context=self.context)
 
-    self.assertTrue(FeeReport.objects.filter(id=fee_report._id, is_active=False))
+    fee_report_does_not_exist = activate_errors.FEE_REPORT_DOES_NOT_EXIST(id=fee_report_id)
+    self.assertEqual(
+      response.render(),
+      {
+        constants.ERRORS: {
+          fee_report_does_not_exist.code: fee_report_does_not_exist.render(),
+        },
+      },
+    )
+
+  def test_no_arguments(self):
+    payload = {}
+
+    response = self.schema.respond(payload=payload, context=self.context)
+
+    self.assertTrue(self.account.challenges.filter(origin=activate_constants.ORIGIN).exists())
+
+  def test_activate(self):
+    is_active = True
+    fee_report = self.account.fee_reports.create(is_active=not is_active)
+
+    payload = {
+      activate_constants.FEE_REPORT_ID: fee_report._id,
+      fee_report_fields.IS_ACTIVE: is_active,
+    }
+
+    response = self.schema.respond(payload=payload, context=self.context)
+
+    self.assertEqual(FeeReport.objects.get(id=fee_report._id).is_active, not is_active)
 
     challenge = Challenge.objects.get(origin=activate_constants.ORIGIN)
 
@@ -50,34 +93,24 @@ class FeeReportActivateSchemaTestCase(TestCase):
 
     second_response = self.schema.respond(payload=payload, context=self.context)
 
-    self.assertTrue(FeeReport.objects.filter(id=fee_report._id, is_active=True))
+    self.assertEqual(FeeReport.objects.get(id=fee_report._id).is_active, is_active)
 
-  def test_activate_does_not_exist(self):
-    test_id = uuid.uuid4().hex
+  def test_activate_without_active(self):
+    fee_report = self.account.fee_reports.create(is_active=False)
 
     payload = {
-      activate_constants.FEE_REPORT_ID: test_id,
+      activate_constants.FEE_REPORT_ID: fee_report._id,
     }
 
     response = self.schema.respond(payload=payload, context=self.context)
 
-    fee_report_does_not_exist = activate_errors.FEE_REPORT_DOES_NOT_EXIST(id=test_id)
-    self.assertEqual(response.render(), {
-      constants.ERRORS: {
-        fee_report_does_not_exist.code: fee_report_does_not_exist.render(),
-      },
-    })
+    self.assertEqual(FeeReport.objects.get(id=fee_report._id).is_active, False)
 
-  def test_activate_id_not_included(self):
-    payload = {
-      fee_report_fields.IS_ACTIVE: True,
-    }
+    challenge = Challenge.objects.get(origin=activate_constants.ORIGIN)
 
-    response = self.schema.respond(payload=payload, context=self.context)
+    challenge.is_open = False
+    challenge.save()
 
-    fee_report_id_not_included = activate_errors.FEE_REPORT_ID_NOT_INCLUDED()
-    self.assertEqual(response.render(), {
-      constants.ERRORS: {
-        fee_report_id_not_included.code: fee_report_id_not_included.render(),
-      },
-    })
+    second_response = self.schema.respond(payload=payload, context=self.context)
+
+    self.assertEqual(FeeReport.objects.get(id=fee_report._id).is_active, True)

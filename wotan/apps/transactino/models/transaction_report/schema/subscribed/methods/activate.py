@@ -73,8 +73,8 @@ class TransactionReportActivateSchema(WithOrigin, WithChallenge, StructureSchema
     if self.active_response.has_errors():
       return
 
-    transaction_report_id = self.active_response.force_get_child(activate_constants.TRANSACTION_REPORT_ID).render()
-    is_active = self.active_response.force_get_child(transaction_report_fields.IS_ACTIVE).render()
+    transaction_report_id = self.get_child_value(activate_constants.TRANSACTION_REPORT_ID)
+    is_active = self.get_child_value(transaction_report_fields.IS_ACTIVE)
 
     transaction_report = context.get_account().transaction_reports.get(id=transaction_report_id)
     if transaction_report is None:
