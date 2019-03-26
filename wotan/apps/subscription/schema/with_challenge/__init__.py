@@ -15,10 +15,10 @@ class WithChallengeClientResponse(StructureResponse, BaseClientResponse):
   pass
 
 class WithChallengeClientSchema(StructureSchema):
-  def __init__(self, children={}, **kwargs):
+  def __init__(self, response=WithChallengeClientResponse, children={}, **kwargs):
     super().__init__(
       **kwargs,
-      response=WithChallengeClientResponse,
+      response=response,
       children=merge(
         {
           with_challenge_constants.CHALLENGE_COMPLETE: Schema(types=types.BOOLEAN()),
@@ -47,12 +47,10 @@ class WithChallengeClientSchema(StructureSchema):
     return super().respond(payload=payload, context=context)
 
 class WithChallenge(Schema):
-  def __init__(self, client=None, **kwargs):
+  def __init__(self, client=WithChallengeClientSchema(), **kwargs):
     super().__init__(
       **kwargs,
-      client=(
-        client or WithChallengeClientSchema()
-      ),
+      client=client,
     )
 
   def get_available_errors(self):

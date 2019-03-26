@@ -17,6 +17,7 @@ from ..with_origin import WithOrigin, WithOriginResponse
 from ..with_challenge import (
   WithChallenge,
   WithChallengeClientSchema,
+  WithChallengeClientResponse,
 )
 from .constants import create_constants
 
@@ -27,7 +28,7 @@ class CreateClientCreatedSchema(IndexedSchema):
       template=TemplateSchema(types=types.UUID()),
     )
 
-class CreateClientResponse(StructureResponse, BaseClientResponse):
+class CreateClientResponse(WithChallengeClientResponse, StructureResponse, BaseClientResponse):
   pass
 
 class CreateClientSchema(WithChallengeClientSchema):
@@ -36,7 +37,6 @@ class CreateClientSchema(WithChallengeClientSchema):
       **kwargs,
       response=CreateClientResponse,
       children={
-        create_constants.CREATE_COMPLETE: Schema(types=types.BOOLEAN()),
         create_constants.CREATED: CreateClientCreatedSchema(),
       },
     )
@@ -49,25 +49,13 @@ class CreateSchemaWithChallenge(WithOrigin, WithChallenge, IndexedSchema):
     self.model = Model
     super().__init__(
       **kwargs,
+      response=CreateResponseWithChallenge,
       template=PrototypeSchema(Model, mode=mode),
       client=CreateClientSchema(),
     )
-    self.response = CreateResponseWithChallenge
 
   def responds_to_valid_payload(self, payload, context):
     super().responds_to_valid_payload(payload, context)
-
-    if not self.challenge_accepted:
-      self.active_response = self.client.respond(
-        payload=merge(
-          {
-            create_constants.CREATE_COMPLETE: False,
-          },
-          self.get_challenge_client_response(),
-        ),
-      )
-      self.active_response.add_external_queryset(self.active_challenge_queryset)
-      return
 
     if self.active_response.has_errors():
       return
@@ -81,11 +69,9 @@ class CreateSchemaWithChallenge(WithOrigin, WithChallenge, IndexedSchema):
 
     full_queryset = self.model.objects.filter(id__in=temporary_ids.values())
 
-    if full_queryset:
-      self.active_response = self.client.respond(
-        payload={
-          create_constants.CREATE_COMPLETE: True,
-          create_constants.CREATED: temporary_ids,
-        },
-      )
-      self.active_response.add_internal_queryset(full_queryset)
+    self.active_response = self.client.respond(
+      payload={
+        create_constants.CREATED: temporary_ids,
+      },
+    )
+    self.active_response.add_internal_queryset(full_queryset)

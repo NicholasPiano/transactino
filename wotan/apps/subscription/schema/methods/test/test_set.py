@@ -31,7 +31,13 @@ class AccountSuperadminSetSchemaTestCase(TestCase):
     self.account.import_public_key()
     self.context = TestContext(self.account)
 
+  def test_without_arguments(self):
+    response = self.schema.respond(payload={}, context=self.context)
+
+    self.assertTrue(self.account.challenges.filter(origin=self.origin).exists())
+
   def test_set(self):
+    self.account.challenges.create(origin=self.origin, is_open=False, has_been_used=False)
     self.assertFalse(self.account.is_verified)
 
     payload = {
@@ -43,13 +49,6 @@ class AccountSuperadminSetSchemaTestCase(TestCase):
     }
 
     response = self.schema.respond(payload=payload, context=self.context)
-
-    challenge = Challenge.objects.get(origin=self.origin)
-
-    challenge.is_open = False
-    challenge.save()
-
-    second_response = self.schema.respond(payload=payload, context=self.context)
 
     self.account.refresh_from_db()
 

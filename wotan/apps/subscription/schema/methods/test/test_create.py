@@ -14,6 +14,7 @@ from ....models.challenge import Challenge
 from ....models.account import Account
 from ....models.address import Address
 from ....models.address.constants import address_fields
+from ...with_challenge.constants import with_challenge_constants
 from ..create import CreateSchemaWithChallenge
 from ..constants import create_constants
 
@@ -32,8 +33,14 @@ class AccountSuperadminSetSchemaTestCase(TestCase):
     self.account.import_public_key()
     self.context = TestContext(self.account)
 
-  def test_set(self):
-    self.assertFalse(Address.objects.get())
+  def test_without_arguments(self):
+    response = self.schema.respond(payload={}, context=self.context)
+
+    self.assertTrue(self.account.challenges.filter(origin=self.origin).exists())
+
+  def test_create(self):
+    self.account.challenges.create(origin=self.origin, is_open=False, has_been_used=False)
+    self.assertFalse(Address.objects.exists())
 
     temp_id = uuid.uuid4().hex
     payload = {
@@ -46,17 +53,10 @@ class AccountSuperadminSetSchemaTestCase(TestCase):
 
     response = self.schema.respond(payload=payload, context=self.context)
 
-    challenge = Challenge.objects.get(origin=self.origin)
-
-    challenge.is_open = False
-    challenge.save()
-
-    second_response = self.schema.respond(payload=payload, context=self.context)
-
     address = Address.objects.get()
     self.assertTrue(address)
-    self.assertEqual(second_response.render(), {
-      create_constants.CREATE_COMPLETE: True,
+    self.assertEqual(response.render(), {
+      with_challenge_constants.CHALLENGE_COMPLETE: True,
       create_constants.CREATED: {
         temp_id: address._id,
       },
