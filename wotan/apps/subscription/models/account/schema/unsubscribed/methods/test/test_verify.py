@@ -8,7 +8,7 @@ from django.conf import settings
 
 from util.api.constants import constants
 
-from .......schema.with_challenge import with_challenge_constants, with_challenge_errors
+from .......schema.with_challenge import with_challenge_constants
 from ......challenge import Challenge
 from ..... import Account
 from ..verify import AccountVerifySchema
@@ -28,20 +28,7 @@ class AccountVerifySchemaTestCase(TestCase):
     self.account = Account.objects.create(public_key=settings.TEST_PUBLIC_KEY)
     self.account.import_public_key()
     self.context = TestContext(self.account)
-
-  def test_verify(self):
-    payload = {}
-
-    response = self.schema.respond(payload=payload, context=self.context)
-
-    self.assertEqual(Challenge.objects.filter(origin=verify_constants.ORIGIN, is_open=True).count(), 1)
-    self.assertEqual(response.render(), {
-      with_challenge_constants.OPEN_CHALLENGE_ID: Challenge.objects.get(
-        origin=verify_constants.ORIGIN,
-        is_open=True,
-      )._id,
-      verify_constants.VERIFICATION_COMPLETE: False,
-    })
+    self.account.challenges.create(origin=verify_constants.ORIGIN, is_open=False, has_been_used=False)
 
   def test_verify_with_arguments(self):
     payload = {
@@ -56,3 +43,22 @@ class AccountVerifySchemaTestCase(TestCase):
         account_verify_takes_no_arguments.code: account_verify_takes_no_arguments.render(),
       },
     })
+
+  def test_verify_already_verified(self):
+    self.account.is_verified = True
+    self.account.save()
+    response = self.schema.respond(payload={}, context=self.context)
+
+    account_already_verified = verify_errors.ACCOUNT_ALREADY_VERIFIED()
+    self.assertEqual(response.render(), {
+      constants.ERRORS: {
+        account_already_verified.code: account_already_verified.render(),
+      },
+    })
+
+  def test_verify(self):
+    response = self.schema.respond(payload={}, context=self.context)
+
+    self.account.refresh_from_db()
+
+    self.assertTrue(self.account.is_verified)

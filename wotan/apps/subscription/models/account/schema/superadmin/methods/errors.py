@@ -1,10 +1,10 @@
 
 from util.api import Error
 
-class AccountNotIncludedError(Error):
+class AccountIdNotIncludedError(Error):
   code = '1032'
-  name = 'account_not_included'
+  name = 'account_id_not_included'
   description = 'The account ID must be included'
 
-class account_superadmin_method_errors:
-  ACCOUNT_NOT_INCLUDED = AccountNotIncludedError
+class lock_errors:
+  ACCOUNT_ID_NOT_INCLUDED = AccountIdNotIncludedError

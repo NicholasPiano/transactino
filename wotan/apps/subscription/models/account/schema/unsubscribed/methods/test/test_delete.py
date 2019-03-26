@@ -8,7 +8,7 @@ from django.conf import settings
 
 from util.api.constants import constants
 
-from .......schema.with_challenge import with_challenge_constants, with_challenge_errors
+from .......schema.with_challenge import with_challenge_constants
 from ......challenge import Challenge
 from ..... import Account
 from ..delete import AccountDeleteSchema
@@ -28,24 +28,7 @@ class AccountDeleteSchemaTestCase(TestCase):
     self.account = Account.objects.create(public_key=settings.TEST_PUBLIC_KEY)
     self.account.import_public_key()
     self.context = TestContext(self.account)
-
-  def test_delete(self):
-    payload = {}
-
-    response = self.schema.respond(payload=payload, context=self.context)
-
-    challenge = Challenge.objects.get(origin=delete_constants.ORIGIN)
-
-    challenge.is_open = False
-    challenge.save()
-
-    second_response = self.schema.respond(payload=payload, context=self.context)
-
-    self.assertFalse(Challenge.objects.all())
-    self.assertFalse(Account.objects.all())
-    self.assertEqual(second_response.render(), {
-      delete_constants.DELETION_COMPLETE: True,
-    })
+    self.account.challenges.create(origin=delete_constants.ORIGIN, is_open=False, has_been_used=False)
 
   def test_delete_with_arguments(self):
     payload = {
@@ -59,4 +42,12 @@ class AccountDeleteSchemaTestCase(TestCase):
       constants.ERRORS: {
         account_delete_takes_no_arguments.code: account_delete_takes_no_arguments.render(),
       },
+    })
+
+  def test_delete(self):
+    response = self.schema.respond(payload={}, context=self.context)
+
+    self.assertFalse(Account.objects.all())
+    self.assertEqual(response.render(), {
+      with_challenge_constants.CHALLENGE_COMPLETE: True,
     })

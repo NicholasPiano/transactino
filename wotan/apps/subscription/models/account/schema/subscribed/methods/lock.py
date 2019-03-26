@@ -4,69 +4,40 @@ from django.conf import settings
 from util.merge import merge
 from util.api import (
   Schema, StructureSchema,
-  Response, StructureResponse,
-  types, map_type,
-  constants,
+  StructureResponse,
+  types,
 )
-
-from apps.base.schema.methods.base import ResponseWithExternalQuerySets
 
 from ......schema.with_origin import WithOrigin, WithOriginResponse
-from ......schema.with_challenge import (
-  WithChallenge,
-  WithChallengeClientSchema,
-)
+from ......schema.with_challenge import WithChallenge
 from ....constants import account_fields
 from .constants import lock_constants
 
-class AccountSubscribedLockClientResponse(StructureResponse, ResponseWithExternalQuerySets):
+class AccountSubscribedLockResponse(StructureResponse, WithOriginResponse):
   pass
 
-class AccountSubscribedLockClientSchema(WithChallengeClientSchema):
-  def __init__(self, **kwargs):
+class AccountSubscribedLockSchema(WithOrigin, WithChallenge, StructureSchema):
+  def __init__(self, Model):
+    self.model = Model
     super().__init__(
-      **kwargs,
-      response=AccountSubscribedLockClientResponse,
+      response=AccountSubscribedLockResponse,
+      origin=lock_constants.ORIGIN,
       children={
-        lock_constants.LOCKING_COMPLETE: Schema(types=types.BOOLEAN()),
+        lock_constants.LOCK: Schema(types=types.BOOLEAN()),
       },
     )
-
-class AccountSubscribedLockResponse(WithOriginResponse):
-  pass
-
-class AccountSubscribedLockSchema(WithOrigin, WithChallenge):
-  def __init__(self, Model, **kwargs):
-    super().__init__(
-      **kwargs,
-      types=types.BOOLEAN(),
-      client=AccountSubscribedLockClientSchema(),
-      origin=lock_constants.ORIGIN,
-    )
-    self.model = Model
-    self.response = AccountSubscribedLockResponse
 
   def responds_to_valid_payload(self, payload, context):
     super().responds_to_valid_payload(payload, context)
 
-    if not self.challenge_accepted:
-      self.active_response = self.client.respond(
-        payload=merge(
-          {
-            lock_constants.LOCKING_COMPLETE: False,
-          },
-          self.get_challenge_client_response(),
-        ),
-      )
-      self.active_response.add_external_queryset(self.active_challenge_queryset)
+    if self.active_response.has_errors():
       return
 
     account = context.get_account()
-    account.is_locked = self.active_response.render()
+
+    lock = self.get_child_value(lock_constants.LOCK)
+
+    account.is_locked = lock if lock is not None else True
     account.save()
 
-    self.active_response = self.client.respond(
-      payload={
-        lock_constants.LOCKING_COMPLETE: True,
-      },
-    )
+    self.active_response = self.client.respond()

@@ -4,85 +4,63 @@ from django.conf import settings
 from util.merge import merge
 from util.api import (
   Schema, StructureSchema,
-  Response, StructureResponse,
-  types, map_type,
-  constants,
+  StructureResponse,
+  types,
 )
-
-from apps.base.schema.methods.base import ResponseWithExternalQuerySets
 
 from ......schema.with_origin import WithOrigin, WithOriginResponse
-from ......schema.with_challenge import (
-  WithChallenge,
-  WithChallengeClientSchema,
-)
+from ......schema.with_challenge import WithChallenge
 from ....constants import account_fields
 from .constants import lock_constants
-from .errors import account_superadmin_method_errors
-
-class AccountSuperadminLockClientResponse(StructureResponse, ResponseWithExternalQuerySets):
-  pass
-
-class AccountSuperadminLockClientSchema(WithChallengeClientSchema):
-  def __init__(self, **kwargs):
-    super().__init__(
-      **kwargs,
-      response=AccountSuperadminLockClientResponse,
-      children={
-        lock_constants.LOCKING_COMPLETE: Schema(types=types.BOOLEAN()),
-      },
-    )
+from .errors import lock_errors
 
 class AccountSuperadminLockResponse(StructureResponse, WithOriginResponse):
   pass
 
 class AccountSuperadminLockSchema(WithOrigin, WithChallenge, StructureSchema):
-  def __init__(self, Model, **kwargs):
+  def __init__(self, Model):
+    self.model = Model
     super().__init__(
-      **kwargs,
-      client=AccountSuperadminLockClientSchema(),
       origin=lock_constants.ORIGIN,
+      response=AccountSuperadminLockResponse,
       children={
         lock_constants.LOCK: Schema(types=types.BOOLEAN()),
-        lock_constants.ACCOUNT: Schema(types=types.UUID()),
+        lock_constants.ACCOUNT_ID: Schema(types=types.UUID()),
       },
     )
-    self.model = Model
-    self.response = AccountSuperadminLockResponse
+
+  def get_available_errors(self):
+    return set.union(
+      super().get_available_errors(),
+      {
+        lock_errors.ACCOUNT_ID_NOT_INCLUDED(),
+      },
+    )
 
   def passes_pre_response_checks(self, payload, context):
+    passes_pre_response_checks = super().passes_pre_response_checks(payload, context)
 
-    if lock_constants.ACCOUNT not in payload:
-      self.active_response.add_error(account_superadmin_method_errors.ACCOUNT_NOT_INCLUDED())
+    if not passes_pre_response_checks:
       return False
 
-    return super().passes_pre_response_checks(payload, context)
+    if lock_constants.ACCOUNT_ID not in payload:
+      self.active_response.add_error(lock_errors.ACCOUNT_ID_NOT_INCLUDED())
+      return False
+
+    return True
 
   def responds_to_valid_payload(self, payload, context):
     super().responds_to_valid_payload(payload, context)
 
-    if not self.challenge_accepted:
-      self.active_response = self.client.respond(
-        payload=merge(
-          {
-            lock_constants.LOCKING_COMPLETE: False,
-          },
-          self.get_challenge_client_response(),
-        ),
-      )
-      self.active_response.add_external_queryset(self.active_challenge_queryset)
+    if self.active_response.has_errors():
       return
 
-    account_id = self.active_response.get_child(lock_constants.ACCOUNT).render()
+    account_id = self.get_child_value(lock_constants.ACCOUNT_ID)
     account = self.model.objects.get(id=account_id)
 
-    should_lock = self.active_response.force_get_child(lock_constants.LOCK).render()
+    lock = self.get_child_value(lock_constants.LOCK)
 
-    account.is_superadmin_locked = should_lock
+    account.is_superadmin_locked = lock if lock is not None else True
     account.save()
 
-    self.active_response = self.client.respond(
-      payload={
-        lock_constants.LOCKING_COMPLETE: True,
-      },
-    )
+    self.active_response = self.client.respond()
