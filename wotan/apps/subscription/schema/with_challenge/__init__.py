@@ -28,7 +28,10 @@ class WithChallengeClientSchema(StructureSchema):
       ),
     )
 
-  def respond(self, payload=None, context=None, challenge_id=None):
+  def respond(self, payload={}, context=None, challenge_id=None, check_challenge=False, **kwargs):
+    if not check_challenge:
+      return super().respond(payload=payload, context=context, **kwargs)
+
     payload = merge(
       payload,
       {
@@ -44,7 +47,7 @@ class WithChallengeClientSchema(StructureSchema):
         },
       )
 
-    return super().respond(payload=payload, context=context)
+    return super().respond(payload=payload, context=context, **kwargs)
 
 class WithChallenge(Schema):
   def __init__(self, client=WithChallengeClientSchema(), **kwargs):
@@ -71,7 +74,7 @@ class WithChallenge(Schema):
       return False
 
     if not self.should_check_challenge(payload, context):
-      return passes_pre_response_checks
+      return True
 
     open_challenge = context.get_account().challenges.get(origin=self.origin, is_open=True)
     if open_challenge is not None:
@@ -89,7 +92,7 @@ class WithChallenge(Schema):
     if closed_challenge is None:
       new_challenge = context.get_account().challenges.create(origin=self.origin)
       new_challenge.encrypt_content()
-      self.active_response = self.client.respond(challenge_id=new_challenge._id)
+      self.active_response = self.client.respond(challenge_id=new_challenge._id, check_challenge=True)
       self.active_response.add_external_queryset([new_challenge])
       return False
 

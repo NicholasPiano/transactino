@@ -8,7 +8,6 @@ from util.api import (
 )
 
 from apps.base.schema.constants import schema_constants
-from apps.base.schema.methods.base import BaseClientResponse
 
 from ......schema.with_origin import WithOrigin, WithOriginResponse
 from ......schema.with_challenge import (
@@ -23,41 +22,31 @@ from ....constants import ip_fields
 from .constants import create_constants
 from .errors import create_errors
 
-class IPCreateClientResponse(StructureResponse, BaseClientResponse):
-  pass
-
 class IPCreateClientSchema(WithChallengeClientSchema, WithPaymentClientSchema):
-  def __init__(self, **kwargs):
-    super().__init__(
-      **kwargs,
-      response=IPCreateClientResponse,
-      children={
-        create_constants.CREATE_COMPLETE: Schema(types=types.BOOLEAN()),
-      },
-    )
+  pass
 
 class IPCreateResponse(StructureResponse, WithOriginResponse):
   pass
 
 class IPCreateSchema(WithOrigin, WithChallenge, WithPayment, StructureSchema):
-  def __init__(self, Model, **kwargs):
+  def __init__(self, Model):
     self.model = Model
     super().__init__(
-      **kwargs,
       description=(
         'The schema for the IP create method.'
       ),
-      client=IPCreateClientSchema(),
       origin=create_constants.ORIGIN,
+      response=IPCreateResponse,
+      client=IPCreateClientSchema(),
       children={
         ip_fields.VALUE: Schema(
           description=(
             'Must be a valid IPv4 address.'
           ),
+          types=types.IP_ADDRESS(),
         ),
       }
     )
-    self.response = IPCreateResponse
 
   def get_available_errors(self):
     return set.union(
@@ -81,8 +70,8 @@ class IPCreateSchema(WithOrigin, WithChallenge, WithPayment, StructureSchema):
     return super().should_check_challenge(payload, context)
 
   def should_check_payment(self, payload, context):
-    if context.get_account().ips.count() >= create_constants.MAX_IPS:
-      return True
+    if context.get_account().ips.count() < create_constants.MAX_IPS:
+      return False
 
     return super().should_check_payment(payload, context)
 
@@ -90,43 +79,32 @@ class IPCreateSchema(WithOrigin, WithChallenge, WithPayment, StructureSchema):
     return create_constants.BEYOND_MAX_COST_PER_IP
 
   def passes_pre_response_checks(self, payload, context):
+    passes_pre_response_checks = super().passes_pre_response_checks(payload, context)
+
+    if not passes_pre_response_checks:
+      return False
+
     if ip_fields.VALUE not in payload:
       self.active_response.add_error(create_errors.VALUE_NOT_INCLUDED())
+      return False
 
-    if ip_fields.VALUE in payload:
-      ip_value = payload.get(ip_fields.VALUE)
-      if self.model.objects.filter(value=ip_value).exclude(account=None).exists():
-        self.active_response.add_error(create_errors.IP_ALREADY_BOUND(value=ip_value))
-        return False
-
-    return super().passes_pre_response_checks(payload, context)
+    return True
 
   def responds_to_valid_payload(self, payload, context):
     super().responds_to_valid_payload(payload, context)
 
-    if not self.challenge_accepted or not self.payment_accepted:
-      self.active_response = self.client.respond(
-        payload=merge(
-          {
-            create_constants.CREATE_COMPLETE: False,
-          },
-          self.get_challenge_client_response(),
-          self.get_payment_client_response(),
-        ),
-      )
-      self.active_response.add_external_queryset(self.active_challenge_queryset)
-      self.active_response.add_external_queryset(self.active_payment_queryset)
-      return
-
     if self.active_response.has_errors():
       return
 
-    ip_value = self.active_response.get_child(ip_fields.VALUE).render()
-    ip, ip_created = context.get_account().ips.get_or_create(value=ip_value)
+    ip_value = self.get_child_value(ip_fields.VALUE)
 
-    self.active_response = self.client.respond(
-      payload={
-        create_constants.CREATE_COMPLETE: True,
-      },
-    )
-    self.active_response.add_internal_queryset(context.get_account().ips.filter(value=ip_value))
+    ip = context.get_account().ips.get(value=ip_value)
+
+    if ip is not None:
+      self.active_response.add_error(create_errors.IP_ALREADY_BOUND(value=ip_value))
+      return
+
+    ip = context.get_account().ips.create(value=ip_value)
+
+    self.active_response = self.client.respond()
+    self.active_response.add_internal_queryset([ip])

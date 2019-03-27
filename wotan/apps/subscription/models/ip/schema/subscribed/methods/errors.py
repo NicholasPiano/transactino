@@ -23,20 +23,26 @@ class create_errors:
   VALUE_NOT_INCLUDED = ValueNotIncludedError
   IP_ALREADY_BOUND = IPAlreadyBoundError
 
+class IpIdNotIncludedError(Error):
+  code = '10091'
+  name = 'ip_id_not_included'
+  description = 'IP ID must be included'
+
 class IPDoesNotExistError(Error):
   code = '1009'
   name = 'ip_does_not_exist'
   description = 'IP Address does not exist'
-  description_with_arguments = 'IP Address with value [{}] does not exist'
+  description_with_arguments = 'IP Address with id [{}] does not exist'
 
-  def __init__(self, value=None):
+  def __init__(self, id=None):
     self.description = (
-      self.description_with_arguments.format(value)
-      if value is not None
+      self.description_with_arguments.format(id)
+      if id is not None
       else self.description
     )
 
 class delete_errors:
+  IP_ID_NOT_INCLUDED = IpIdNotIncludedError
   IP_DOES_NOT_EXIST = IPDoesNotExistError
 
 class IPGetTakesNoArgumentsError(Error):

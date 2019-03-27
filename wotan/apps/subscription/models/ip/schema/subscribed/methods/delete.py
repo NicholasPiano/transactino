@@ -1,10 +1,9 @@
 
 from util.merge import merge
 from util.api import (
-  Schema, StructureSchema, TemplateSchema, IndexedSchema,
-  Response, StructureResponse, IndexedResponse,
-  types, map_type,
-  constants,
+  Schema, StructureSchema,
+  Response, StructureResponse,
+  types,
 )
 
 from apps.base.schema.constants import schema_constants
@@ -18,23 +17,10 @@ from ......schema.with_challenge import (
 from .constants import delete_constants
 from .errors import delete_errors
 
-class IPDeleteClientResponse(StructureResponse, ResponseWithExternalQuerySets):
+class IPDeleteResponse(StructureResponse, WithOriginResponse):
   pass
 
-class IPDeleteClientSchema(WithChallengeClientSchema):
-  def __init__(self, **kwargs):
-    super().__init__(
-      **kwargs,
-      response=IPDeleteClientResponse,
-      children={
-        delete_constants.DELETE_COMPLETE: Schema(types=types.BOOLEAN()),
-      },
-    )
-
-class IPDeleteResponse(WithOriginResponse):
-  pass
-
-class IPDeleteSchema(WithOrigin, WithChallenge):
+class IPDeleteSchema(WithOrigin, WithChallenge, StructureSchema):
   def __init__(self, Model, **kwargs):
     self.model = Model
     super().__init__(
@@ -42,48 +28,51 @@ class IPDeleteSchema(WithOrigin, WithChallenge):
       description=(
         'The schema for the IP delete method.'
       ),
-      client=IPDeleteClientSchema(),
       origin=delete_constants.ORIGIN,
+      response=IPDeleteResponse,
+      children={
+        delete_constants.IP_ID: Schema(types=types.UUID()),
+      },
     )
-    self.response = IPDeleteResponse
 
   def get_available_errors(self):
     return set.union(
       super().get_available_errors(),
       {
+        delete_errors.IP_ID_NOT_INCLUDED(),
         delete_errors.IP_DOES_NOT_EXIST(),
       },
     )
 
   def passes_pre_response_checks(self, payload, context):
-    if not context.get_account().ips.filter(value=payload).count():
+    passes_pre_response_checks = super().passes_pre_response_checks(payload, context)
+
+    if not passes_pre_response_checks:
+      return False
+
+    if delete_constants.IP_ID not in payload:
       self.active_response.add_error(
-        delete_errors.IP_DOES_NOT_EXIST(value=payload),
+        delete_errors.IP_ID_NOT_INCLUDED(),
       )
       return False
 
-    return super().passes_pre_response_checks(payload, context)
+    return True
 
   def responds_to_valid_payload(self, payload, context):
     super().responds_to_valid_payload(payload, context)
 
-    if not self.challenge_accepted:
-      self.active_response = self.client.respond(
-        payload=merge(
-          {
-            delete_constants.DELETE_COMPLETE: False,
-          },
-          self.get_challenge_client_response(),
-        ),
-      )
-      self.active_response.add_external_queryset(self.active_challenge_queryset)
+    if self.active_response.has_errors():
       return
 
-    ip = context.get_account().ips.get(value=payload)
+    ip_id = self.get_child_value(delete_constants.IP_ID)
+    ip = context.get_account().ips.get(id=ip_id)
+
+    if ip is None:
+      self.active_response.add_error(
+        delete_errors.IP_DOES_NOT_EXIST(id=ip_id),
+      )
+      return
+
     ip.delete()
 
-    self.active_response = self.client.respond(
-      payload={
-        delete_constants.DELETE_COMPLETE: True,
-      },
-    )
+    self.active_response = self.client.respond()

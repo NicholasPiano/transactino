@@ -1,5 +1,6 @@
 
 from util.is_valid_uuid import is_valid_uuid
+from util.is_valid_ip_address import is_valid_ip_address
 
 from .constants import constants
 
@@ -94,6 +95,14 @@ class UUID(Type):
   def validate(self, value):
     return is_valid_uuid(value)
 
+class IpAddress(Type):
+  code = '0081'
+  description = 'A valid IPv4 address'
+  type = '__ip'
+
+  def validate(self, value):
+    return is_valid_ip_address(value)
+
 class Time(Type):
   code = '009'
   description = 'A valid timestamp'
@@ -151,6 +160,7 @@ class types:
   FLOAT = Float
   STRING = String
   UUID = UUID
+  IP_ADDRESS = IpAddress
   TIME = Time
   REF = Ref
   ENUM = Enum

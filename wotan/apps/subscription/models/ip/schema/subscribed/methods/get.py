@@ -1,35 +1,13 @@
 
-from util.merge import merge
 from util.api import (
-  Schema, StructureSchema, TemplateSchema, IndexedSchema,
-  Response, StructureResponse, IndexedResponse,
-  types, map_type,
-  constants,
+  Schema,
+  types,
 )
-
-from apps.base.schema.constants import schema_constants
-from apps.base.schema.methods.base import BaseClientResponse
 
 from ......schema.with_origin import WithOrigin, WithOriginResponse
-from ......schema.with_challenge import (
-  WithChallenge,
-  WithChallengeClientSchema,
-)
+from ......schema.with_challenge import WithChallenge
 from .constants import get_constants
 from .errors import get_errors
-
-class IPGetClientResponse(StructureResponse, BaseClientResponse):
-  pass
-
-class IPGetClientSchema(WithChallengeClientSchema):
-  def __init__(self, **kwargs):
-    super().__init__(
-      **kwargs,
-      response=IPGetClientResponse,
-      children={
-        get_constants.GET_COMPLETE: Schema(types=types.BOOLEAN()),
-      },
-    )
 
 class IPGetResponse(WithOriginResponse):
   pass
@@ -40,13 +18,13 @@ class IPGetSchema(WithOrigin, WithChallenge):
     super().__init__(
       **kwargs,
       description=(
-        'The schema for the IP get method.'
+        'The schema for the IP get method. This method returns'
+        ' ALL IP addresses bound to this account.'
       ),
       types=types.STRUCTURE(),
-      client=IPGetClientSchema(),
       origin=get_constants.ORIGIN,
+      response=IPGetResponse,
     )
-    self.response = IPGetResponse
 
   def get_available_errors(self):
     return set.union(
@@ -57,32 +35,24 @@ class IPGetSchema(WithOrigin, WithChallenge):
     )
 
   def passes_pre_response_checks(self, payload, context):
+    passes_pre_response_checks = super().passes_pre_response_checks(payload, context)
+
+    if not passes_pre_response_checks:
+      return False
+
     if payload:
       self.active_response.add_error(
         get_errors.IP_GET_TAKES_NO_ARGUMENTS(),
       )
       return False
 
-    return super().passes_pre_response_checks(payload, context)
+    return True
 
   def responds_to_valid_payload(self, payload, context):
     super().responds_to_valid_payload(payload, context)
 
-    if not self.challenge_accepted:
-      self.active_response = self.client.respond(
-        payload=merge(
-          {
-            get_constants.GET_COMPLETE: False,
-          },
-          self.get_challenge_client_response(),
-        ),
-      )
-      self.active_response.add_external_queryset(self.active_challenge_queryset)
+    if self.active_response.has_errors():
       return
 
-    self.active_response = self.client.respond(
-      payload={
-        get_constants.GET_COMPLETE: True,
-      },
-    )
+    self.active_response = self.client.respond()
     self.active_response.add_internal_queryset(context.get_account().ips.all())

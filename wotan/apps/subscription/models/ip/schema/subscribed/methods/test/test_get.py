@@ -8,7 +8,6 @@ from django.conf import settings
 
 from util.api.constants import constants
 
-from .......schema.with_challenge import with_challenge_constants, with_challenge_errors
 from ......account import Account
 from ......challenge import Challenge
 from ..... import IP
@@ -29,25 +28,7 @@ class IPGetSchemaTestCase(TestCase):
     self.account = Account.objects.create(public_key=settings.TEST_PUBLIC_KEY)
     self.account.import_public_key()
     self.context = TestContext(self.account)
-
-  def test_get(self):
-    ip = self.account.ips.create(value='ip-address')
-
-    payload = {}
-
-    response = self.schema.respond(payload=payload, context=self.context)
-
-    challenge = Challenge.objects.get(origin=get_constants.ORIGIN)
-
-    challenge.is_open = False
-    challenge.save()
-
-    second_response = self.schema.respond(payload=payload, context=self.context)
-
-    self.assertEqual(
-      list(second_response.internal_queryset),
-      [ip],
-    )
+    self.account.challenges.create(origin=get_constants.ORIGIN, is_open=False, has_been_used=False)
 
   def test_get_with_arguments(self):
     payload = {
@@ -62,3 +43,13 @@ class IPGetSchemaTestCase(TestCase):
         ip_get_takes_no_arguments.code: ip_get_takes_no_arguments.render(),
       },
     })
+
+  def test_get(self):
+    ip = self.account.ips.create(value='ip-address')
+
+    response = self.schema.respond(payload={}, context=self.context)
+
+    self.assertEqual(
+      list(response.internal_queryset),
+      [ip],
+    )

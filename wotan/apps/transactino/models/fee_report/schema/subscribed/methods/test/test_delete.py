@@ -8,8 +8,7 @@ from django.conf import settings
 
 from util.api.constants import constants
 
-from apps.subscription.schema.with_challenge import with_challenge_constants, with_challenge_errors
-from apps.subscription.models import Account, Challenge
+from apps.subscription.models import Account
 
 from ..... import FeeReport
 from ..delete import FeeReportDeleteSchema
@@ -29,6 +28,11 @@ class FeeReportDeleteSchemaTestCase(TestCase):
     self.account = Account.objects.create(public_key=settings.TEST_PUBLIC_KEY)
     self.account.import_public_key()
     self.context = TestContext(self.account)
+
+  def test_no_arguments(self):
+    response = self.schema.respond(payload={}, context=self.context)
+
+    self.assertTrue(self.account.challenges.filter(origin=delete_constants.ORIGIN).exists())
 
   def test_without_report_id(self):
     challenge = self.account.challenges.create(origin=delete_constants.ORIGIN, is_open=False, has_been_used=False)
@@ -65,14 +69,8 @@ class FeeReportDeleteSchemaTestCase(TestCase):
       },
     )
 
-  def test_no_arguments(self):
-    payload = {}
-
-    response = self.schema.respond(payload=payload, context=self.context)
-
-    self.assertTrue(self.account.challenges.filter(origin=delete_constants.ORIGIN).exists())
-
   def test_delete(self):
+    challenge = self.account.challenges.create(origin=delete_constants.ORIGIN, is_open=False, has_been_used=False)
     fee_report = self.account.fee_reports.create()
 
     payload = {
@@ -81,13 +79,4 @@ class FeeReportDeleteSchemaTestCase(TestCase):
 
     response = self.schema.respond(payload=payload, context=self.context)
 
-    self.assertTrue(FeeReport.objects.get(id=fee_report._id))
-
-    challenge = Challenge.objects.get(origin=delete_constants.ORIGIN)
-
-    challenge.is_open = False
-    challenge.save()
-
-    second_response = self.schema.respond(payload=payload, context=self.context)
-
-    self.assertFalse(FeeReport.objects.get(id=fee_report._id))
+    self.assertFalse(self.account.fee_reports.get(id=fee_report._id))
