@@ -13,7 +13,6 @@ class subscription_fields:
   DURATION_IN_DAYS = 'duration_in_days'
   ACTIVATION_DATE = 'activation_date'
   IS_VALID_UNTIL = 'is_valid_until'
-  IS_PAYMENT_CONFIRMED = 'is_payment_confirmed'
   HAS_BEEN_ACTIVATED = 'has_been_activated'
   IS_ACTIVE = 'is_active'
   LAST_UPDATE_TIME = 'last_update_time'

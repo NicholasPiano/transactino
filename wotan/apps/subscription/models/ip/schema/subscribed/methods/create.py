@@ -1,23 +1,18 @@
 
 from util.merge import merge
 from util.api import (
-  Schema, StructureSchema, TemplateSchema, IndexedSchema,
-  Response, StructureResponse, IndexedResponse,
-  types, map_type,
-  constants,
+  Schema, StructureSchema,
+  StructureResponse,
+  types,
 )
-
-from apps.base.schema.constants import schema_constants
 
 from ......schema.with_origin import WithOrigin, WithOriginResponse
 from ......schema.with_challenge import (
   WithChallenge,
   WithChallengeClientSchema,
 )
-from ......schema.with_payment import (
-  WithPayment,
-  WithPaymentClientSchema,
-)
+from ......schema.with_payment import WithPaymentClientSchema
+from ......schema.with_fixed_payment import WithFixedPayment
 from ....constants import ip_fields
 from .constants import create_constants
 from .errors import create_errors
@@ -28,7 +23,7 @@ class IPCreateClientSchema(WithChallengeClientSchema, WithPaymentClientSchema):
 class IPCreateResponse(StructureResponse, WithOriginResponse):
   pass
 
-class IPCreateSchema(WithOrigin, WithChallenge, WithPayment, StructureSchema):
+class IPCreateSchema(WithOrigin, WithChallenge, WithFixedPayment, StructureSchema):
   def __init__(self, Model):
     self.model = Model
     super().__init__(

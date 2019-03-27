@@ -9,7 +9,7 @@ class DurationNotIncludedError(Error):
 class create_errors:
   DURATION_NOT_INCLUDED = DurationNotIncludedError
 
-class SubscriptionIDNotIncludedError(Error):
+class SubscriptionIdNotIncludedError(Error):
   code = '989'
   name = 'subscription_id_not_included'
   description = 'Subscription ID must be included'
@@ -29,4 +29,4 @@ class SubscriptionDoesNotExistError(Error):
 
 class activate_errors:
   SUBSCRIPTION_DOES_NOT_EXIST = SubscriptionDoesNotExistError
-  SUBSCRIPTION_ID_NOT_INCLUDED = SubscriptionIDNotIncludedError
+  SUBSCRIPTION_ID_NOT_INCLUDED = SubscriptionIdNotIncludedError

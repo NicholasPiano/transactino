@@ -23,7 +23,7 @@ class TestContext():
   def get_account(self):
     return self.account
 
-class AccountSuperadminSetSchemaTestCase(TestCase):
+class SubscriptionSetTestCase(TestCase):
   def setUp(self):
     self.origin = uuid.uuid4().hex
     self.schema = SetSchemaWithChallenge(Account, origin=self.origin)

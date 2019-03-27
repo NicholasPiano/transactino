@@ -81,6 +81,7 @@ class TransactinoSchemaTestCase(TestCase):
     # Simulate user action
     gpg = GPG(binary=settings.GPG_BINARY, path=settings.GPG_PATH)
     imported_key = gpg.import_key(settings.TEST_PRIVATE_KEY)
+    imported_system_key = gpg.import_key(settings.TEST_SYSTEM_PRIVATE_KEY)
 
     challenge_id = list(
       create_response.render().get(
@@ -93,7 +94,7 @@ class TransactinoSchemaTestCase(TestCase):
         schema_constants.INSTANCES
       ).keys()
     )[0]
-    encrypted_message = create_response.render().get(
+    encrypted_content = create_response.render().get(
       transactino_constants.SCHEMA
     ).get(
       transactino_constants.MODELS
@@ -109,7 +110,11 @@ class TransactinoSchemaTestCase(TestCase):
       challenge_fields.ENCRYPTED_CONTENT
     )
 
-    decrypted_message = gpg.decrypt_from_private(encrypted_message)
+    decrypted_content = gpg.decrypt_from_private(encrypted_content)
+    reencrypted_content = gpg.encrypt_to_public_with_long_key_id(
+      decrypted_content,
+      imported_system_key.long_key_id,
+    )
 
     respond_payload = {
       transactino_constants.SCHEMA: {
@@ -118,7 +123,7 @@ class TransactinoSchemaTestCase(TestCase):
             schema_constants.METHODS: {
               challenge_method_constants.RESPOND: {
                 respond_constants.CHALLENGE_ID: challenge_id,
-                respond_constants.PLAINTEXT: decrypted_message,
+                respond_constants.CONTENT: reencrypted_content,
               },
             },
           },

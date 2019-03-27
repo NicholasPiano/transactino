@@ -10,7 +10,7 @@ from ......schema.methods.create import CreateSchemaWithChallenge
 from .constants import set_constants, create_constants
 
 class AddressSuperadminModelMethodsSchema(StructureSchema):
-  def __init__(self, mode=None, **kwargs):
+  def __init__(self, Model, mode=None, **kwargs):
     super().__init__(
       **kwargs,
       description='',

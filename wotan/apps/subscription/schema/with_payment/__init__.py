@@ -70,51 +70,48 @@ class WithPayment(Schema):
   def should_check_payment(self, payload, context):
     return True
 
-  def get_btc_amount(self):
-    raise NotImplementedError('Define a cost for making a payment')
-
-  def passes_pre_response_checks(self, payload, context):
-    passes_pre_response_checks = super().passes_pre_response_checks(payload, context)
-
-    if not passes_pre_response_checks:
-      return False
-
+  def payment_complete(self, payload, context, origin=None):
     if not self.should_check_payment(payload, context):
       return True
 
-    open_payment = context.get_account().payments.get(origin=self.origin, is_open=True)
+    if origin is None:
+      return False
+
+    open_payment = context.get_account().payments.get(origin=origin, is_open=True)
     if open_payment is not None:
       self.active_response.add_error(
-        with_payment_errors.OPEN_PAYMENT_EXISTS_WITH_ORIGIN(id=open_payment._id, origin=self.origin),
+        with_flexible_payment_errors.OPEN_PAYMENT_EXISTS_WITH_ORIGIN(id=open_payment._id, origin=origin),
       )
       return False
 
     closed_payment = context.get_account().payments.get(
-      origin=self.origin,
+      origin=origin,
       is_open=False,
       has_been_used=False,
     )
 
     if closed_payment is None:
-      address = Address.objects.get_active_address()
-
-      if not address:
-        self.active_response.add_error(
-          with_payment_errors.PAYMENTS_UNAVAILABLE(),
-        )
-        return
-
-      new_payment = context.get_account().payments.create(
-        origin=self.origin,
-        address=address,
-        base_amount=self.get_btc_amount(context),
-      )
-      new_payment.prepare()
-      self.active_response = self.client.respond(payment_id=new_payment._id, check_payment=True)
-      self.active_response.add_external_queryset([new_payment])
       return False
 
     closed_payment.has_been_used = True
     closed_payment.save()
 
     return True
+
+  def prepare_payment(self, context, origin=None, amount=None):
+    address = Address.objects.get_active_address()
+
+    if not address:
+      self.active_response.add_error(
+        with_flexible_payment_errors.PAYMENTS_UNAVAILABLE(),
+      )
+      return
+
+    new_payment = context.get_account().payments.create(
+      origin=origin,
+      address=address,
+      base_amount=amount,
+    )
+    new_payment.prepare()
+    self.active_response = self.client.respond(payment_id=new_payment._id, check_payment=True)
+    self.active_response.add_external_queryset([new_payment], model=type(new_payment))

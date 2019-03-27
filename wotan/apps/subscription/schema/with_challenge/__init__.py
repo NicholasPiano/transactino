@@ -93,7 +93,7 @@ class WithChallenge(Schema):
       new_challenge = context.get_account().challenges.create(origin=self.origin)
       new_challenge.encrypt_content()
       self.active_response = self.client.respond(challenge_id=new_challenge._id, check_challenge=True)
-      self.active_response.add_external_queryset([new_challenge])
+      self.active_response.add_external_queryset([new_challenge], model=type(new_challenge))
       return False
 
     closed_challenge.has_been_used = True

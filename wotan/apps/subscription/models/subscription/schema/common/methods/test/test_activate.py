@@ -35,32 +35,8 @@ class SubscriptionActivateSchemaTestCase(TestCase):
     )
     self.context = TestContext(self.account)
 
-  def test_activate(self):
-    payload = {
-      activate_constants.SUBSCRIPTION_ID: self.subscription._id,
-    }
-
-    response = self.schema.respond(payload=payload, context=self.context)
-
-    payment = Payment.objects.get(origin=self.subscription.origin)
-
-    payment.is_open = False
-    payment.save()
-
-    second_response = self.schema.respond(payload=payload, context=self.context)
-
-    self.assertEqual(
-      Payment.objects.filter(origin=self.subscription.origin, is_open=False, has_been_used=True).count(),
-      1,
-    )
-    self.assertEqual(second_response.render(), {
-      activate_constants.ACTIVATION_COMPLETE: True,
-    })
-
-  def test_subscription_without_subscription_id(self):
-    payload = {}
-
-    response = self.schema.respond(payload=payload, context=self.context)
+  def test_without_subscription_id(self):
+    response = self.schema.respond(payload={}, context=self.context)
 
     subscription_id_not_included = activate_errors.SUBSCRIPTION_ID_NOT_INCLUDED()
     self.assertEqual(response.render(), {
@@ -83,3 +59,15 @@ class SubscriptionActivateSchemaTestCase(TestCase):
         subscription_does_not_exist.code: subscription_does_not_exist.render(),
       },
     })
+
+  def test_activate(self):
+    self.account.payments.create(origin=self.subscription.origin, is_open=False, has_been_used=False)
+    payload = {
+      activate_constants.SUBSCRIPTION_ID: self.subscription._id,
+    }
+
+    response = self.schema.respond(payload=payload, context=self.context)
+
+    self.subscription.refresh_from_db()
+
+    self.assertTrue(self.subscription.has_been_activated)

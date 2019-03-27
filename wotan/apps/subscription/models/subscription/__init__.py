@@ -24,7 +24,6 @@ class SubscriptionManager(Manager):
       subscription_fields.HAS_BEEN_ACTIVATED,
       subscription_fields.DURATION_IN_DAYS,
       subscription_fields.IS_ACTIVE,
-      subscription_fields.IS_PAYMENT_CONFIRMED,
       subscription_fields.ORIGIN,
     ]
     if mode == mode_constants.SUPERADMIN:
@@ -83,7 +82,6 @@ class Subscription(Model):
   activation_date = models.DateTimeField(auto_now_add=False, null=True)
   is_valid_until = models.DateTimeField(auto_now_add=False, null=True)
 
-  is_payment_confirmed = models.BooleanField(default=False)
   has_been_activated = models.BooleanField(default=False)
   is_active = models.BooleanField(default=False)
   last_update_time = models.DateTimeField(auto_now_add=False, null=True)
@@ -96,27 +94,18 @@ class Subscription(Model):
   class Meta:
     app_label = APP_LABEL
 
-  def get_cost(self):
+  def get_btc_amount(self):
     return self.duration_in_days * subscription_constants.DEFAULT_COST_PER_DAY
 
-  def confirm_payment(self):
-    self.is_payment_confirmed = True
+  def activate(self):
+    self.has_been_activated = True
+
+    current_date = timezone.now()
+    self.activation_date = self.activation_date if current_date < self.activation_date else current_date
+    self.is_valid_until = self.activation_date + datetime.timedelta(days=self.duration_in_days)
     self.save()
 
-  def activate(self):
-    if self.is_payment_confirmed:
-      self.has_been_activated = True
-
-      current_date = timezone.now()
-      self.activation_date = self.activation_date if current_date < self.activation_date else current_date
-      self.is_valid_until = self.activation_date + datetime.timedelta(days=self.duration_in_days)
-      self.save()
-
   def update(self):
-    Payment = apps.get_model(APP_LABEL, 'Payment')
-    if Payment.objects.filter(origin=self.origin, is_open=False).exists():
-      self.confirm_payment()
-
     if self.activation_date is not None:
       if self.has_been_activated and timezone.now() > self.activation_date:
         self.is_active = True

@@ -48,6 +48,3 @@ class AccountDeleteSchemaTestCase(TestCase):
     response = self.schema.respond(payload={}, context=self.context)
 
     self.assertFalse(Account.objects.all())
-    self.assertEqual(response.render(), {
-      with_challenge_constants.CHALLENGE_COMPLETE: True,
-    })

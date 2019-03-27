@@ -10,5 +10,4 @@ class create_constants:
 
 class activate_constants:
   ORIGIN = '599fedc4e1274ebf816e5a37f3a7fcf4'
-  ACTIVATION_COMPLETE = 'activation_complete'
   SUBSCRIPTION_ID = 'subscription_id'

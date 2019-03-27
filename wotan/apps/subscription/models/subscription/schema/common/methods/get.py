@@ -34,7 +34,8 @@ class SubscriptionGetSchema(StructureSchema):
         ),
         subscription_fields.IS_ACTIVE: Schema(
           description=(
-            'The subscription active status'
+            'The subscription active status. If omitted, all subscriptions'
+            ' are returned.'
           ),
           types=types.BOOLEAN(),
         ),
@@ -44,13 +45,13 @@ class SubscriptionGetSchema(StructureSchema):
   def responds_to_valid_payload(self, payload, context):
     super().responds_to_valid_payload(payload, context)
 
-    id = self.active_response.force_get_child(model_fields.ID).render()
+    id = self.get_child_value(model_fields.ID)
 
     queryset = []
     if id is not None:
       queryset = context.get_account().subscriptions.filter(id=id)
     else:
-      is_active = self.active_response.force_get_child(subscription_fields.IS_ACTIVE).render()
+      is_active = self.get_child_value(subscription_fields.IS_ACTIVE)
 
       if is_active is None:
         queryset = context.get_account().subscriptions.all()

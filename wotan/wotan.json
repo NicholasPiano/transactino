@@ -150,6 +150,24 @@
           "create": "The current method in place is a fun idea, but it's a bit of a solution without a problem at the moment. Basically, it allows a request to contain arbitrary temporary IDs that identify resources to be created so that they can be matched to the resulting database IDs once they return to the client. I will remove this in favour of a simpler create method. Just kidding. I'm keeping it. It's fricking awesome.",
           "set": "done",
         }
+      },
+      "20190327": {
+        "description": "Almost finished with payment changes. Now makes way more sense.",
+        "children": {
+          "note about jormungand changes": "No is_payment_confirmed field on subscription",
+          "t12.4": {
+            "description": "Transaction report, but made lots of changes to the ways challenges and payments work.",
+            "children": {
+              "tests": {
+                "description": "Finishing testing before merging",
+                "children": {
+                  "test_unsubscribed": "done",
+                  "test_transactino": "done",
+                }
+              }
+            }
+          }
+        }
       }
     }
   }

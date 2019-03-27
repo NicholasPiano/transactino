@@ -25,7 +25,7 @@ class TestContext():
   def get_account(self):
     return self.account
 
-class AccountSuperadminSetSchemaTestCase(TestCase):
+class SubscriptionCreateSchemaTestCase(TestCase):
   def setUp(self):
     self.origin = uuid.uuid4().hex
     self.schema = CreateSchemaWithChallenge(Address, origin=self.origin)
@@ -56,7 +56,6 @@ class AccountSuperadminSetSchemaTestCase(TestCase):
     address = Address.objects.get()
     self.assertTrue(address)
     self.assertEqual(response.render(), {
-      with_challenge_constants.CHALLENGE_COMPLETE: True,
       create_constants.CREATED: {
         temp_id: address._id,
       },
