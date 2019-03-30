@@ -45,14 +45,14 @@ class Response():
   def render_empty(self, top=False):
     self.rendered = {
       constants.DESCRIPTION: self.description,
-      # constants.TYPES: {
-      #   type.code: type.render()
-      #   for type in self.types
-      # },
-      # constants.ERRORS: [
-      #   error.code
-      #   for error in self.parent_schema.available_errors
-      # ],
+      constants.TYPES: {
+        type.code: type.render()
+        for type in self.types
+      },
+      constants.ERRORS: [
+        error.code
+        for error in self.parent_schema.available_errors
+      ],
     }
 
     type_errors = []
@@ -135,16 +135,16 @@ class StructureResponse(Response):
         constants.CHILDREN: children,
       })
 
-      # if top:
-      #   self.rendered.update({
-      #     constants.ERRORS: {
-      #       error.code: error.render()
-      #       for error in (
-      #         list(self.parent_schema.available_errors)
-      #         + list(self.errors.values())
-      #       )
-      #     },
-      #   })
+      if top:
+        self.rendered.update({
+          constants.ERRORS: {
+            error.code: error.render()
+            for error in (
+              list(self.parent_schema.available_errors)
+              + list(self.errors.values())
+            )
+          },
+        })
 
   def render_value(self):
     self.rendered = {
