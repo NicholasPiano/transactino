@@ -121,9 +121,9 @@ class StructureSchema(Schema, SupportsAddition):
   ]
   default_response = StructureResponse
 
-  def __init__(self, children={}, **kwargs):
+  def __init__(self, children=None, **kwargs):
     super().__init__(**kwargs)
-    self.children = children
+    self.children = children or {}
 
   def get_available_errors(self):
     return set.union(

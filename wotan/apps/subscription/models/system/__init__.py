@@ -49,8 +49,15 @@ class SystemManager(Manager):
 class System(Model):
   objects = SystemManager()
 
-  public_key = models.TextField(default='')
-  long_key_id = models.CharField(max_length=255, default='')
+  public_key = models.TextField(
+    default='',
+    verbose_name='The GPG public key of the system',
+  )
+  long_key_id = models.CharField(
+    max_length=255,
+    default='',
+    verbose_name='The GPG long key id corresponding to the public key',
+  )
   is_active = models.BooleanField(default=True)
 
   class Meta:

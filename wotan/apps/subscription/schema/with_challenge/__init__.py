@@ -15,21 +15,31 @@ class WithChallengeClientResponse(StructureResponse, BaseClientResponse):
   pass
 
 class WithChallengeClientSchema(StructureSchema):
-  def __init__(self, response=WithChallengeClientResponse, children={}, **kwargs):
+  def __init__(self, response=WithChallengeClientResponse, children=None, **kwargs):
     super().__init__(
       **kwargs,
+      description=(
+        'The result of a challenge-blocked method.'
+        ' Contains information relevant to the open challenge'
+        ' needed to complete the method execution.'
+      ),
       response=response,
       children=merge(
         {
-          with_challenge_constants.CHALLENGE_COMPLETE: Schema(types=types.BOOLEAN()),
-          with_challenge_constants.OPEN_CHALLENGE_ID: Schema(types=types.UUID()),
+          with_challenge_constants.CHALLENGE_COMPLETE: Schema(
+            description='A flag indicating whether the challenge is complete',
+            types=types.BOOLEAN(),
+          ),
+          with_challenge_constants.OPEN_CHALLENGE_ID: Schema(
+            description='The ID of the open challenge',
+            types=types.UUID(),
+          ),
         },
         children,
       ),
     )
 
   def respond(self, payload=None, context=None, challenge_id=None, check_challenge=False, **kwargs):
-    print(self.hello, payload, context, challenge_id, check_challenge, kwargs)
     if not check_challenge:
       return super().respond(payload=payload, context=context, **kwargs)
 

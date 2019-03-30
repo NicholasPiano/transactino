@@ -17,7 +17,7 @@ class WithPaymentClientResponse(StructureResponse, BaseClientResponse):
   pass
 
 class WithPaymentClientSchema(StructureSchema):
-  def __init__(self, response=WithPaymentClientResponse, children={}, **kwargs):
+  def __init__(self, response=WithPaymentClientResponse, children=None, **kwargs):
     super().__init__(
       **kwargs,
       response=response,

@@ -24,8 +24,12 @@ class SystemInstanceSchema(InstanceSchema):
     )
 
 class SystemInstancesSchema(InstancesSchema):
-  def __init__(self, Model, mode=None, **kwargs):
-    super().__init__(Model, mode=mode, **kwargs)
+  def __init__(self, Model, mode=None):
+    super().__init__(
+      Model,
+      mode=mode,
+      description='The returned instance of the System model',
+    )
     self.template = SystemInstanceSchema(Model, mode=mode)
 
 class SystemInstancesClosedSchema(InstancesClosedSchema):
