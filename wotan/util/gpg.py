@@ -15,6 +15,8 @@ class status_constants:
   IMPORTED = 'imported'
 
 class command_constants:
+  SIGN = '--sign'
+  DETACH_SIG = '--detach-sig'
   IMPORT = '--import'
   OUTPUT = '--output'
   ENCRYPT = '--encrypt'
@@ -53,6 +55,14 @@ class GPG:
     if not exists(self.decrypted_path):
       os.mkdir(self.decrypted_path)
 
+    self.sign_path = join(path, 'sign')
+    if not exists(self.sign_path):
+      os.mkdir(self.sign_path)
+
+    self.signed_path = join(path, 'signed')
+    if not exists(self.signed_path):
+      os.mkdir(self.signed_path)
+
     self.pubring_path = join(path, 'pubring.gpg')
     self.secring_path = join(path, 'secring.gpg')
 
@@ -72,7 +82,6 @@ class GPG:
     return err.decode('utf-8')
 
   def import_key(self, key_data):
-
     unique_id = uuid.uuid4().hex
     asc_file_name = '{}.asc'.format(unique_id)
     asc_file_path = join(self.key_path, asc_file_name)
@@ -150,3 +159,25 @@ class GPG:
       decrypted_message = decrypted_file.read()
 
     return decrypted_message
+
+  def sign_with_private(self, content):
+    sign_id = uuid.uuid4().hex
+    sign_path = join(self.sign_path, sign_id)
+    with open(sign_path, 'w+') as sign_file:
+      sign_file.write(content)
+
+    signed_path = join(self.signed_path, '{}.sig'.format(sign_id))
+
+    output = self._run_command(
+      command_constants.OUTPUT, signed_path,
+      command_constants.SIGN,
+      command_constants.ARMOR,
+      command_constants.DETACH_SIG,
+      sign_path,
+    )
+
+    signature = None
+    with open(signed_path, 'r') as signed_file:
+      signature = signed_file.read()
+
+    return signature

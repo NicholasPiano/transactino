@@ -5,6 +5,7 @@ from apps.base.schema import ModelsSchemaWithExternal
 from apps.subscription.constants import mode_constants
 from apps.subscription.models import (
   Account,
+  Announcement,
   System,
   Subscription,
   Challenge,
@@ -19,6 +20,7 @@ class UnsubscribedSchema(StructureSchema):
 
     models = [
       Account,
+      Announcement,
       Challenge,
       System,
     ]
@@ -33,8 +35,8 @@ class UnsubscribedSchema(StructureSchema):
     super().__init__(
       **kwargs,
       description=(
-        'The account does not have an active subscription. '
-        'Refer to the Subscription model to create one'
+        'The account does not have an active subscription.'
+        ' Refer to the Subscription model to create one.'
       ),
       children=merge(
         {

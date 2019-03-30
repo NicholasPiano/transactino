@@ -4,6 +4,7 @@ import uuid
 from util.gpg import GPG
 
 from django.db import models
+from django.utils import timezone
 from django.conf import settings
 
 from apps.base.models import Model, Manager, model_fields
@@ -14,6 +15,12 @@ from .constants import announcement_constants, announcement_fields
 from .schema.common import AnnouncementModelSchema
 
 class AnnouncementManager(Manager):
+  def create_and_sign(self, *args, **kwargs):
+    created = super().create(*args, **kwargs)
+    created.sign_matter()
+
+    return created
+
   def active(self):
     return self.filter(system__is_active=True, is_active=True)
 
@@ -69,3 +76,13 @@ class Announcement(Model):
 
   class Meta:
     app_label = APP_LABEL
+
+  def sign_matter(self):
+    gpg = GPG(binary=settings.GPG_BINARY, path=settings.GPG_PATH)
+    self.signature = gpg.sign_with_private(self.matter)
+    self.save()
+
+  def activate(self):
+    self.is_active = True
+    self.date_activated = timezone.now()
+    self.save()

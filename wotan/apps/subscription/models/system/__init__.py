@@ -14,13 +14,18 @@ from .constants import system_fields
 from .schema.common import SystemModelSchema
 
 class SystemManager(Manager):
+  def create_and_import(self, *args, **kwargs):
+    created = super().create(*args, **kwargs)
+    created.import_keys()
+
+    return created
+
   def active(self):
     return self.get(is_active=True)
 
   def attributes(self, mode=None):
     fields = [
       system_fields.PUBLIC_KEY,
-      system_fields.LONG_KEY_ID,
     ]
 
     return [
@@ -49,6 +54,10 @@ class SystemManager(Manager):
 class System(Model):
   objects = SystemManager()
 
+  private_key = models.TextField(
+    default='',
+    verbose_name='The GPG private key of the system',
+  )
   public_key = models.TextField(
     default='',
     verbose_name='The GPG public key of the system',
@@ -63,8 +72,9 @@ class System(Model):
   class Meta:
     app_label = APP_LABEL
 
-  def import_public_key(self):
+  def import_keys(self):
     gpg = GPG(binary=settings.GPG_BINARY, path=settings.GPG_PATH)
+    private_key_import = gpg.import_key(self.private_key)
     public_key_import = gpg.import_key(self.public_key)
 
     self.long_key_id = public_key_import.long_key_id

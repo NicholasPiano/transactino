@@ -26,9 +26,10 @@ class ChallengeRespondSchemaTestCase(TestCase):
   def setUp(self):
     self.schema = ChallengeRespondSchema()
     self.gpg = GPG(binary=settings.GPG_BINARY, path=settings.GPG_PATH)
-    self.system = System.objects.create(public_key=settings.TEST_SYSTEM_PUBLIC_KEY)
-    self.system.import_public_key()
-    self.gpg.import_key(settings.TEST_SYSTEM_PRIVATE_KEY)
+    self.system = System.objects.create_and_import(
+      public_key=settings.TEST_SYSTEM_PUBLIC_KEY,
+      private_key=settings.TEST_SYSTEM_PRIVATE_KEY,
+    )
     self.account = Account.objects.create(public_key=settings.TEST_PUBLIC_KEY)
     self.account.import_public_key()
     self.challenge = self.account.challenges.create()
