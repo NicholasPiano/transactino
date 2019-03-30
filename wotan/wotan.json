@@ -176,8 +176,27 @@
               "update webpage": "Clearer presentation of jormungand download",
               "do deployment": "",
             }
+          }
+        }
+      },
+      "20190330": {
+        "description": "Getting close to the first release",
+        "children": {
+          "t12.5": {
+            "description": "Add descriptions",
+            "children": {
+              "unsubscribed": "Descriptions were mostly for the unsubscribed schema. More will need to be added for the subscribed schema when it is completed.",
+              "overlapping tests problem": "The overlapping tests problem was solved by removing globally created dictionaries as default values of methods that subsequently modified those values in the body of the method. These values were created at import time, thus were the same for each test. This could lead to values remaining in these default values between tests, or more dangerously, between requests. This is very bad for a web server, and cements my opinion that a webserver should be designed entirely functionally, with no trace of state whatsoever. Python is not designed to accomodate this.",
+            }
           },
-          "t12.5": "",
+          "t12.6": {
+            "description": "Adding announcement model. Need a way to interrupt normal operations by changing database values, rather than by modifying the code running on a webserver. Use cases for this include warnings about upcoming downtime for actual updates and announcements about general status of the system or upcoming planned changes.",
+            "children": {
+              "normal model": "It should behave like the System model, roughly. Only active announcements can be fetched by normal plebs.",
+              "inserted into every response": "I feel like this should not be done for general performance reasons. Perhaps a small note could be placed in the response, rather than bundling every active announcement into every response. In any case, a similar mechanism to external querysets could be used.",
+              "should be signed by the system": "Can be a foreign key to system model. Signing is part of the creation process.",
+            }
+          }
         }
       }
     }

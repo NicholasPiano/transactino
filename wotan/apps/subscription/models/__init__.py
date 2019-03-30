@@ -1,6 +1,7 @@
 
 from .account import Account
 from .address import Address
+from .announcement import Announcement
 from .challenge import Challenge
 from .connection import Connection
 from .discount import Discount
