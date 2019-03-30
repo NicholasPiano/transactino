@@ -19,9 +19,7 @@ class InstanceSchema(StructureSchema):
       **kwargs,
       description=(
         'The schema for reporting a single instance of the {} model.'
-      ).format(
-        Model.__name__,
-      ),
+      ).format(Model.__name__),
       children={
         schema_constants.ATTRIBUTES: InstanceAttributeSchema(Model, mode=mode),
         schema_constants.RELATIONSHIPS: InstanceRelationshipSchema(Model, mode=mode),
@@ -62,23 +60,23 @@ class InstancesResponse(IndexedResponse):
       )
 
 class InstancesSchema(IndexedSchema):
-  def __init__(self, Model, mode=None, **kwargs):
+  def __init__(self, Model, mode=None, template=None, **kwargs):
+    template = template or InstanceSchema(Model, mode=mode)
     super().__init__(
       **kwargs,
       response=InstancesResponse,
-      template=InstanceSchema(Model, mode=mode),
+      template=template,
     )
 
 class InstancesClosedSchema(ClosedSchema):
-  def __init__(self, Model, mode=None, **kwargs):
+  def __init__(self, Model, mode=None, client=None, **kwargs):
+    client = client or InstancesSchema(Model, mode=mode)
     super().__init__(
       **kwargs,
       description=(
         'The schema for reporting details of instances of the'
         ' {} model. This schema takes no input and does not trigger'
         ' any methods or any interaction with the API.'
-      ).format(
-        Model.__name__,
-      ),
-      client=InstancesSchema(Model, mode=mode),
+      ).format(Model.__name__),
+      client=client,
     )

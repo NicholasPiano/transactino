@@ -8,10 +8,15 @@ from util.api import (
 )
 
 from ......schema.with_origin import WithOrigin
-from ......schema.with_challenge import WithChallenge
+from ......schema.with_challenge import WithChallenge, WithChallengeClientSchema
 from ....constants import account_fields
 from .constants import verify_constants
 from .errors import verify_errors
+
+class Client(WithChallengeClientSchema):
+  def respond(self, payload=None, context=None):
+    print('CLIENT PAYLOAD', payload)
+    return super().respond(payload=payload, context=context)
 
 class AccountVerifySchema(WithOrigin, WithChallenge):
   def __init__(self, **kwargs):
@@ -24,6 +29,7 @@ class AccountVerifySchema(WithOrigin, WithChallenge):
       ),
       types=types.STRUCTURE(),
       origin=verify_constants.ORIGIN,
+      client=Client(),
     )
 
   def get_available_errors(self):

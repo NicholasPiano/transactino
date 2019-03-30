@@ -11,9 +11,13 @@ from .respond import ChallengeRespondSchema
 from .get import ChallengeGetSchema
 
 class ChallengeModelMethodsSchema(StructureSchema):
-  def __init__(self, Model, **kwargs):
-    super().__init__(Model, **kwargs)
-    self.children = {
-      challenge_method_constants.RESPOND: ChallengeRespondSchema(),
-      method_constants.GET: ChallengeGetSchema(),
-    }
+  def __init__(self, Model):
+    super().__init__(
+      description=(
+        'Methods for the Challenge model'
+      ),
+      children={
+        challenge_method_constants.RESPOND: ChallengeRespondSchema(),
+        method_constants.GET: ChallengeGetSchema(),
+      },
+    )

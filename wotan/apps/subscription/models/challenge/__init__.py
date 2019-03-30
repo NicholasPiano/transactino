@@ -75,7 +75,14 @@ class Challenge(Model):
 
   origin = models.UUIDField(default=uuid.uuid4)
   content = models.TextField(default=generate_challenge_content, editable=False)
-  encrypted_content = models.TextField(default='')
+  encrypted_content = models.TextField(
+    default='',
+    verbose_name=(
+      'The secret content of the challenge encrypted'
+      ' to the public key of the user. Decrypt this content'
+      ' using your secret key.'
+    ),
+  )
   is_open = models.BooleanField(default=True)
   has_been_used = models.BooleanField(default=False)
 

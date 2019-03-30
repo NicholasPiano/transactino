@@ -28,7 +28,8 @@ class WithChallengeClientSchema(StructureSchema):
       ),
     )
 
-  def respond(self, payload={}, context=None, challenge_id=None, check_challenge=False, **kwargs):
+  def respond(self, payload=None, context=None, challenge_id=None, check_challenge=False, **kwargs):
+    print(self.hello, payload, context, challenge_id, check_challenge, kwargs)
     if not check_challenge:
       return super().respond(payload=payload, context=context, **kwargs)
 
@@ -50,7 +51,8 @@ class WithChallengeClientSchema(StructureSchema):
     return super().respond(payload=payload, context=context, **kwargs)
 
 class WithChallenge(Schema):
-  def __init__(self, client=WithChallengeClientSchema(), **kwargs):
+  def __init__(self, client=None, **kwargs):
+    client = client or WithChallengeClientSchema()
     super().__init__(
       **kwargs,
       client=client,

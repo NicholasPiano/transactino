@@ -9,6 +9,7 @@ class InstanceAttributeSchema(StructureSchema):
       description='Non-relationship attributes of the model instance',
       children={
         attribute_field.name: Schema(
+          description=attribute_field.verbose_name,
           types=map_type(attribute_field.get_internal_type())
         )
         for attribute_field

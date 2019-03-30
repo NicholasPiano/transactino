@@ -30,7 +30,7 @@ class AccountManager(Manager):
 class Account(Model):
   objects = AccountManager()
 
-  public_key = models.TextField(default='')
+  public_key = models.TextField(default='', verbose_name='')
   long_key_id = models.CharField(max_length=255, default='')
   is_superadmin = models.BooleanField(default=False)
   is_verified = models.BooleanField(default=False)

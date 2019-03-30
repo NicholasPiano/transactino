@@ -1,4 +1,6 @@
 
+import random
+
 from util.merge import merge
 from util.force_array import force_array
 
@@ -19,6 +21,7 @@ class Schema():
   default_response = Response
 
   def __init__(self, description=None, types=None, response=None, client=None, closed=False):
+    self.hello = random.randint(1, 1000)
     self.description = description
     self.types = force_array(types or self.default_types)
     self.response = response or self.default_response

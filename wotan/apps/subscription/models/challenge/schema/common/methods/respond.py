@@ -22,8 +22,14 @@ class ChallengeRespondClientSchema(StructureSchema):
         ' outcome of the evaluation.'
       ),
       children={
-        respond_constants.CHALLENGE_ID: Schema(types=types.UUID()),
-        respond_constants.IS_VERIFIED: Schema(types=types.BOOLEAN()),
+        respond_constants.CHALLENGE_ID: Schema(
+          description='The ID of the Challenge that is in the process of being verified',
+          types=types.UUID(),
+        ),
+        respond_constants.IS_VERIFIED: Schema(
+          description='A flag indicating whether the verification has been successful',
+          types=types.BOOLEAN(),
+        ),
       },
     )
 

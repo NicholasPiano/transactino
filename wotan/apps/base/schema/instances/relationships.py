@@ -13,7 +13,11 @@ class InstanceRelationshipSchema(StructureSchema):
       description='Relationships on the model instance',
       children={
         relationship_field.name: Schema(
-          description='Relationships can refer to a single related model, or multiple, or else be null',
+          description=(
+            relationship_field.verbose_name
+            if hasattr(relationship_field, 'verbose_name')
+            else relationship_field.get_related_field().verbose_name
+          ),
           types=[
             types.REF(description='A database reference to a single other model instance'),
             types.ARRAY(description='An array of references to multiple other model instances'),

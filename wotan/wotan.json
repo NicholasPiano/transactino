@@ -166,7 +166,18 @@
                 }
               }
             }
-          }
+          },
+          "todo": {
+            "description": "This should be all I need to deploy a reasonable application",
+            "children": {
+              "update descriptions": "",
+              "top-down tests": "Need subscribed tests, account verified",
+              "update jormungand": "Long overdue. The current version does not even support the API as it stands.",
+              "update webpage": "Clearer presentation of jormungand download",
+              "do deployment": "",
+            }
+          },
+          "t12.5": "",
         }
       }
     }

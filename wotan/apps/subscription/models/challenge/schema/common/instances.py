@@ -24,11 +24,20 @@ class ChallengeInstanceSchema(InstanceSchema):
     )
 
 class ChallengeInstancesSchema(InstancesSchema):
-  def __init__(self, Model, mode=None, **kwargs):
-    super().__init__(Model, mode=mode, **kwargs)
-    self.template = ChallengeInstanceSchema(Model, mode=mode)
+  def __init__(self, Model, mode=None):
+    super().__init__(
+      Model,
+      mode=mode,
+      description=(
+        'The result of the Challenge query'
+      ),
+      template=ChallengeInstanceSchema(Model, mode=mode),
+    )
 
 class ChallengeInstancesClosedSchema(InstancesClosedSchema):
-  def __init__(self, Model, mode=None, **kwargs):
-    super().__init__(Model, mode=mode, **kwargs)
-    self.client = ChallengeInstancesSchema(Model, mode=mode)
+  def __init__(self, Model, mode=None):
+    super().__init__(
+      Model,
+      mode=mode,
+      client=ChallengeInstancesSchema(Model, mode=mode),
+    )
