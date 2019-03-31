@@ -1,9 +1,19 @@
 
 class TransactinoContext():
-  def __init__(self, connection=None):
+  def __init__(self, system=None, connection=None):
+    self.system = system
     self.connection = connection
 
+  def has_announcements(self):
+    if self.system is None:
+      return False
+
+    return self.system.announcements.filter(is_active=True).exists()
+
   def get_ip(self):
+    if self.connection is None:
+      return None
+
     return self.connection.ip
 
   def get_account(self):

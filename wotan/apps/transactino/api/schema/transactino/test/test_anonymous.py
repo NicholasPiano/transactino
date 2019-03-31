@@ -12,6 +12,7 @@ from apps.subscription.models import Connection, Account, System
 from apps.subscription.models.account.constants import account_fields
 from apps.subscription.models.system.constants import system_fields
 
+from ....constants import api_constants
 from ..constants import transactino_constants
 from .. import TransactinoSchema
 
@@ -37,23 +38,31 @@ class AnonymousTestCase(TestCase):
       paths,
       [
         [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
+          api_constants.SCHEMA,
+          transactino_constants.README,
+        ],
+        [
+          api_constants.SCHEMA,
+          transactino_constants.SOCKET,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
           Account.__name__,
           schema_constants.METHODS,
           method_constants.CREATE,
           account_fields.PUBLIC_KEY,
         ],
         [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
+          api_constants.SCHEMA,
+          api_constants.MODELS,
           System.__name__,
           schema_constants.METHODS,
           method_constants.GET,
         ],
         [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
+          api_constants.SCHEMA,
+          api_constants.MODELS,
           System.__name__,
           schema_constants.INSTANCES,
         ],
@@ -62,8 +71,8 @@ class AnonymousTestCase(TestCase):
 
   def test_account_create(self):
     create_payload = {
-      transactino_constants.SCHEMA: {
-        transactino_constants.MODELS: {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
           Account.__name__: {
             schema_constants.METHODS: {
               method_constants.CREATE: {
@@ -85,8 +94,8 @@ class AnonymousTestCase(TestCase):
   def test_system_get(self):
     system = System.objects.create(public_key=settings.TEST_SYSTEM_PUBLIC_KEY)
     get_payload = {
-      transactino_constants.SCHEMA: {
-        transactino_constants.MODELS: {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
           System.__name__: {
             schema_constants.METHODS: {
               method_constants.GET: {},
@@ -107,28 +116,19 @@ class AnonymousTestCase(TestCase):
       paths,
       [
         [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
+          api_constants.SCHEMA,
+          api_constants.MODELS,
           System.__name__,
           schema_constants.METHODS,
         ],
         [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
+          api_constants.SCHEMA,
+          api_constants.MODELS,
           System.__name__,
           schema_constants.INSTANCES,
           system._id,
           schema_constants.ATTRIBUTES,
           system_fields.PUBLIC_KEY,
-        ],
-        [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
-          System.__name__,
-          schema_constants.INSTANCES,
-          system._id,
-          schema_constants.ATTRIBUTES,
-          system_fields.LONG_KEY_ID,
         ],
       ],
     )

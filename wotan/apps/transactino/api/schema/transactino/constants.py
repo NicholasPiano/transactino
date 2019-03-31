@@ -1,4 +1,6 @@
 
 class transactino_constants:
-  SCHEMA = 'schema'
-  MODELS = 'models'
+  SYSTEM = 'system'
+  SOCKET = 'socket'
+  ANNOUNCEMENTS = 'announcements'
+  README = 'readme'

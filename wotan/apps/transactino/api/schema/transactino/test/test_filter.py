@@ -13,7 +13,7 @@ from apps.base.schema.methods.constants import filter_constants, method_constant
 from apps.subscription.models import Account, IP, Connection
 from apps.subscription.models.account.constants import account_fields
 
-from ..constants import transactino_constants
+from ....constants import api_constants
 from .. import TransactinoSchema
 
 class FilterTestCase(TestCase):
@@ -43,8 +43,8 @@ class FilterTestCase(TestCase):
 
   def test_filter(self):
     payload = {
-      transactino_constants.SCHEMA: {
-        transactino_constants.MODELS: {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
           Account.__name__: {
             schema_constants.METHODS: {
               method_constants.FILTER: {

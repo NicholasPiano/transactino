@@ -1,6 +1,7 @@
 
 from util.merge import merge
 from util.api import StructureSchema
+
 from apps.base.schema import ModelsSchemaWithExternal
 from apps.subscription.constants import mode_constants
 from apps.subscription.models import (
@@ -12,7 +13,8 @@ from apps.subscription.models import (
   Payment,
 )
 
-from .constants import transactino_constants
+from ...constants import api_constants
+from .control import TransactinoControlSchema
 from .common import CommonSchema
 
 class UnsubscribedSchema(StructureSchema):
@@ -38,12 +40,13 @@ class UnsubscribedSchema(StructureSchema):
         'The account does not have an active subscription.'
         ' Refer to the Subscription model to create one.'
       ),
-      children=merge(
-        {
-          transactino_constants.SCHEMA: StructureSchema(
-            description='The schema accepts data in plaintext JSON and interacts with the API',
-            children={
-              transactino_constants.MODELS: ModelsSchemaWithExternal(
+      children={
+        api_constants.SCHEMA: TransactinoControlSchema(
+          description='The schema accepts data in plaintext JSON and interacts with the API',
+          children=merge(
+            CommonSchema().children,
+            {
+              api_constants.MODELS: ModelsSchemaWithExternal(
                 description='Models available to the user',
                 children={
                   Model.__name__: Model.objects.schema(mode=mode_constants.UNSUBSCRIBED)
@@ -53,6 +56,6 @@ class UnsubscribedSchema(StructureSchema):
               ),
             },
           ),
-        },
-      ),
+        ),
+      },
     )

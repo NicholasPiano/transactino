@@ -29,6 +29,7 @@ from apps.subscription.models.challenge.schema.common.methods.constants import (
 )
 from apps.subscription.models.system.constants import system_fields
 
+from ....constants import api_constants
 from ..constants import transactino_constants
 from .. import TransactinoSchema
 
@@ -53,7 +54,11 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
   def test_schema_paths(self):
     null_payload = None
 
-    response = self.schema.respond(payload=null_payload, connection=self.connection)
+    response = self.schema.respond(
+      system=self.system,
+      connection=self.connection,
+      payload=null_payload,
+    )
     rendered_response = response.render()
     paths = extract_schema_paths(rendered_response)
 
@@ -61,72 +66,88 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
       paths,
       [
         [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
+          api_constants.SCHEMA,
+          transactino_constants.README,
+        ],
+        [
+          api_constants.SCHEMA,
+          transactino_constants.SOCKET,
+        ],
+        [
+          api_constants.SCHEMA,
+          transactino_constants.SYSTEM,
+        ],
+        [
+          api_constants.SCHEMA,
+          transactino_constants.ANNOUNCEMENTS,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
           Account.__name__,
           schema_constants.METHODS,
           account_unsubscribed_method_constants.VERIFY,
         ],
         [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
+          api_constants.SCHEMA,
+          api_constants.MODELS,
           Account.__name__,
           schema_constants.METHODS,
           method_constants.DELETE,
         ],
         [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
+          api_constants.SCHEMA,
+          api_constants.MODELS,
           Announcement.__name__,
           schema_constants.METHODS,
           method_constants.GET,
         ],
         [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
+          api_constants.SCHEMA,
+          api_constants.MODELS,
           Announcement.__name__,
           schema_constants.INSTANCES,
         ],
         [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
+          api_constants.SCHEMA,
+          api_constants.MODELS,
           Challenge.__name__,
           schema_constants.METHODS,
           challenge_method_constants.RESPOND,
           respond_constants.CHALLENGE_ID,
         ],
         [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
+          api_constants.SCHEMA,
+          api_constants.MODELS,
           Challenge.__name__,
           schema_constants.METHODS,
           challenge_method_constants.RESPOND,
           respond_constants.CONTENT,
         ],
         [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
+          api_constants.SCHEMA,
+          api_constants.MODELS,
           Challenge.__name__,
           schema_constants.METHODS,
           method_constants.GET,
           challenge_fields.IS_OPEN,
         ],
         [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
+          api_constants.SCHEMA,
+          api_constants.MODELS,
           Challenge.__name__,
           schema_constants.INSTANCES,
         ],
         [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
+          api_constants.SCHEMA,
+          api_constants.MODELS,
           System.__name__,
           schema_constants.METHODS,
           method_constants.GET,
         ],
         [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
+          api_constants.SCHEMA,
+          api_constants.MODELS,
           System.__name__,
           schema_constants.INSTANCES,
         ],
@@ -135,8 +156,8 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
 
   def test_account_verify(self):
     verify_payload = {
-      transactino_constants.SCHEMA: {
-        transactino_constants.MODELS: {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
           Account.__name__: {
             schema_constants.METHODS: {
               account_unsubscribed_method_constants.VERIFY: {},
@@ -147,8 +168,9 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
     }
 
     verify_response = self.schema.respond(
-      payload=verify_payload,
+      system=self.system,
       connection=self.connection,
+      payload=verify_payload,
     )
 
     gpg = GPG(binary=settings.GPG_BINARY, path=settings.GPG_PATH)
@@ -159,8 +181,8 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
     encrypted_content = find_in_dictionary(
       verify_response.render(),
       [
-        transactino_constants.SCHEMA,
-        transactino_constants.MODELS,
+        api_constants.SCHEMA,
+        api_constants.MODELS,
         Challenge.__name__,
         schema_constants.INSTANCES,
         challenge._id,
@@ -176,8 +198,8 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
     )
 
     respond_payload = {
-      transactino_constants.SCHEMA: {
-        transactino_constants.MODELS: {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
           Challenge.__name__: {
             schema_constants.METHODS: {
               challenge_method_constants.RESPOND: {
@@ -191,20 +213,22 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
     }
 
     respond_response = self.schema.respond(
-      payload=respond_payload,
+      system=self.system,
       connection=self.connection,
+      payload=respond_payload,
     )
     second_verify_response = self.schema.respond(
-      payload=verify_payload,
+      system=self.system,
       connection=self.connection,
+      payload=verify_payload,
     )
 
     self.assertTrue(Account.objects.get(public_key=self.public_key).is_verified)
 
   def test_account_delete(self):
     delete_payload = {
-      transactino_constants.SCHEMA: {
-        transactino_constants.MODELS: {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
           Account.__name__: {
             schema_constants.METHODS: {
               method_constants.DELETE: {},
@@ -215,8 +239,9 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
     }
 
     delete_response = self.schema.respond(
-      payload=delete_payload,
+      system=self.system,
       connection=self.connection,
+      payload=delete_payload,
     )
 
     gpg = GPG(binary=settings.GPG_BINARY, path=settings.GPG_PATH)
@@ -227,8 +252,8 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
     encrypted_content = find_in_dictionary(
       delete_response.render(),
       [
-        transactino_constants.SCHEMA,
-        transactino_constants.MODELS,
+        api_constants.SCHEMA,
+        api_constants.MODELS,
         Challenge.__name__,
         schema_constants.INSTANCES,
         challenge._id,
@@ -244,8 +269,8 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
     )
 
     respond_payload = {
-      transactino_constants.SCHEMA: {
-        transactino_constants.MODELS: {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
           Challenge.__name__: {
             schema_constants.METHODS: {
               challenge_method_constants.RESPOND: {
@@ -259,12 +284,14 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
     }
 
     respond_response = self.schema.respond(
-      payload=respond_payload,
+      system=self.system,
       connection=self.connection,
+      payload=respond_payload,
     )
     second_delete_response = self.schema.respond(
-      payload=delete_payload,
+      system=self.system,
       connection=self.connection,
+      payload=delete_payload,
     )
 
     self.assertFalse(Account.objects.get(public_key=self.public_key))
@@ -281,8 +308,8 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
     )
 
     get_payload = {
-      transactino_constants.SCHEMA: {
-        transactino_constants.MODELS: {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
           Announcement.__name__: {
             schema_constants.METHODS: {
               method_constants.GET: {},
@@ -292,7 +319,11 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
       },
     }
 
-    get_response = self.schema.respond(payload=get_payload, connection=self.connection)
+    get_response = self.schema.respond(
+      system=self.system,
+      connection=self.connection,
+      payload=get_payload,
+    )
 
     paths = extract_schema_paths(get_response.render(), null=False)
 
@@ -300,14 +331,14 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
       paths,
       [
         [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
+          api_constants.SCHEMA,
+          api_constants.MODELS,
           Announcement.__name__,
           schema_constants.METHODS,
         ],
         [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
+          api_constants.SCHEMA,
+          api_constants.MODELS,
           Announcement.__name__,
           schema_constants.INSTANCES,
           active_announcement._id,
@@ -315,8 +346,8 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
           announcement_fields.MATTER,
         ],
         [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
+          api_constants.SCHEMA,
+          api_constants.MODELS,
           Announcement.__name__,
           schema_constants.INSTANCES,
           active_announcement._id,
@@ -324,8 +355,8 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
           announcement_fields.SIGNATURE,
         ],
         [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
+          api_constants.SCHEMA,
+          api_constants.MODELS,
           Announcement.__name__,
           schema_constants.INSTANCES,
           active_announcement._id,
@@ -334,6 +365,36 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
         ],
       ],
     )
+
+  def test_announcement_notification(self):
+    active_announcement = Announcement.objects.create_and_sign(
+      system=self.system,
+      matter='active',
+    )
+    active_announcement.activate()
+
+    get_payload = {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
+          Challenge.__name__: {
+            schema_constants.METHODS: {
+              method_constants.GET: {},
+            },
+          },
+        },
+      },
+    }
+
+    get_response = self.schema.respond(
+      system=self.system,
+      connection=self.connection,
+      payload=get_payload,
+    )
+
+    schema_response = get_response.get_child(api_constants.SCHEMA)
+    announcements_response = schema_response.get_child(transactino_constants.ANNOUNCEMENTS)
+
+    self.assertTrue(announcements_response)
 
   def test_challenge_get(self):
     open_challenge_content = 'open_challenge_content'
@@ -348,8 +409,8 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
     )
 
     get_payload = {
-      transactino_constants.SCHEMA: {
-        transactino_constants.MODELS: {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
           Challenge.__name__: {
             schema_constants.METHODS: {
               method_constants.GET: {},
@@ -360,8 +421,9 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
     }
 
     get_response = self.schema.respond(
-      payload=get_payload,
+      system=self.system,
       connection=self.connection,
+      payload=get_payload,
     )
 
     paths = extract_schema_paths(get_response.render(), null=False)
@@ -370,16 +432,16 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
       paths,
       [
         [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
+          api_constants.SCHEMA,
+          api_constants.MODELS,
           Challenge.__name__,
           schema_constants.METHODS,
           method_constants.GET,
           challenge_fields.IS_OPEN,
         ],
         [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
+          api_constants.SCHEMA,
+          api_constants.MODELS,
           Challenge.__name__,
           schema_constants.INSTANCES,
           open_challenge._id,
@@ -387,8 +449,8 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
           challenge_fields.ENCRYPTED_CONTENT,
         ],
         [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
+          api_constants.SCHEMA,
+          api_constants.MODELS,
           Challenge.__name__,
           schema_constants.INSTANCES,
           closed_challenge._id,
@@ -411,8 +473,8 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
     )
 
     get_payload = {
-      transactino_constants.SCHEMA: {
-        transactino_constants.MODELS: {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
           Challenge.__name__: {
             schema_constants.METHODS: {
               method_constants.GET: {
@@ -425,16 +487,17 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
     }
 
     get_response = self.schema.respond(
-      payload=get_payload,
+      system=self.system,
       connection=self.connection,
+      payload=get_payload,
     )
 
     rendered_response = get_response.render()
     instances = find_in_dictionary(
       rendered_response,
       [
-        transactino_constants.SCHEMA,
-        transactino_constants.MODELS,
+        api_constants.SCHEMA,
+        api_constants.MODELS,
         Challenge.__name__,
         schema_constants.INSTANCES,
       ],
@@ -445,8 +508,8 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
 
   def test_system_get(self):
     get_payload = {
-      transactino_constants.SCHEMA: {
-        transactino_constants.MODELS: {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
           System.__name__: {
             schema_constants.METHODS: {
               method_constants.GET: {},
@@ -456,7 +519,11 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
       },
     }
 
-    get_response = self.schema.respond(payload=get_payload, connection=self.connection)
+    get_response = self.schema.respond(
+      system=self.system,
+      connection=self.connection,
+      payload=get_payload,
+    )
 
     paths = extract_schema_paths(get_response.render(), null=False)
 
@@ -464,14 +531,14 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
       paths,
       [
         [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
+          api_constants.SCHEMA,
+          api_constants.MODELS,
           System.__name__,
           schema_constants.METHODS,
         ],
         [
-          transactino_constants.SCHEMA,
-          transactino_constants.MODELS,
+          api_constants.SCHEMA,
+          api_constants.MODELS,
           System.__name__,
           schema_constants.INSTANCES,
           self.system._id,

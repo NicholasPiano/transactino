@@ -3,7 +3,7 @@ import json
 
 from util.api import Schema, StructureSchema, types
 
-from apps.subscription.models import Connection
+from apps.subscription.models import System, Connection
 
 from .constants import proxy_constants
 from .transactino import TransactinoSchema
@@ -23,6 +23,8 @@ class ProxySchema(StructureSchema):
     if self.active_response.has_errors():
       return
 
+    system = System.objects.active()
+
     connection, connection_created = Connection.objects.bring_online(
       name=self.active_response.get_child(proxy_constants.CHANNEL).render(),
       ip_value=self.active_response.get_child(proxy_constants.IP).render(),
@@ -31,6 +33,7 @@ class ProxySchema(StructureSchema):
     self.active_response.add_child(
       proxy_constants.TRANSACTINO,
       TransactinoSchema().respond(
+        system=system,
         connection=connection,
         payload=payload.get(proxy_constants.TRANSACTINO),
       )

@@ -1,20 +1,24 @@
 
-from constants import application_constants
-
 from util.api import StructureSchema
 
-from .message import MessageSchema
+from apps.subscription.constants import mode_constants
+
+from ..constants import transactino_constants
+from .system import SystemSchema
+from .announcements import AnnouncementsSchema
 from .readme import ReadmeSchema
 from .socket import SocketSchema
-from .system import SystemSchema
-from .models import ModelsSchemaWithChallenges
 
 class CommonSchema(StructureSchema):
-  def __init__(self, **kwargs):
+  def __init__(self, mode=None, **kwargs):
     super().__init__(**kwargs)
     self.children = {
-      application_constants.SYSTEM: SystemSchema(),
-      application_constants.SOCKET: SocketSchema(),
-      application_constants.MESSAGE: MessageSchema(),
-      application_constants.README: ReadmeSchema(),
+      transactino_constants.README: ReadmeSchema(),
+      transactino_constants.SOCKET: SocketSchema(),
     }
+
+    if mode != mode_constants.ANONYMOUS:
+      self.children.update({
+        transactino_constants.SYSTEM: SystemSchema(),
+        transactino_constants.ANNOUNCEMENTS: AnnouncementsSchema(),
+      })

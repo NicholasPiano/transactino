@@ -19,7 +19,7 @@ from apps.subscription.models.challenge.schema.common.methods.constants import (
 )
 from apps.subscription.models.subscription.constants import subscription_fields
 
-from ..constants import transactino_constants
+from ....constants import api_constants
 from .. import TransactinoSchema
 
 class TransactinoSchemaTestCase(TestCase):
@@ -35,8 +35,8 @@ class TransactinoSchemaTestCase(TestCase):
 
   def test_subscription_creation(self):
     create_account_payload = {
-      transactino_constants.SCHEMA: {
-        transactino_constants.MODELS: {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
           Account.__name__: {
             schema_constants.METHODS: {
               method_constants.CREATE: {
@@ -62,8 +62,8 @@ class TransactinoSchemaTestCase(TestCase):
     account.save()
 
     create_subscription_payload = {
-      transactino_constants.SCHEMA: {
-        transactino_constants.MODELS: {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
           Subscription.__name__: {
             schema_constants.METHODS: {
               method_constants.CREATE: {},
@@ -85,9 +85,9 @@ class TransactinoSchemaTestCase(TestCase):
 
     challenge_id = list(
       create_response.render().get(
-        transactino_constants.SCHEMA
+        api_constants.SCHEMA
       ).get(
-        transactino_constants.MODELS
+        api_constants.MODELS
       ).get(
         Challenge.__name__
       ).get(
@@ -95,9 +95,9 @@ class TransactinoSchemaTestCase(TestCase):
       ).keys()
     )[0]
     encrypted_content = create_response.render().get(
-      transactino_constants.SCHEMA
+      api_constants.SCHEMA
     ).get(
-      transactino_constants.MODELS
+      api_constants.MODELS
     ).get(
       Challenge.__name__
     ).get(
@@ -117,8 +117,8 @@ class TransactinoSchemaTestCase(TestCase):
     )
 
     respond_payload = {
-      transactino_constants.SCHEMA: {
-        transactino_constants.MODELS: {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
           Challenge.__name__: {
             schema_constants.METHODS: {
               challenge_method_constants.RESPOND: {
@@ -137,8 +137,8 @@ class TransactinoSchemaTestCase(TestCase):
     )
 
     second_create_subscription_payload = {
-      transactino_constants.SCHEMA: {
-        transactino_constants.MODELS: {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
           Subscription.__name__: {
             schema_constants.METHODS: {
               method_constants.CREATE: {

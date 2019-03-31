@@ -14,7 +14,7 @@ from apps.subscription.models import (
 )
 
 from .....models import FeeReport
-from ..constants import transactino_constants
+from ....constants import api_constants
 from ..common import CommonSchema
 from .constants import superadmin_constants
 
@@ -24,9 +24,9 @@ class SuperadminTopLevelSchema(StructureSchema):
       **kwargs,
       children=merge(
         {
-          transactino_constants.SCHEMA: StructureSchema(
+          api_constants.SCHEMA: StructureSchema(
             children={
-              transactino_constants.MODELS: ModelsSchemaWithExternal(
+              api_constants.MODELS: ModelsSchemaWithExternal(
                 children={
                   Model.__name__: Model.objects.schema(mode=mode_constants.SUPERADMIN) for Model in [
                     Account,

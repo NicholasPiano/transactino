@@ -4,7 +4,7 @@ from util.merge import merge
 from .constants import constants
 
 class Response():
-  def __init__(self, parent_schema):
+  def __init__(self, parent_schema, value=None):
     self.parent_schema = parent_schema
     self.description = parent_schema.description
     self.types = parent_schema.types
@@ -12,7 +12,7 @@ class Response():
     self.active_type = None
     self.errors = {}
     self.is_empty = False
-    self.value = None
+    self.value = value
     self.rendered = None
     self.has_child_errors = False
 
@@ -110,7 +110,10 @@ class StructureResponse(Response):
 
   def force_get_child(self, child_key):
     if child_key not in self.children and child_key in self.parent_schema.children:
-      self.add_child(child_key, self.parent_schema.children.get(child_key).get_response())
+      self.add_child(
+        child_key,
+        self.parent_schema.children.get(child_key).get_response()
+      )
 
     return self.get_child(child_key)
 
