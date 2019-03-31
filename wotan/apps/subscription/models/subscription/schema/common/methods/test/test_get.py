@@ -7,10 +7,9 @@ from django.conf import settings
 
 from util.api.constants import constants
 
-from apps.base.constants import model_fields
-
 from ......account import Account
 from .....constants import subscription_fields
+from ..constants import get_constants
 from ..get import SubscriptionGetSchema
 
 class TestContext():
@@ -44,7 +43,7 @@ class SubscriptionGetSchemaTestCase(TestCase):
 
   def test_get_id(self):
     payload = {
-      model_fields.ID: self.active_subscription._id,
+      get_constants.SUBSCRIPTION_ID: self.active_subscription._id,
     }
 
     response = self.schema.respond(payload=payload, context=self.context)
@@ -56,7 +55,7 @@ class SubscriptionGetSchemaTestCase(TestCase):
 
   def test_get_id_and_active(self):
     payload = {
-      model_fields.ID: self.active_subscription._id,
+      get_constants.SUBSCRIPTION_ID: self.active_subscription._id,
       subscription_fields.IS_ACTIVE: True,
     }
 

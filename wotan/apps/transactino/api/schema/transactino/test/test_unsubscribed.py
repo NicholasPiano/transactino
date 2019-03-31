@@ -16,18 +16,31 @@ from apps.subscription.models import (
   Challenge,
   System,
   Connection,
+  Subscription,
+  Payment,
 )
 from apps.subscription.models.account.constants import account_fields
-from apps.subscription.models.announcement.constants import announcement_fields
 from apps.subscription.models.account.schema.unsubscribed.methods.constants import (
   account_unsubscribed_method_constants,
 )
+from apps.subscription.models.announcement.constants import announcement_fields
 from apps.subscription.models.challenge.constants import challenge_fields
 from apps.subscription.models.challenge.schema.common.methods.constants import (
-  respond_constants,
   challenge_method_constants,
+  respond_constants as challenge_respond_constants,
+  get_constants as challenge_get_constants,
 )
 from apps.subscription.models.system.constants import system_fields
+from apps.subscription.models.subscription.constants import subscription_fields
+from apps.subscription.models.subscription.schema.common.methods.constants import (
+  subscription_method_constants,
+  get_constants as subscription_get_constants,
+  activate_constants as subscription_activate_constants,
+)
+from apps.subscription.models.payment.constants import payment_fields
+from apps.subscription.models.payment.schema.common.methods.constants import (
+  get_constants as payment_get_constants,
+)
 
 from ....constants import api_constants
 from ..constants import transactino_constants
@@ -114,7 +127,7 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
           Challenge.__name__,
           schema_constants.METHODS,
           challenge_method_constants.RESPOND,
-          respond_constants.CHALLENGE_ID,
+          challenge_respond_constants.CHALLENGE_ID,
         ],
         [
           api_constants.SCHEMA,
@@ -122,7 +135,15 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
           Challenge.__name__,
           schema_constants.METHODS,
           challenge_method_constants.RESPOND,
-          respond_constants.CONTENT,
+          challenge_respond_constants.CONTENT,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Challenge.__name__,
+          schema_constants.METHODS,
+          method_constants.GET,
+          challenge_get_constants.CHALLENGE_ID,
         ],
         [
           api_constants.SCHEMA,
@@ -203,8 +224,8 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
           Challenge.__name__: {
             schema_constants.METHODS: {
               challenge_method_constants.RESPOND: {
-                respond_constants.CHALLENGE_ID: challenge._id,
-                respond_constants.CONTENT: reencrypted_content,
+                challenge_respond_constants.CHALLENGE_ID: challenge._id,
+                challenge_respond_constants.CONTENT: reencrypted_content,
               },
             },
           },
@@ -274,8 +295,8 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
           Challenge.__name__: {
             schema_constants.METHODS: {
               challenge_method_constants.RESPOND: {
-                respond_constants.CHALLENGE_ID: challenge._id,
-                respond_constants.CONTENT: reencrypted_content,
+                challenge_respond_constants.CHALLENGE_ID: challenge._id,
+                challenge_respond_constants.CONTENT: reencrypted_content,
               },
             },
           },
@@ -437,6 +458,14 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
           Challenge.__name__,
           schema_constants.METHODS,
           method_constants.GET,
+          challenge_get_constants.CHALLENGE_ID,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Challenge.__name__,
+          schema_constants.METHODS,
+          method_constants.GET,
           challenge_fields.IS_OPEN,
         ],
         [
@@ -459,52 +488,6 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
         ],
       ],
     )
-
-  def test_challenge_get_open(self):
-    open_challenge_content = 'open_challenge_content'
-    open_challenge = self.account.challenges.create(
-      is_open=True,
-      encrypted_content=open_challenge_content,
-    )
-    closed_challenge_content = 'closed_challenge_content'
-    closed_challenge = self.account.challenges.create(
-      is_open=False,
-      encrypted_content=closed_challenge_content,
-    )
-
-    get_payload = {
-      api_constants.SCHEMA: {
-        api_constants.MODELS: {
-          Challenge.__name__: {
-            schema_constants.METHODS: {
-              method_constants.GET: {
-                challenge_fields.IS_OPEN: True,
-              },
-            },
-          },
-        },
-      },
-    }
-
-    get_response = self.schema.respond(
-      system=self.system,
-      connection=self.connection,
-      payload=get_payload,
-    )
-
-    rendered_response = get_response.render()
-    instances = find_in_dictionary(
-      rendered_response,
-      [
-        api_constants.SCHEMA,
-        api_constants.MODELS,
-        Challenge.__name__,
-        schema_constants.INSTANCES,
-      ],
-    )
-
-    self.assertTrue(open_challenge._id in instances)
-    self.assertFalse(closed_challenge._id in instances)
 
   def test_system_get(self):
     get_payload = {
@@ -549,4 +532,396 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
     )
 
 class UnsubscribedAccountVerifiedTestCase(TestCase):
-  pass
+  def setUp(self):
+    self.schema = TransactinoSchema()
+    self.system = System.objects.create_and_import(
+      public_key=settings.TEST_SYSTEM_PUBLIC_KEY,
+      private_key=settings.TEST_SYSTEM_PRIVATE_KEY,
+    )
+    self.public_key = settings.TEST_PUBLIC_KEY
+    self.ip_value = 'ip_value'
+    self.channel_name = 'channel_name'
+    self.account = Account.objects.create(public_key=self.public_key, is_verified=True)
+    self.account.import_public_key()
+    self.ip = self.account.ips.create(value=self.ip_value)
+    self.connection, connection_created = Connection.objects.bring_online(
+      name=self.channel_name,
+      ip_value=self.ip_value,
+    )
+
+  def test_schema_paths(self):
+    null_payload = None
+
+    response = self.schema.respond(
+      system=self.system,
+      connection=self.connection,
+      payload=null_payload,
+    )
+    rendered_response = response.render()
+    paths = extract_schema_paths(rendered_response)
+
+    self.assertEqual(
+      paths,
+      [
+        [
+          api_constants.SCHEMA,
+          transactino_constants.README,
+        ],
+        [
+          api_constants.SCHEMA,
+          transactino_constants.SOCKET,
+        ],
+        [
+          api_constants.SCHEMA,
+          transactino_constants.SYSTEM,
+        ],
+        [
+          api_constants.SCHEMA,
+          transactino_constants.ANNOUNCEMENTS,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Account.__name__,
+          schema_constants.METHODS,
+          account_unsubscribed_method_constants.VERIFY,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Account.__name__,
+          schema_constants.METHODS,
+          method_constants.DELETE,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Announcement.__name__,
+          schema_constants.METHODS,
+          method_constants.GET,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Announcement.__name__,
+          schema_constants.INSTANCES,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Challenge.__name__,
+          schema_constants.METHODS,
+          challenge_method_constants.RESPOND,
+          challenge_respond_constants.CHALLENGE_ID,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Challenge.__name__,
+          schema_constants.METHODS,
+          challenge_method_constants.RESPOND,
+          challenge_respond_constants.CONTENT,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Challenge.__name__,
+          schema_constants.METHODS,
+          method_constants.GET,
+          challenge_get_constants.CHALLENGE_ID,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Challenge.__name__,
+          schema_constants.METHODS,
+          method_constants.GET,
+          challenge_fields.IS_OPEN,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Challenge.__name__,
+          schema_constants.INSTANCES,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          System.__name__,
+          schema_constants.METHODS,
+          method_constants.GET,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          System.__name__,
+          schema_constants.INSTANCES,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Subscription.__name__,
+          schema_constants.METHODS,
+          method_constants.CREATE,
+          subscription_fields.DURATION_IN_DAYS,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Subscription.__name__,
+          schema_constants.METHODS,
+          method_constants.CREATE,
+          subscription_fields.ACTIVATION_DATE,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Subscription.__name__,
+          schema_constants.METHODS,
+          subscription_method_constants.ACTIVATE,
+          subscription_activate_constants.SUBSCRIPTION_ID,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Subscription.__name__,
+          schema_constants.METHODS,
+          method_constants.GET,
+          subscription_get_constants.SUBSCRIPTION_ID,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Subscription.__name__,
+          schema_constants.METHODS,
+          method_constants.GET,
+          subscription_fields.IS_ACTIVE,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Subscription.__name__,
+          schema_constants.INSTANCES,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Payment.__name__,
+          schema_constants.METHODS,
+          method_constants.GET,
+          payment_get_constants.PAYMENT_ID,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Payment.__name__,
+          schema_constants.METHODS,
+          method_constants.GET,
+          payment_fields.IS_OPEN,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Payment.__name__,
+          schema_constants.INSTANCES,
+        ],
+      ],
+    )
+
+  def test_subscription_get(self):
+    subscription = self.account.subscriptions.create(is_active=False)
+    get_payload = {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
+          Subscription.__name__: {
+            schema_constants.METHODS: {
+              method_constants.GET: {},
+            },
+          },
+        },
+      },
+    }
+
+    get_response = self.schema.respond(
+      system=self.system,
+      connection=self.connection,
+      payload=get_payload,
+    )
+
+    paths = extract_schema_paths(get_response.render(), null=False)
+
+    self.assertEqual(
+      paths,
+      [
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Subscription.__name__,
+          schema_constants.METHODS,
+          method_constants.GET,
+          subscription_get_constants.SUBSCRIPTION_ID,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Subscription.__name__,
+          schema_constants.METHODS,
+          method_constants.GET,
+          subscription_fields.IS_ACTIVE,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Subscription.__name__,
+          schema_constants.INSTANCES,
+          subscription._id,
+          schema_constants.ATTRIBUTES,
+          subscription_fields.ORIGIN,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Subscription.__name__,
+          schema_constants.INSTANCES,
+          subscription._id,
+          schema_constants.ATTRIBUTES,
+          subscription_fields.DURATION_IN_DAYS,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Subscription.__name__,
+          schema_constants.INSTANCES,
+          subscription._id,
+          schema_constants.ATTRIBUTES,
+          subscription_fields.ACTIVATION_DATE,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Subscription.__name__,
+          schema_constants.INSTANCES,
+          subscription._id,
+          schema_constants.ATTRIBUTES,
+          subscription_fields.IS_VALID_UNTIL,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Subscription.__name__,
+          schema_constants.INSTANCES,
+          subscription._id,
+          schema_constants.ATTRIBUTES,
+          subscription_fields.HAS_BEEN_ACTIVATED,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Subscription.__name__,
+          schema_constants.INSTANCES,
+          subscription._id,
+          schema_constants.ATTRIBUTES,
+          subscription_fields.IS_ACTIVE,
+        ],
+      ],
+    )
+
+  def test_payment_get(self):
+    payment = self.account.payments.create(is_open=True)
+    get_payload = {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
+          Payment.__name__: {
+            schema_constants.METHODS: {
+              method_constants.GET: {},
+            },
+          },
+        },
+      },
+    }
+
+    get_response = self.schema.respond(
+      system=self.system,
+      connection=self.connection,
+      payload=get_payload,
+    )
+
+    print(json.dumps(get_response.render(), indent=2))
+
+    paths = extract_schema_paths(get_response.render(), null=False)
+
+    self.assertEqual(
+      paths,
+      [
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Payment.__name__,
+          schema_constants.METHODS,
+          method_constants.GET,
+          payment_get_constants.PAYMENT_ID,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Payment.__name__,
+          schema_constants.METHODS,
+          method_constants.GET,
+          payment_fields.IS_OPEN,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Payment.__name__,
+          schema_constants.INSTANCES,
+          payment._id,
+          schema_constants.ATTRIBUTES,
+          payment_fields.ORIGIN,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Payment.__name__,
+          schema_constants.INSTANCES,
+          payment._id,
+          schema_constants.ATTRIBUTES,
+          payment_fields.IS_OPEN,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Payment.__name__,
+          schema_constants.INSTANCES,
+          payment._id,
+          schema_constants.ATTRIBUTES,
+          payment_fields.TIME_CONFIRMED,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Payment.__name__,
+          schema_constants.INSTANCES,
+          payment._id,
+          schema_constants.ATTRIBUTES,
+          payment_fields.FULL_BTC_AMOUNT,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Payment.__name__,
+          schema_constants.INSTANCES,
+          payment._id,
+          schema_constants.ATTRIBUTES,
+          payment_fields.BLOCK_HASH,
+        ],
+        [
+          api_constants.SCHEMA,
+          api_constants.MODELS,
+          Payment.__name__,
+          schema_constants.INSTANCES,
+          payment._id,
+          schema_constants.ATTRIBUTES,
+          payment_fields.TXID,
+        ],
+      ],
+    )

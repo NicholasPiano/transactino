@@ -11,6 +11,7 @@ from apps.base.constants import model_fields
 from apps.base.schema.methods.base import ResponseWithInternalQuerySet
 
 from ....constants import subscription_fields
+from .constants import get_constants
 
 class SubscriptionGetResponse(StructureResponse, ResponseWithInternalQuerySet):
   pass
@@ -26,7 +27,7 @@ class SubscriptionGetSchema(StructureSchema):
       ),
       response=SubscriptionGetResponse,
       children={
-        model_fields.ID: Schema(
+        get_constants.SUBSCRIPTION_ID: Schema(
           description=(
             'The subscription ID'
           ),
@@ -45,7 +46,7 @@ class SubscriptionGetSchema(StructureSchema):
   def responds_to_valid_payload(self, payload, context):
     super().responds_to_valid_payload(payload, context)
 
-    id = self.get_child_value(model_fields.ID)
+    id = self.get_child_value(get_constants.SUBSCRIPTION_ID)
 
     queryset = []
     if id is not None:

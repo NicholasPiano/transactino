@@ -198,6 +198,19 @@
             }
           }
         }
+      },
+      "20190331": {
+        "description": "Adding Announcement model, dashboard schema, and updating tests",
+        "children": {
+          "t12.6": "Added announcement model and added a top-level schema entry that will activate when there are active announcements. This adds a bit of data to the response, but nothing too overbearing, and it leaves the Announcement model schema nice and consistent with the rest of the model schemas.",
+          "t12.7": {
+            "description": "Top-level tests. Mostly the unsubscribed-but-verified schema and the subscribed schema.",
+            "children": {
+              "challenge get filter by id": "",
+              ""
+            }
+          }
+        }
       }
     }
   }

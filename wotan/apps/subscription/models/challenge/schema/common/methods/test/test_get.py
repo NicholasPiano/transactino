@@ -9,6 +9,7 @@ from util.api.constants import constants
 
 from ......account import Account
 from .....constants import challenge_fields
+from ..constants import get_constants
 from ..get import ChallengeGetSchema
 
 class TestContext():
@@ -38,6 +39,31 @@ class ChallengeGetSchemaTestCase(TestCase):
         self.open_challenge,
         self.closed_challenge,
       ],
+    )
+
+  def test_get_id(self):
+    payload = {
+      get_constants.CHALLENGE_ID: self.open_challenge._id,
+    }
+
+    response = self.schema.respond(payload=payload, context=self.context)
+
+    self.assertEqual(
+      list(response.internal_queryset),
+      [self.open_challenge],
+    )
+
+  def test_get_id_and_open(self):
+    payload = {
+      get_constants.CHALLENGE_ID: self.open_challenge._id,
+      challenge_fields.IS_OPEN: True,
+    }
+
+    response = self.schema.respond(payload=payload, context=self.context)
+
+    self.assertEqual(
+      list(response.internal_queryset),
+      [self.open_challenge],
     )
 
   def test_get_open(self):

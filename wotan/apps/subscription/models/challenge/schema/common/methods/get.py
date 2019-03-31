@@ -11,6 +11,7 @@ from apps.base.schema.constants import schema_constants
 from apps.base.schema.methods.base import ResponseWithInternalQuerySet
 
 from ....constants import challenge_fields
+from .constants import get_constants
 
 class ChallengeGetResponse(StructureResponse, ResponseWithInternalQuerySet):
   pass
@@ -27,6 +28,12 @@ class ChallengeGetSchema(StructureSchema):
       ),
       response=ChallengeGetResponse,
       children={
+        get_constants.CHALLENGE_ID: Schema(
+          description=(
+            'The challenge ID'
+          ),
+          types=types.UUID(),
+        ),
         challenge_fields.IS_OPEN: Schema(
           description=(
             'A value intended to filter the list of challenges'
@@ -40,12 +47,17 @@ class ChallengeGetSchema(StructureSchema):
   def responds_to_valid_payload(self, payload, context):
     super().responds_to_valid_payload(payload, context)
 
-    is_open = self.active_response.force_get_child(challenge_fields.IS_OPEN).render()
+    id = self.get_child_value(get_constants.CHALLENGE_ID)
 
     queryset = []
-    if is_open is None:
-      queryset = context.get_account().challenges.all()
+    if id is not None:
+      queryset = context.get_account().challenges.filter(id=id)
     else:
-      queryset = context.get_account().challenges.filter(is_open=is_open)
+      is_open = self.get_child_value(challenge_fields.IS_OPEN)
+
+      if is_open is None:
+        queryset = context.get_account().challenges.all()
+      else:
+        queryset = context.get_account().challenges.filter(is_open=is_open)
 
     self.active_response.add_internal_queryset(queryset)

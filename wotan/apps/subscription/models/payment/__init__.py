@@ -60,6 +60,26 @@ class PaymentManager(Manager):
       if relationship.name in fields
     ]
 
+  def serialize(self, instance, attributes=None, relationships=None, mode=None):
+    serialized = {
+      schema_constants.ATTRIBUTES: self.serialize_attributes(
+        instance,
+        attributes=attributes,
+        mode=mode,
+      ),
+    }
+
+    if mode == mode_constants.SUPERADMIN:
+      serialized.update({
+        schema_constants.RELATIONSHIPS: self.serialize_relationships(
+          instance,
+          relationships=relationships,
+          mode=mode,
+        ),
+      })
+
+    return serialized
+
   def schema(self, mode=None):
     if mode == mode_constants.SUPERADMIN:
       return PaymentSuperadminModelSchema(self.model, mode=mode)
