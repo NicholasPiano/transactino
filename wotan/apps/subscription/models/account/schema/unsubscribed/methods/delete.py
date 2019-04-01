@@ -52,4 +52,4 @@ class AccountDeleteSchema(WithOrigin, WithChallenge):
 
     context.get_account().delete()
 
-    self.active_response = self.client.respond()
+    self.active_response = self.client.respond(check_challenge=True)

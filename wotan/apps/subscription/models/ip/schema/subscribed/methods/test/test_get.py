@@ -29,27 +29,44 @@ class IPGetSchemaTestCase(TestCase):
     self.account.import_public_key()
     self.context = TestContext(self.account)
     self.account.challenges.create(origin=get_constants.ORIGIN, is_open=False, has_been_used=False)
+    self.first_ip = self.account.ips.create(value='first')
+    self.second_ip = self.account.ips.create(value='second')
 
-  def test_get_with_arguments(self):
+  def test_get_does_not_exist(self):
+    ip_id = uuid.uuid4().hex
     payload = {
-      'key': 'value',
+      get_constants.IP_ID: ip_id,
     }
 
     response = self.schema.respond(payload=payload, context=self.context)
 
-    ip_get_takes_no_arguments = get_errors.IP_GET_TAKES_NO_ARGUMENTS()
-    self.assertEqual(response.render(), {
-      constants.ERRORS: {
-        ip_get_takes_no_arguments.code: ip_get_takes_no_arguments.render(),
+    ip_does_not_exist = get_errors.IP_DOES_NOT_EXIST(id=ip_id)
+    self.assertEqual(
+      response.render(),
+      {
+        constants.ERRORS: {
+          ip_does_not_exist.code: ip_does_not_exist.render(),
+        },
       },
-    })
+    )
+
+  def test_get_with_id(self):
+    payload = {
+      get_constants.IP_ID: self.first_ip._id,
+    }
+
+    response = self.schema.respond(payload=payload, context=self.context)
+
+    self.assertTrue(self.first_ip in response.internal_queryset)
 
   def test_get(self):
-    ip = self.account.ips.create(value='ip-address')
-
     response = self.schema.respond(payload={}, context=self.context)
 
-    self.assertEqual(
-      list(response.internal_queryset),
-      [ip],
-    )
+    expected_queryset = [
+      self.first_ip,
+      self.second_ip,
+    ]
+
+    self.assertEqual(len(response.internal_queryset), len(expected_queryset))
+    for result in response.internal_queryset:
+      self.assertTrue(result in expected_queryset)

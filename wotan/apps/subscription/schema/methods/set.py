@@ -38,5 +38,5 @@ class SetSchemaWithChallenge(WithOrigin, WithChallenge, IndexedSchema):
 
     full_queryset = self.model.objects.filter(id__in=self.active_response.children.keys())
 
-    self.active_response = self.client.respond()
+    self.active_response = self.client.respond(check_challenge=True)
     self.active_response.add_internal_queryset(full_queryset)

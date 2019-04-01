@@ -30,3 +30,6 @@ class SubscriptionDoesNotExistError(Error):
 class activate_errors:
   SUBSCRIPTION_DOES_NOT_EXIST = SubscriptionDoesNotExistError
   SUBSCRIPTION_ID_NOT_INCLUDED = SubscriptionIdNotIncludedError
+
+class get_errors:
+  SUBSCRIPTION_DOES_NOT_EXIST = SubscriptionDoesNotExistError

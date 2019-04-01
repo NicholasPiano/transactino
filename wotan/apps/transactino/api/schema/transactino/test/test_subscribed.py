@@ -215,6 +215,7 @@ class SubscribedTestCase(TestCase):
         IP.__name__,
         schema_constants.METHODS,
         method_constants.GET,
+        ip_get_constants.IP_ID,
       ],
       [
         api_constants.SCHEMA,

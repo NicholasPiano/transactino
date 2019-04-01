@@ -45,10 +45,5 @@ class delete_errors:
   IP_ID_NOT_INCLUDED = IpIdNotIncludedError
   IP_DOES_NOT_EXIST = IPDoesNotExistError
 
-class IPGetTakesNoArgumentsError(Error):
-  code = '1010'
-  name = 'ip_get_takes_no_arguments'
-  description = 'IP Address get takes no arguments'
-
 class get_errors:
-  IP_GET_TAKES_NO_ARGUMENTS = IPGetTakesNoArgumentsError
+  IP_DOES_NOT_EXIST = IPDoesNotExistError

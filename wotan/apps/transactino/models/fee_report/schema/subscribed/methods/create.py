@@ -58,5 +58,5 @@ class FeeReportCreateSchema(WithOrigin, WithChallenge, StructureSchema):
       is_active=is_active if is_active is not None else True,
     )
 
-    self.active_response = self.client.respond()
+    self.active_response = self.client.respond(check_challenge=True)
     self.active_response.add_internal_queryset([fee_report])

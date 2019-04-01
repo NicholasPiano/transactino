@@ -42,3 +42,6 @@ class respond_errors:
   CHALLENGE_DOES_NOT_EXIST = ChallengeDoesNotExistError
   CLOSED_CHALLENGE_HAS_BEEN_USED = ClosedChallengeHasBeenUsedError
   CONTENT_NOT_INCLUDED = ContentNotIncludedError
+
+class get_errors:
+  CHALLENGE_DOES_NOT_EXIST = ChallengeDoesNotExistError

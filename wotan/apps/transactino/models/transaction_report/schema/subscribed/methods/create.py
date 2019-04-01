@@ -145,5 +145,5 @@ class TransactionReportCreateSchema(WithOrigin, WithChallenge, StructureSchema):
       value_greater_than=value_greater_than or 0,
     )
 
-    self.active_response = self.client.respond()
+    self.active_response = self.client.respond(check_challenge=True)
     self.active_response.add_internal_queryset([transaction_report])

@@ -12,6 +12,7 @@ from apps.base.schema.methods.base import ResponseWithInternalQuerySet
 
 from ....constants import challenge_fields
 from .constants import get_constants
+from .errors import get_errors
 
 class ChallengeGetResponse(StructureResponse, ResponseWithInternalQuerySet):
   pass
@@ -36,8 +37,8 @@ class ChallengeGetSchema(StructureSchema):
         ),
         challenge_fields.IS_OPEN: Schema(
           description=(
-            'A value intended to filter the list of challenges'
-            ' by its open state.'
+            'Filter the list of challenges'
+            ' by their open states.'
           ),
           types=types.BOOLEAN(),
         ),
@@ -47,11 +48,18 @@ class ChallengeGetSchema(StructureSchema):
   def responds_to_valid_payload(self, payload, context):
     super().responds_to_valid_payload(payload, context)
 
-    id = self.get_child_value(get_constants.CHALLENGE_ID)
+    challenge_id = self.get_child_value(get_constants.CHALLENGE_ID)
 
     queryset = []
-    if id is not None:
-      queryset = context.get_account().challenges.filter(id=id)
+    if challenge_id is not None:
+      queryset = context.get_account().challenges.filter(id=challenge_id)
+
+      if not queryset:
+        self.active_response.add_error(
+          get_errors.CHALLENGE_DOES_NOT_EXIST(id=challenge_id)
+        )
+        return
+
     else:
       is_open = self.get_child_value(challenge_fields.IS_OPEN)
 

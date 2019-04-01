@@ -63,4 +63,4 @@ class AccountSuperadminLockSchema(WithOrigin, WithChallenge, StructureSchema):
     account.is_superadmin_locked = lock if lock is not None else True
     account.save()
 
-    self.active_response = self.client.respond()
+    self.active_response = self.client.respond(check_challenge=True)

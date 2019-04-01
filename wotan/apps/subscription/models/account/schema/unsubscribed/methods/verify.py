@@ -65,4 +65,4 @@ class AccountVerifySchema(WithOrigin, WithChallenge):
     account.is_verified = True
     account.save()
 
-    self.active_response = self.client.respond()
+    self.active_response = self.client.respond(check_challenge=True)

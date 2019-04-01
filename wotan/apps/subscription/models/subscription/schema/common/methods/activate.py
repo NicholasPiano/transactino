@@ -62,4 +62,4 @@ class SubscriptionActivateSchema(WithPayment, StructureSchema):
 
     subscription.activate()
 
-    self.active_response = self.client.respond()
+    self.active_response = self.client.respond(check_payment=True)

@@ -83,5 +83,5 @@ class SubscriptionCreateSchema(WithOrigin, WithChallenge, StructureSchema):
       activation_date=activation_date,
     )
 
-    self.active_response = self.client.respond()
+    self.active_response = self.client.respond(check_challenge=True)
     self.active_response.add_internal_queryset([subscription])

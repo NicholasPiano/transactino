@@ -101,5 +101,5 @@ class IPCreateSchema(WithOrigin, WithChallenge, WithFixedPayment, StructureSchem
 
     ip = context.get_account().ips.create(value=ip_value)
 
-    self.active_response = self.client.respond()
+    self.active_response = self.client.respond(check_challenge=True, check_payment=True)
     self.active_response.add_internal_queryset([ip])

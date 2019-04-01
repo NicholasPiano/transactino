@@ -13,6 +13,7 @@ from apps.base.schema.methods.base import ResponseWithInternalQuerySet
 
 from ....constants import payment_fields
 from .constants import get_constants
+from .errors import get_errors
 
 class PaymentGetResponse(StructureResponse, ResponseWithInternalQuerySet):
   pass
@@ -42,11 +43,18 @@ class PaymentGetSchema(StructureSchema):
   def responds_to_valid_payload(self, payload, context):
     super().responds_to_valid_payload(payload, context)
 
-    id = self.active_response.force_get_child(get_constants.PAYMENT_ID).render()
+    payment_id = self.active_response.force_get_child(get_constants.PAYMENT_ID).render()
 
     queryset = []
-    if id is not None:
-      queryset = context.get_account().payments.filter(id=id)
+    if payment_id is not None:
+      queryset = context.get_account().payments.filter(id=payment_id)
+
+      if not queryset:
+        self.active_response.add_error(
+          get_errors.PAYMENT_DOES_NOT_EXIST(id=payment_id)
+        )
+        return
+
     else:
       is_open = self.active_response.force_get_child(payment_fields.IS_OPEN).render()
 

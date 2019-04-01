@@ -1,4 +1,5 @@
 
+import uuid
 import json
 
 from django.db import models
@@ -10,6 +11,7 @@ from util.api.constants import constants
 from ......account import Account
 from .....constants import payment_fields
 from ..constants import get_constants
+from ..errors import get_errors
 from ..get import PaymentGetSchema
 
 class TestContext():
@@ -27,6 +29,25 @@ class PaymentGetSchemaTestCase(TestCase):
     self.context = TestContext(account=self.account)
     self.open_payment = self.account.payments.create(is_open=True)
     self.closed_payment = self.account.payments.create(is_open=False)
+
+  def test_get_does_not_exist(self):
+    payment_id = uuid.uuid4().hex
+
+    payload = {
+      get_constants.PAYMENT_ID: payment_id,
+    }
+
+    response = self.schema.respond(payload=payload, context=self.context)
+
+    payment_does_not_exist = get_errors.PAYMENT_DOES_NOT_EXIST(id=payment_id)
+    self.assertEqual(
+      response.render(),
+      {
+        constants.ERRORS: {
+          payment_does_not_exist.code: payment_does_not_exist.render(),
+        },
+      },
+    )
 
   def test_get(self):
     payload = {}

@@ -12,6 +12,7 @@ from apps.base.schema.methods.base import ResponseWithInternalQuerySet
 
 from ....constants import subscription_fields
 from .constants import get_constants
+from .errors import get_errors
 
 class SubscriptionGetResponse(StructureResponse, ResponseWithInternalQuerySet):
   pass
@@ -43,14 +44,29 @@ class SubscriptionGetSchema(StructureSchema):
       },
     )
 
+  def get_available_errors(self):
+    return set.union(
+      super().get_available_errors(),
+      {
+        get_errors.SUBSCRIPTION_DOES_NOT_EXIST(),
+      },
+    )
+
   def responds_to_valid_payload(self, payload, context):
     super().responds_to_valid_payload(payload, context)
 
-    id = self.get_child_value(get_constants.SUBSCRIPTION_ID)
+    subscription_id = self.get_child_value(get_constants.SUBSCRIPTION_ID)
 
     queryset = []
-    if id is not None:
-      queryset = context.get_account().subscriptions.filter(id=id)
+    if subscription_id is not None:
+      queryset = context.get_account().subscriptions.filter(id=subscription_id)
+
+      if not queryset:
+        self.active_response.add_error(
+          get_errors.SUBSCRIPTION_DOES_NOT_EXIST(id=subscription_id)
+        )
+        return
+
     else:
       is_active = self.get_child_value(subscription_fields.IS_ACTIVE)
 
