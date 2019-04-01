@@ -1,4 +1,6 @@
 
+from dateutil.parser import parse as parse_datetime
+
 from util.merge import merge
 from util.api import (
   Schema, StructureSchema,
@@ -80,7 +82,7 @@ class SubscriptionCreateSchema(WithOrigin, WithChallenge, StructureSchema):
 
     subscription = context.get_account().subscriptions.create(
       duration_in_days=duration_in_days,
-      activation_date=activation_date,
+      activation_date=parse_datetime(activation_date),
     )
 
     self.active_response = self.client.respond(check_challenge=True)

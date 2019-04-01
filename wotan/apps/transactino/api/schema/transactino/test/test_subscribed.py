@@ -1,5 +1,6 @@
 
 import json
+from dateutil.parser import parse as parse_datetime
 
 from django.conf import settings
 from django.test import TestCase
@@ -38,6 +39,7 @@ from apps.subscription.models.subscription.schema.common.methods.constants impor
   subscription_method_constants,
   get_constants as subscription_get_constants,
   activate_constants as subscription_activate_constants,
+  create_constants as subscription_create_constants,
 )
 from apps.subscription.models.payment.constants import payment_fields
 from apps.subscription.models.payment.schema.common.methods.constants import (
@@ -47,8 +49,10 @@ from apps.subscription.models.ip.constants import ip_fields
 from apps.subscription.models.ip.schema.subscribed.methods.constants import (
   delete_constants as ip_delete_constants,
   get_constants as ip_get_constants,
+  create_constants as ip_create_constants,
 )
 from apps.subscription.schema.with_challenge.constants import with_challenge_constants
+from apps.subscription.schema.with_payment.constants import with_payment_constants
 
 from .....models import (
   FeeReport,
@@ -693,13 +697,153 @@ class SubscribedTestCase(TestCase):
       self.assertTrue(path in expected_paths)
 
   def test_ip_create(self):
-    pass
+    self.account.challenges.create(origin=ip_create_constants.ORIGIN, is_open=False, has_been_used=False)
+
+    ip_value = '255.255.255.255'
+
+    create_payload = {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
+          IP.__name__: {
+            schema_constants.METHODS: {
+              method_constants.CREATE: {
+                ip_fields.VALUE: ip_value,
+              },
+            },
+          },
+        },
+      },
+    }
+
+    create_response = self.schema.respond(
+      system=self.system,
+      connection=self.connection,
+      payload=create_payload,
+    )
+
+    ip = self.account.ips.get(value=ip_value)
+
+    paths = extract_schema_paths(create_response.render(), null=False)
+
+    expected_paths = [
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        IP.__name__,
+        schema_constants.METHODS,
+        method_constants.CREATE,
+        with_challenge_constants.CHALLENGE_COMPLETE,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        IP.__name__,
+        schema_constants.INSTANCES,
+        ip._id,
+        schema_constants.ATTRIBUTES,
+        ip_fields.VALUE,
+      ],
+    ]
+
+    self.assertEqual(len(paths), len(expected_paths))
+    for path in paths:
+      print('PATH... ', path)
+      self.assertTrue(path in expected_paths)
 
   def test_ip_create_beyond_max(self):
-    pass
+    for _ in range(ip_create_constants.MAX_IPS):
+      self.account.ips.create(value='value')
+
+    self.account.payments.create(origin=ip_create_constants.ORIGIN, is_open=False, has_been_used=False)
+    self.account.challenges.create(origin=ip_create_constants.ORIGIN, is_open=False, has_been_used=False)
+
+    ip_value = '255.255.255.255'
+
+    create_payload = {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
+          IP.__name__: {
+            schema_constants.METHODS: {
+              method_constants.CREATE: {
+                ip_fields.VALUE: ip_value,
+              },
+            },
+          },
+        },
+      },
+    }
+
+    create_response = self.schema.respond(
+      system=self.system,
+      connection=self.connection,
+      payload=create_payload,
+    )
+
+    ip = self.account.ips.get(value=ip_value)
+
+    paths = extract_schema_paths(create_response.render(), null=False)
+
+    expected_paths = [
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        IP.__name__,
+        schema_constants.METHODS,
+        method_constants.CREATE,
+        with_challenge_constants.CHALLENGE_COMPLETE,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        IP.__name__,
+        schema_constants.METHODS,
+        method_constants.CREATE,
+        with_payment_constants.PAYMENT_COMPLETE,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        IP.__name__,
+        schema_constants.INSTANCES,
+        ip._id,
+        schema_constants.ATTRIBUTES,
+        ip_fields.VALUE,
+      ],
+    ]
+
+    self.assertEqual(len(paths), len(expected_paths))
+    for path in paths:
+      print('PATH... ', path)
+      self.assertTrue(path in expected_paths)
 
   def test_ip_delete(self):
-    pass
+    ip_value = '255.255.255.255'
+
+    ip = self.account.ips.create(value=ip_value)
+
+    self.account.challenges.create(origin=ip_delete_constants.ORIGIN, is_open=False, has_been_used=False)
+
+    delete_payload = {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
+          IP.__name__: {
+            schema_constants.METHODS: {
+              method_constants.DELETE: {
+                ip_delete_constants.IP_ID: ip._id,
+              },
+            },
+          },
+        },
+      },
+    }
+
+    delete_response = self.schema.respond(
+      system=self.system,
+      connection=self.connection,
+      payload=delete_payload,
+    )
+
+    self.assertFalse(self.account.ips.filter(value=ip_value).exists())
 
   def test_ip_get(self):
     self.account.challenges.create(origin=ip_get_constants.ORIGIN, is_open=False, has_been_used=False)
@@ -851,7 +995,112 @@ class SubscribedTestCase(TestCase):
       self.assertTrue(path in expected_paths)
 
   def test_subscription_create(self):
-    pass
+    self.account.challenges.create(
+      origin=subscription_create_constants.ORIGIN,
+      is_open=False,
+      has_been_used=False,
+    )
+
+    duration_in_days = 1
+    activation_date = '1990-1-1 00:00:00UTC'
+
+    create_payload = {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
+          Subscription.__name__: {
+            schema_constants.METHODS: {
+              method_constants.CREATE: {
+                subscription_fields.DURATION_IN_DAYS: duration_in_days,
+                subscription_fields.ACTIVATION_DATE: activation_date,
+              },
+            },
+          },
+        },
+      },
+    }
+
+    create_response = self.schema.respond(
+      system=self.system,
+      connection=self.connection,
+      payload=create_payload,
+    )
+
+    subscription = self.account.subscriptions.get(
+      duration_in_days=duration_in_days,
+      activation_date=parse_datetime(activation_date),
+    )
+
+    paths = extract_schema_paths(create_response.render(), null=False)
+
+    expected_paths = [
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        Subscription.__name__,
+        schema_constants.METHODS,
+        method_constants.CREATE,
+        with_challenge_constants.CHALLENGE_COMPLETE,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        Subscription.__name__,
+        schema_constants.INSTANCES,
+        subscription._id,
+        schema_constants.ATTRIBUTES,
+        subscription_fields.ORIGIN,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        Subscription.__name__,
+        schema_constants.INSTANCES,
+        subscription._id,
+        schema_constants.ATTRIBUTES,
+        subscription_fields.DURATION_IN_DAYS,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        Subscription.__name__,
+        schema_constants.INSTANCES,
+        subscription._id,
+        schema_constants.ATTRIBUTES,
+        subscription_fields.ACTIVATION_DATE,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        Subscription.__name__,
+        schema_constants.INSTANCES,
+        subscription._id,
+        schema_constants.ATTRIBUTES,
+        subscription_fields.IS_VALID_UNTIL,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        Subscription.__name__,
+        schema_constants.INSTANCES,
+        subscription._id,
+        schema_constants.ATTRIBUTES,
+        subscription_fields.IS_ACTIVE,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        Subscription.__name__,
+        schema_constants.INSTANCES,
+        subscription._id,
+        schema_constants.ATTRIBUTES,
+        subscription_fields.HAS_BEEN_ACTIVATED,
+      ],
+    ]
+
+    self.assertEqual(len(paths), len(expected_paths))
+    for path in paths:
+      print('PATH... ', path)
+      self.assertTrue(path in expected_paths)
 
   def test_subscription_activate(self):
     pass

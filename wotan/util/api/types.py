@@ -1,4 +1,5 @@
 
+from util.is_valid_datetime import is_valid_datetime
 from util.is_valid_uuid import is_valid_uuid
 from util.is_valid_ip_address import is_valid_ip_address
 
@@ -105,11 +106,17 @@ class IpAddress(Type):
 
 class Time(Type):
   code = '009'
-  description = 'A valid timestamp'
+  description = (
+    'A valid timestamp - either an integer timestamp'
+    ' or a string that formats to a valid datetime.'
+  )
   type = '__datetime'
 
   def validate(self, value):
-    return True
+    if not (isinstance(value, int) or isinstance(value, str)):
+      return False
+
+    return is_valid_datetime(value)
 
 class Model(Type):
   pass

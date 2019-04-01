@@ -58,15 +58,22 @@ class Manager(models.Manager):
 
   def serialize_attributes(self, instance, attributes=None, mode=None):
     return {
-      attribute_field.name: (
-        str(getattr(instance, attribute_field.name))
-        if attribute_field.get_internal_type() not in constants.PLAIN_TYPES
-        else getattr(instance, attribute_field.name)
-      )
+      attribute_field.name: self.serialize_attribute(instance, attribute_field)
       for attribute_field
       in self.attributes(mode=mode)
       if attributes is None or attribute_field.name in attributes
     }
+
+  def serialize_attribute(self, instance, attribute_field):
+    attribute_value = getattr(instance, attribute_field.name)
+
+    if attribute_value is None:
+      return constants.NULL
+
+    if attribute_field.get_internal_type() not in constants.PLAIN_TYPES:
+      return str(attribute_value)
+
+    return attribute_value
 
   def serialize_relationships(self, instance, relationships=None, mode=None):
     return {

@@ -99,7 +99,9 @@ class IPCreateSchema(WithOrigin, WithChallenge, WithFixedPayment, StructureSchem
       self.active_response.add_error(create_errors.IP_ALREADY_BOUND(value=ip_value))
       return
 
+    check_payment = self.should_check_payment(payload, context)
+
     ip = context.get_account().ips.create(value=ip_value)
 
-    self.active_response = self.client.respond(check_challenge=True, check_payment=True)
+    self.active_response = self.client.respond(check_challenge=True, check_payment=check_payment)
     self.active_response.add_internal_queryset([ip])

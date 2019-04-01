@@ -16,10 +16,19 @@ class SubscriptionActivateSchema(WithPayment, StructureSchema):
       description=(
         'The schema for the Subscription activate method. This method is'
         ' blocked by a payment that must be closed before the method can'
-        ' be completed.'
+        ' be completed. If you enter the ID of the subscription incorrectly,'
+        ' the method will throw an error, but the payment will be valid for'
+        ' each unactivated subscription until it is activated. Several payments'
+        ' can be open simultaneously for different subscriptions. Refer to the'
+        ' "origin" property of the subscription to check which payment'
+        ' references it. Make sure you understand which subscription you are'
+        ' activating by checking the relevant properties.'
       ),
       children={
-        activate_constants.SUBSCRIPTION_ID: Schema(types=types.UUID()),
+        activate_constants.SUBSCRIPTION_ID: Schema(
+          description='The ID of the Subscription',
+          types=types.UUID(),
+        ),
       },
     )
 

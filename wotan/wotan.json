@@ -252,7 +252,34 @@
           }
         }
       },
-      "20190401"
+      "20190401": {
+        "description": "Final leg with tests, etc. After these tests, are done, I think deployment can begin.",
+        "children": {
+          "t12.7": {
+            "description": "Top-level tests.",
+            "children": {
+              "subscribed tests": {
+                "description": "A lot of tests to write",
+                "children": {
+                  "test_ip_create": "done",
+                  "test_ip_create_beyond_max": "done",
+                  "test_ip_delete": "done",
+                  "test_subscription_create": "done",
+                  "test_subscription_activate": "",
+                  "test_fee_report_create": "",
+                  "test_fee_report_delete": "",
+                  "test_fee_report_get": "",
+                  "test_transaction_report_create": "",
+                  "test_transaction_report_delete": "",
+                  "test_transaction_report_get": "",
+                  "test_transaction_report_activate": "",
+                  "transaction_match_get": ""
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
