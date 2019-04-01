@@ -34,40 +34,42 @@ class AnonymousTestCase(TestCase):
     rendered_response = response.render()
     paths = extract_schema_paths(rendered_response)
 
-    self.assertEqual(
-      paths,
+    expected_paths = [
       [
-        [
-          api_constants.SCHEMA,
-          transactino_constants.README,
-        ],
-        [
-          api_constants.SCHEMA,
-          transactino_constants.SOCKET,
-        ],
-        [
-          api_constants.SCHEMA,
-          api_constants.MODELS,
-          Account.__name__,
-          schema_constants.METHODS,
-          method_constants.CREATE,
-          account_fields.PUBLIC_KEY,
-        ],
-        [
-          api_constants.SCHEMA,
-          api_constants.MODELS,
-          System.__name__,
-          schema_constants.METHODS,
-          method_constants.GET,
-        ],
-        [
-          api_constants.SCHEMA,
-          api_constants.MODELS,
-          System.__name__,
-          schema_constants.INSTANCES,
-        ],
+        api_constants.SCHEMA,
+        transactino_constants.README,
       ],
-    )
+      [
+        api_constants.SCHEMA,
+        transactino_constants.SOCKET,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        Account.__name__,
+        schema_constants.METHODS,
+        method_constants.CREATE,
+        account_fields.PUBLIC_KEY,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        System.__name__,
+        schema_constants.METHODS,
+        method_constants.GET,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        System.__name__,
+        schema_constants.INSTANCES,
+      ],
+    ]
+
+    self.assertEqual(len(paths), len(expected_paths))
+    for path in paths:
+      print('PATH... ', path)
+      self.assertTrue(path in expected_paths)
 
   def test_account_create(self):
     create_payload = {
@@ -112,23 +114,25 @@ class AnonymousTestCase(TestCase):
 
     paths = extract_schema_paths(get_response.render(), null=False)
 
-    self.assertEqual(
-      paths,
+    expected_paths = [
       [
-        [
-          api_constants.SCHEMA,
-          api_constants.MODELS,
-          System.__name__,
-          schema_constants.METHODS,
-        ],
-        [
-          api_constants.SCHEMA,
-          api_constants.MODELS,
-          System.__name__,
-          schema_constants.INSTANCES,
-          system._id,
-          schema_constants.ATTRIBUTES,
-          system_fields.PUBLIC_KEY,
-        ],
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        System.__name__,
+        schema_constants.METHODS,
       ],
-    )
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        System.__name__,
+        schema_constants.INSTANCES,
+        system._id,
+        schema_constants.ATTRIBUTES,
+        system_fields.PUBLIC_KEY,
+      ],
+    ]
+
+    self.assertEqual(len(paths), len(expected_paths))
+    for path in paths:
+      print('PATH... ', path)
+      self.assertTrue(path in expected_paths)

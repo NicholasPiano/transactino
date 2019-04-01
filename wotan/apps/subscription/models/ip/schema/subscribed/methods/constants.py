@@ -12,4 +12,3 @@ class delete_constants:
 
 class get_constants:
   ORIGIN = 'f8cd3f77e4984118a37a8b4fcfac56e6'
-  GET_COMPLETE = 'get_complete'

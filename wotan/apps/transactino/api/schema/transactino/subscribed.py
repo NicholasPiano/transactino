@@ -13,7 +13,11 @@ from apps.subscription.models import (
   Subscription,
 )
 
-from ....models import FeeReport
+from ....models import (
+  FeeReport,
+  TransactionReport,
+  TransactionMatch,
+)
 from ...constants import api_constants
 from .control import TransactinoControlSchema
 from .common import CommonSchema
@@ -44,6 +48,7 @@ class SubscribedSchema(StructureSchema):
                     Payment,
                     Subscription,
                     FeeReport,
+                    TransactionReport,
                   ]
                 },
               ),

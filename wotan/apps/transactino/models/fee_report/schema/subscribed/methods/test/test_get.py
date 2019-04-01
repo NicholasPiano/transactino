@@ -13,6 +13,7 @@ from apps.subscription.models import Account, Challenge
 
 from ..... import FeeReport
 from .....constants import fee_report_fields
+from ..constants import get_constants
 from ..get import FeeReportGetSchema
 
 class TestContext():
@@ -46,7 +47,7 @@ class FeeReportGetSchemaTestCase(TestCase):
 
   def test_get_id(self):
     payload = {
-      model_fields.ID: self.active_fee_report._id,
+      get_constants.FEE_REPORT_ID: self.active_fee_report._id,
     }
 
     response = self.schema.respond(payload=payload, context=self.context)
@@ -58,7 +59,7 @@ class FeeReportGetSchemaTestCase(TestCase):
 
   def test_get_id_and_active(self):
     payload = {
-      model_fields.ID: self.active_fee_report._id,
+      get_constants.FEE_REPORT_ID: self.active_fee_report._id,
       fee_report_fields.IS_ACTIVE: True,
     }
 

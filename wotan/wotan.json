@@ -206,12 +206,53 @@
           "t12.7": {
             "description": "Top-level tests. Mostly the unsubscribed-but-verified schema and the subscribed schema.",
             "children": {
-              "challenge get filter by id": "",
-              ""
+              "challenge get filter by id": "done",
+              "finish unsubscribed tests": "done",
+              "subscribed tests": {
+                "description": "A lot of tests to write",
+                "children": {
+                  "minimise path testing": {
+                    "description": "I don't think it's a very good way to test a result, and definitely not an array of paths. This is very brittle. Paths should be tested individually. It's ok to create an array of paths from a response and test a series of paths for membership in that array, but not order. Also, it is preferable to test actual values fetched with a path rather than testing for the presence of the path itself.",
+                    "children": {
+                      "subscribed - test_subscription_get": "done",
+                      "subscribed - test_payment_get": "done",
+                      "subscribed - test_ip_get": "done",
+                      "subscribed - test_challenge_get": "done",
+                      "subscribed - test_system_get": "done",
+                      "subscribed - test_announcement_get": "done",
+                      "subscribed - test_schema_paths": "done",
+                      "unsubscribed - not verified - test_schema_paths": "done",
+                      "unsubscribed - not verified - test_announcement_get": "done",
+                      "unsubscribed - not verified - test_challenge_get": "done",
+                      "unsubscribed - not verified - test_system_get": "done",
+                      "unsubscribed - verified - test_schema_paths": "done",
+                      "unsubscribed - verified - test_subscription_get": "done",
+                      "unsubscribed - verified - test_payment_get": "done",
+                      "anonymous - test_schema_paths": "done",
+                      "anonymous - test_system_get": "done"
+                    }
+                  },
+                  "ip_get": "Should allow get by ID or value",
+                  "test_ip_create": "",
+                  "test_ip_create_beyond_max": "",
+                  "test_ip_delete": "",
+                  "test_subscription_create": "",
+                  "test_subscription_activate": "",
+                  "test_fee_report_create": "",
+                  "test_fee_report_delete": "",
+                  "test_fee_report_get": "",
+                  "test_transaction_report_create": "",
+                  "test_transaction_report_delete": "",
+                  "test_transaction_report_get": "",
+                  "test_transaction_report_activate": "",
+                  "transaction_match_get": "",
+                }
+              }
             }
           }
         }
-      }
+      },
+      "20190401"
     }
   }
 }

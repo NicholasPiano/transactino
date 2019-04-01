@@ -2,6 +2,7 @@
 from django.db import models
 
 from apps.base.models import Model, Manager, model_fields
+from apps.base.schema.constants import schema_constants
 
 from ...constants import mode_constants, APP_LABEL
 from .constants import ip_constants, ip_fields
@@ -12,7 +13,6 @@ class IPManager(Manager):
   def attributes(self, mode=None):
     fields = [
       ip_fields.VALUE,
-      ip_fields.IS_ONLINE,
     ]
     return [
       field

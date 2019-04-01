@@ -11,6 +11,7 @@ from apps.base.constants import model_fields
 from apps.base.schema.methods.base import ResponseWithInternalQuerySet
 
 from ....constants import transaction_report_fields
+from .constants import get_constants
 
 class TransactionReportGetResponse(StructureResponse, ResponseWithInternalQuerySet):
   pass
@@ -27,7 +28,7 @@ class TransactionReportGetSchema(StructureSchema):
       ),
       response=TransactionReportGetResponse,
       children={
-        model_fields.ID: Schema(
+        get_constants.TRANSACTION_REPORT_ID: Schema(
           description='The ID of the TransactionReport in question.',
           types=types.UUID(),
         ),
@@ -41,11 +42,11 @@ class TransactionReportGetSchema(StructureSchema):
   def responds_to_valid_payload(self, payload, context):
     super().responds_to_valid_payload(payload, context)
 
-    id = self.active_response.force_get_child(model_fields.ID).render()
+    transaction_report_id = self.active_response.force_get_child(get_constants.TRANSACTION_REPORT_ID).render()
 
     queryset = []
-    if id is not None:
-      queryset = context.get_account().transaction_reports.filter(id=id)
+    if transaction_report_id is not None:
+      queryset = context.get_account().transaction_reports.filter(id=transaction_report_id)
     else:
       is_active = self.active_response.force_get_child(transaction_report_fields.IS_ACTIVE).render()
 

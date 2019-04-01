@@ -4,16 +4,65 @@ from django.utils import timezone
 from django.conf import settings
 scheduler = settings.SCHEDULER
 
+from util.blockchaininfo import get_latest_block_hash, get_previous_hash, Block
+
+from apps.base.constants import model_fields
+from apps.base.schema.constants import schema_constants
 from apps.base.models import Model, Manager
+from apps.subscription.constants import mode_constants
 from apps.subscription.models import Account
 
 from ...constants import APP_LABEL
 from .constants import (
   transaction_report_constants,
+  transaction_report_fields,
 )
+from .schema.subscribed import TransactionReportSubscribedModelSchema
 
 class TransactionReportManager(Manager):
-  pass
+  def attributes(self, mode=None):
+    fields = [
+      transaction_report_fields.IS_ACTIVE,
+      transaction_report_fields.TARGET_ADDRESS,
+      transaction_report_fields.VALUE_EQUAL_TO,
+      transaction_report_fields.VALUE_GREATER_THAN,
+      transaction_report_fields.VALUE_LESS_THAN,
+      transaction_report_fields.LATEST_BLOCK_HASH,
+    ]
+
+    return [
+      field
+      for field in self.model._meta.get_fields()
+      if (
+        not field.is_relation
+        and field.name != model_fields.ID
+        and field.name in fields
+      )
+    ]
+
+  def serialize(self, instance, attributes=None, relationships=None, mode=None):
+    serialized = {
+      schema_constants.ATTRIBUTES: self.serialize_attributes(
+        instance,
+        attributes=attributes,
+        mode=mode,
+      ),
+    }
+
+    if mode == mode_constants.SUPERADMIN:
+      serialized.update({
+        schema_constants.RELATIONSHIPS: self.serialize_relationships(
+          instance,
+          relationships=relationships,
+          mode=mode,
+        ),
+      })
+
+    return serialized
+
+  def schema(self, mode=None):
+    if mode == mode_constants.SUBSCRIBED:
+      return TransactionReportSubscribedModelSchema(self.model, mode=mode)
 
 class TransactionReport(Model):
   objects = TransactionReportManager()

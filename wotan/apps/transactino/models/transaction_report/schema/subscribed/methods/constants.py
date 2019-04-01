@@ -1,6 +1,9 @@
 
 import uuid
 
+class transaction_report_subscribed_method_constants:
+  ACTIVATE = 'activate'
+
 class create_constants:
   ORIGIN = '6f42fe4ee17e4f6db14fe711b044e72a'
 
@@ -12,5 +15,5 @@ class activate_constants:
   ORIGIN = '7f56b99dc16f40e38b22507dc15402d3'
   TRANSACTION_REPORT_ID = 'transaction_report_id'
 
-class transaction_report_subscribed_method_constants:
-  ACTIVATE = 'activate'
+class get_constants:
+  TRANSACTION_REPORT_ID = 'transaction_report_id'

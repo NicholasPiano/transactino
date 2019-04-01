@@ -13,6 +13,7 @@ from apps.subscription.models import Account, Challenge
 
 from ..... import TransactionReport
 from .....constants import transaction_report_fields
+from ..constants import get_constants
 from ..get import TransactionReportGetSchema
 
 class TestContext():
@@ -46,7 +47,7 @@ class TransactionReportGetSchemaTestCase(TestCase):
 
   def test_get_id(self):
     payload = {
-      model_fields.ID: self.active_transaction_report._id,
+      get_constants.TRANSACTION_REPORT_ID: self.active_transaction_report._id,
     }
 
     response = self.schema.respond(payload=payload, context=self.context)
@@ -58,7 +59,7 @@ class TransactionReportGetSchemaTestCase(TestCase):
 
   def test_get_id_and_active(self):
     payload = {
-      model_fields.ID: self.active_transaction_report._id,
+      get_constants.TRANSACTION_REPORT_ID: self.active_transaction_report._id,
       transaction_report_fields.IS_ACTIVE: True,
     }
 

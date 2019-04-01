@@ -11,6 +11,7 @@ from apps.base.constants import model_fields
 from apps.base.schema.methods.base import ResponseWithInternalQuerySet
 
 from ....constants import fee_report_fields
+from .constants import get_constants
 
 class FeeReportGetResponse(StructureResponse, ResponseWithInternalQuerySet):
   pass
@@ -27,7 +28,7 @@ class FeeReportGetSchema(StructureSchema):
       ),
       response=FeeReportGetResponse,
       children={
-        model_fields.ID: Schema(
+        get_constants.FEE_REPORT_ID: Schema(
           description='The ID of the FeeReport in question.',
           types=types.UUID(),
         ),
@@ -41,13 +42,13 @@ class FeeReportGetSchema(StructureSchema):
   def responds_to_valid_payload(self, payload, context):
     super().responds_to_valid_payload(payload, context)
 
-    id = self.active_response.force_get_child(model_fields.ID).render()
+    fee_report_id = self.get_child_value(get_constants.FEE_REPORT_ID)
 
     queryset = []
-    if id is not None:
-      queryset = context.get_account().fee_reports.filter(id=id)
+    if fee_report_id is not None:
+      queryset = context.get_account().fee_reports.filter(id=fee_report_id)
     else:
-      is_active = self.active_response.force_get_child(fee_report_fields.IS_ACTIVE).render()
+      is_active = self.get_child_value(fee_report_fields.IS_ACTIVE)
 
       if is_active is None:
         queryset = context.get_account().fee_reports.all()

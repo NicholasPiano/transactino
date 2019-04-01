@@ -54,5 +54,5 @@ class IPGetSchema(WithOrigin, WithChallenge):
     if self.active_response.has_errors():
       return
 
-    self.active_response = self.client.respond()
+    self.active_response = self.client.respond(check_challenge=True)
     self.active_response.add_internal_queryset(context.get_account().ips.all())
