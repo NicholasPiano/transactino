@@ -43,7 +43,7 @@ class PaymentGetSchema(StructureSchema):
   def responds_to_valid_payload(self, payload, context):
     super().responds_to_valid_payload(payload, context)
 
-    payment_id = self.active_response.force_get_child(get_constants.PAYMENT_ID).render()
+    payment_id = self.get_child_value(get_constants.PAYMENT_ID)
 
     queryset = []
     if payment_id is not None:
@@ -56,7 +56,7 @@ class PaymentGetSchema(StructureSchema):
         return
 
     else:
-      is_open = self.active_response.force_get_child(payment_fields.IS_OPEN).render()
+      is_open = self.get_child_value(payment_fields.IS_OPEN)
 
       if is_open is None:
         queryset = context.get_account().payments.all()

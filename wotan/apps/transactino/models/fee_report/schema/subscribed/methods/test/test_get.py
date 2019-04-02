@@ -14,6 +14,7 @@ from apps.subscription.models import Account, Challenge
 from ..... import FeeReport
 from .....constants import fee_report_fields
 from ..constants import get_constants
+from ..errors import get_errors
 from ..get import FeeReportGetSchema
 
 class TestContext():
@@ -31,6 +32,25 @@ class FeeReportGetSchemaTestCase(TestCase):
     self.context = TestContext(self.account)
     self.active_fee_report = self.account.fee_reports.create(is_active=True)
     self.inactive_fee_report = self.account.fee_reports.create(is_active=False)
+
+  def test_get_does_not_exist(self):
+    fee_report_id = uuid.uuid4().hex
+
+    payload = {
+      get_constants.FEE_REPORT_ID: fee_report_id,
+    }
+
+    response = self.schema.respond(payload=payload, context=self.context)
+
+    fee_report_does_not_exist = get_errors.FEE_REPORT_DOES_NOT_EXIST(id=fee_report_id)
+    self.assertEqual(
+      response.render(),
+      {
+        constants.ERRORS: {
+          fee_report_does_not_exist.code: fee_report_does_not_exist.render(),
+        },
+      },
+    )
 
   def test_get(self):
     payload = {}

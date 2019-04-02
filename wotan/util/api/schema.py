@@ -159,7 +159,12 @@ class StructureSchema(Schema, SupportsAddition):
         )
 
   def get_child_value(self, child_key):
-    return self.active_response.force_get_child(child_key).render()
+    child = self.active_response.force_get_child(child_key)
+
+    if child is not None:
+      return child.render()
+
+    return None
 
 class ArraySchema(Schema, SupportsAddition):
   default_types = [

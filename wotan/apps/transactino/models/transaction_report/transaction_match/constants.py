@@ -9,6 +9,8 @@ class transaction_match_fields:
   TRANSACTION_REPORT = 'transaction_report'
   BLOCK_HASH = 'block_hash'
   TXID = 'txid'
+  INDEX = 'index'
   VALUE = 'value'
+  IS_NEW = 'is_new'
 
 transaction_report_fields.MATCHES = transaction_match_constants.TRANSACTION_REPORT_RELATED_NAME

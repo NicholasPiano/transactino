@@ -26,3 +26,6 @@ class activate_errors:
 class delete_errors:
   FEE_REPORT_ID_NOT_INCLUDED = FeeReportIDNotIncludedError
   FEE_REPORT_DOES_NOT_EXIST = FeeReportDoesNotExistError
+
+class get_errors:
+  FEE_REPORT_DOES_NOT_EXIST = FeeReportDoesNotExistError

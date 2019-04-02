@@ -14,6 +14,7 @@ from apps.subscription.models import Account, Challenge
 from ..... import TransactionReport
 from .....constants import transaction_report_fields
 from ..constants import get_constants
+from ..errors import get_errors
 from ..get import TransactionReportGetSchema
 
 class TestContext():
@@ -31,6 +32,25 @@ class TransactionReportGetSchemaTestCase(TestCase):
     self.context = TestContext(self.account)
     self.active_transaction_report = self.account.transaction_reports.create(is_active=True)
     self.inactive_transaction_report = self.account.transaction_reports.create(is_active=False)
+
+  def test_get_does_not_exist(self):
+    transaction_report_id = uuid.uuid4().hex
+
+    payload = {
+      get_constants.TRANSACTION_REPORT_ID: transaction_report_id,
+    }
+
+    response = self.schema.respond(payload=payload, context=self.context)
+
+    transaction_report_does_not_exist = get_errors.TRANSACTION_REPORT_DOES_NOT_EXIST(id=transaction_report_id)
+    self.assertEqual(
+      response.render(),
+      {
+        constants.ERRORS: {
+          transaction_report_does_not_exist.code: transaction_report_does_not_exist.render(),
+        },
+      },
+    )
 
   def test_get(self):
     payload = {}

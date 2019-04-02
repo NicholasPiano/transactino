@@ -66,3 +66,6 @@ class create_errors:
 class delete_errors:
   TRANSACTION_REPORT_ID_NOT_INCLUDED = TransactionReportIDNotIncludedError
   TRANSACTION_REPORT_DOES_NOT_EXIST = TransactionReportDoesNotExistError
+
+class get_errors:
+  TRANSACTION_REPORT_DOES_NOT_EXIST = TransactionReportDoesNotExistError
