@@ -100,11 +100,11 @@ class TransactionReport(Model):
 
     return greater_than and less_than
 
-  def process(self, pending_block_hash=None, block=None):
-    if pending_block_hash is None or pending_block_hash == self.latest_block_hash:
+  def process(self, block):
+    if block.hash is None or block.hash == self.latest_block_hash:
       return
 
-    self.latest_block_hash = pending_block_hash
+    self.latest_block_hash = block.hash
     deltas = block.find_deltas_with_address(self.target_address)
 
     for delta in deltas:
@@ -124,7 +124,7 @@ def transaction_report_task():
     transaction_reports = TransactionReport.objects.filter(is_active=True)
 
     for transaction_report in transaction_reports:
-      transaction_report.process(pending_block_hash=latest_block_hash, block=block)
+      transaction_report.process(block)
 
 if scheduler is not None:
   scheduler.add_job(

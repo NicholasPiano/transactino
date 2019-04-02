@@ -16,6 +16,7 @@ class TransactionMatchSubscribedModelSchema(ModelSchema):
         ' TransactionReport objects.'
       ),
     )
-    self.children.update({
+    self.children = {
       schema_constants.METHODS: TransactionMatchSubscribedModelMethodsSchema(Model),
-    })
+      schema_constants.INSTANCES: self.children[schema_constants.INSTANCES],
+    }

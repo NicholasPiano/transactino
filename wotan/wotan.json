@@ -310,8 +310,8 @@
               "subscribed tests": {
                 "description": "Finish off top-level tests",
                 "children": {
-                  "transaction_match_get": "",
-                  "transaction_match_dismiss": ""
+                  "transaction_match_get": "done",
+                  "transaction_match_dismiss": "done"
                 }
               }
             }

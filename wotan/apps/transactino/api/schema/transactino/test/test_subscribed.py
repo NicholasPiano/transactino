@@ -77,6 +77,10 @@ from .....models.transaction_report.schema.subscribed.methods.constants import (
   create_constants as transaction_report_create_constants,
 )
 from .....models.transaction_report.transaction_match.constants import transaction_match_fields
+from .....models.transaction_report.transaction_match.schema.subscribed.methods.constants import (
+  transaction_match_subscribed_method_constants,
+  get_constants as transaction_match_get_constants,
+)
 from ....constants import api_constants
 from ..constants import transactino_constants
 from .. import TransactinoSchema
@@ -444,6 +448,100 @@ class SubscribedTestCase(TestCase):
         api_constants.SCHEMA,
         api_constants.MODELS,
         TransactionReport.__name__,
+        schema_constants.INSTANCES,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionMatch.__name__,
+        schema_constants.METHODS,
+        method_constants.GET,
+        transaction_match_get_constants.TRANSACTION_REPORT_ID,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionMatch.__name__,
+        schema_constants.METHODS,
+        method_constants.GET,
+        transaction_match_get_constants.TRANSACTION_REPORT_TARGET_ADDRESS,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionMatch.__name__,
+        schema_constants.METHODS,
+        method_constants.GET,
+        transaction_match_get_constants.TRANSACTION_REPORT_IS_ACTIVE,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionMatch.__name__,
+        schema_constants.METHODS,
+        method_constants.GET,
+        transaction_match_get_constants.TRANSACTION_MATCH_ID,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionMatch.__name__,
+        schema_constants.METHODS,
+        method_constants.GET,
+        transaction_match_fields.IS_NEW,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionMatch.__name__,
+        schema_constants.METHODS,
+        method_constants.GET,
+        transaction_match_fields.BLOCK_HASH,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionMatch.__name__,
+        schema_constants.METHODS,
+        transaction_match_subscribed_method_constants.DISMISS,
+        transaction_match_get_constants.TRANSACTION_REPORT_ID,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionMatch.__name__,
+        schema_constants.METHODS,
+        transaction_match_subscribed_method_constants.DISMISS,
+        transaction_match_get_constants.TRANSACTION_REPORT_TARGET_ADDRESS,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionMatch.__name__,
+        schema_constants.METHODS,
+        transaction_match_subscribed_method_constants.DISMISS,
+        transaction_match_get_constants.TRANSACTION_REPORT_IS_ACTIVE,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionMatch.__name__,
+        schema_constants.METHODS,
+        transaction_match_subscribed_method_constants.DISMISS,
+        transaction_match_get_constants.TRANSACTION_MATCH_ID,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionMatch.__name__,
+        schema_constants.METHODS,
+        transaction_match_subscribed_method_constants.DISMISS,
+        transaction_match_fields.BLOCK_HASH,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionMatch.__name__,
         schema_constants.INSTANCES,
       ],
     ]
@@ -1506,7 +1604,7 @@ class SubscribedTestCase(TestCase):
       ],
     ]
 
-    # self.assertEqual(len(paths), len(expected_paths))
+    self.assertEqual(len(paths), len(expected_paths))
     for path in paths:
       print('PATH... ', path)
       self.assertTrue(path in expected_paths)
@@ -1548,8 +1646,176 @@ class SubscribedTestCase(TestCase):
 
     self.assertFalse(transaction_report.is_active)
 
-  def transaction_match_get(self):
-    pass
+  def test_transaction_match_get(self):
+    transaction_report = self.account.transaction_reports.create(
+      is_active=True,
+      target_address='target_address',
+      value_equal_to=1,
+    )
+    transaction_match = transaction_report.matches.create(
+      is_new=True,
+      block_hash='block_hash',
+    )
 
-  def transaction_match_dismiss(self):
-    pass
+    get_payload = {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
+          TransactionMatch.__name__: {
+            schema_constants.METHODS: {
+              method_constants.GET: {},
+            },
+          },
+        },
+      },
+    }
+
+    get_response = self.schema.respond(
+      system=self.system,
+      connection=self.connection,
+      payload=get_payload,
+    )
+
+    paths = extract_schema_paths(get_response.render(), null=False)
+
+    expected_paths = [
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionMatch.__name__,
+        schema_constants.METHODS,
+        method_constants.GET,
+        transaction_match_get_constants.TRANSACTION_REPORT_ID,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionMatch.__name__,
+        schema_constants.METHODS,
+        method_constants.GET,
+        transaction_match_get_constants.TRANSACTION_REPORT_TARGET_ADDRESS,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionMatch.__name__,
+        schema_constants.METHODS,
+        method_constants.GET,
+        transaction_match_get_constants.TRANSACTION_REPORT_IS_ACTIVE,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionMatch.__name__,
+        schema_constants.METHODS,
+        method_constants.GET,
+        transaction_match_get_constants.TRANSACTION_MATCH_ID,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionMatch.__name__,
+        schema_constants.METHODS,
+        method_constants.GET,
+        transaction_match_fields.IS_NEW,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionMatch.__name__,
+        schema_constants.METHODS,
+        method_constants.GET,
+        transaction_match_fields.BLOCK_HASH,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionMatch.__name__,
+        schema_constants.INSTANCES,
+        transaction_match._id,
+        schema_constants.ATTRIBUTES,
+        transaction_match_fields.BLOCK_HASH,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionMatch.__name__,
+        schema_constants.INSTANCES,
+        transaction_match._id,
+        schema_constants.ATTRIBUTES,
+        transaction_match_fields.TXID,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionMatch.__name__,
+        schema_constants.INSTANCES,
+        transaction_match._id,
+        schema_constants.ATTRIBUTES,
+        transaction_match_fields.INDEX,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionMatch.__name__,
+        schema_constants.INSTANCES,
+        transaction_match._id,
+        schema_constants.ATTRIBUTES,
+        transaction_match_fields.VALUE,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionMatch.__name__,
+        schema_constants.INSTANCES,
+        transaction_match._id,
+        schema_constants.ATTRIBUTES,
+        transaction_match_fields.IS_NEW,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionMatch.__name__,
+        schema_constants.INSTANCES,
+        transaction_match._id,
+        schema_constants.RELATIONSHIPS,
+        transaction_match_fields.TRANSACTION_REPORT,
+      ],
+    ]
+
+    self.assertEqual(len(paths), len(expected_paths))
+    for path in paths:
+      print('PATH... ', path)
+      self.assertTrue(path in expected_paths)
+
+  def test_transaction_match_dismiss(self):
+    transaction_report = self.account.transaction_reports.create(
+      is_active=True,
+      target_address='target_address',
+      value_equal_to=1,
+    )
+    transaction_match = transaction_report.matches.create(
+      is_new=True,
+      block_hash='block_hash',
+    )
+
+    dismiss_payload = {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
+          TransactionMatch.__name__: {
+            schema_constants.METHODS: {
+              transaction_match_subscribed_method_constants.DISMISS: {},
+            },
+          },
+        },
+      },
+    }
+
+    dismiss_response = self.schema.respond(
+      system=self.system,
+      connection=self.connection,
+      payload=dismiss_payload,
+    )
+
+    transaction_match.refresh_from_db()
+
+    self.assertFalse(transaction_match.is_new)

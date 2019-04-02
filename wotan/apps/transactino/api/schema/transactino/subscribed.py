@@ -49,6 +49,7 @@ class SubscribedSchema(StructureSchema):
                     Subscription,
                     FeeReport,
                     TransactionReport,
+                    TransactionMatch,
                   ]
                 },
               ),

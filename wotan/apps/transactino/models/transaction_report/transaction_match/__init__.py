@@ -1,7 +1,9 @@
 
 from django.db import models
 
+from apps.base.constants import model_fields
 from apps.base.models import Model, Manager
+from apps.subscription.constants import mode_constants
 from apps.subscription.models import Account
 
 from ....constants import APP_LABEL
