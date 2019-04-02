@@ -62,7 +62,7 @@ class Float(Type):
   type = '__float'
 
   def validate(self, value):
-    return isinstance(value, float)
+    return value == 0 or isinstance(value, float)
 
 class String(Type):
   code = '005'

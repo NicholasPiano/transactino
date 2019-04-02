@@ -13,6 +13,7 @@ from apps.base.schema.constants import schema_constants
 from apps.base.schema.methods.constants import method_constants
 from apps.subscription.models import (
   Account,
+  Address,
   Announcement,
   Challenge,
   System,
@@ -65,6 +66,7 @@ from .....models.fee_report.schema.subscribed.methods.constants import (
   delete_constants as fee_report_delete_constants,
   get_constants as fee_report_get_constants,
   activate_constants as fee_report_activate_constants,
+  create_constants as fee_report_create_constants,
 )
 from .....models.transaction_report.constants import transaction_report_fields
 from .....models.transaction_report.schema.subscribed.methods.constants import (
@@ -72,6 +74,7 @@ from .....models.transaction_report.schema.subscribed.methods.constants import (
   delete_constants as transaction_report_delete_constants,
   get_constants as transaction_report_get_constants,
   activate_constants as transaction_report_activate_constants,
+  create_constants as transaction_report_create_constants,
 )
 from .....models.transaction_report.transaction_match.constants import transaction_match_fields
 from ....constants import api_constants
@@ -723,32 +726,7 @@ class SubscribedTestCase(TestCase):
 
     ip = self.account.ips.get(value=ip_value)
 
-    paths = extract_schema_paths(create_response.render(), null=False)
-
-    expected_paths = [
-      [
-        api_constants.SCHEMA,
-        api_constants.MODELS,
-        IP.__name__,
-        schema_constants.METHODS,
-        method_constants.CREATE,
-        with_challenge_constants.CHALLENGE_COMPLETE,
-      ],
-      [
-        api_constants.SCHEMA,
-        api_constants.MODELS,
-        IP.__name__,
-        schema_constants.INSTANCES,
-        ip._id,
-        schema_constants.ATTRIBUTES,
-        ip_fields.VALUE,
-      ],
-    ]
-
-    self.assertEqual(len(paths), len(expected_paths))
-    for path in paths:
-      print('PATH... ', path)
-      self.assertTrue(path in expected_paths)
+    self.assertTrue(ip is not None)
 
   def test_ip_create_beyond_max(self):
     for _ in range(ip_create_constants.MAX_IPS):
@@ -1030,80 +1008,45 @@ class SubscribedTestCase(TestCase):
       activation_date=parse_datetime(activation_date),
     )
 
-    paths = extract_schema_paths(create_response.render(), null=False)
-
-    expected_paths = [
-      [
-        api_constants.SCHEMA,
-        api_constants.MODELS,
-        Subscription.__name__,
-        schema_constants.METHODS,
-        method_constants.CREATE,
-        with_challenge_constants.CHALLENGE_COMPLETE,
-      ],
-      [
-        api_constants.SCHEMA,
-        api_constants.MODELS,
-        Subscription.__name__,
-        schema_constants.INSTANCES,
-        subscription._id,
-        schema_constants.ATTRIBUTES,
-        subscription_fields.ORIGIN,
-      ],
-      [
-        api_constants.SCHEMA,
-        api_constants.MODELS,
-        Subscription.__name__,
-        schema_constants.INSTANCES,
-        subscription._id,
-        schema_constants.ATTRIBUTES,
-        subscription_fields.DURATION_IN_DAYS,
-      ],
-      [
-        api_constants.SCHEMA,
-        api_constants.MODELS,
-        Subscription.__name__,
-        schema_constants.INSTANCES,
-        subscription._id,
-        schema_constants.ATTRIBUTES,
-        subscription_fields.ACTIVATION_DATE,
-      ],
-      [
-        api_constants.SCHEMA,
-        api_constants.MODELS,
-        Subscription.__name__,
-        schema_constants.INSTANCES,
-        subscription._id,
-        schema_constants.ATTRIBUTES,
-        subscription_fields.IS_VALID_UNTIL,
-      ],
-      [
-        api_constants.SCHEMA,
-        api_constants.MODELS,
-        Subscription.__name__,
-        schema_constants.INSTANCES,
-        subscription._id,
-        schema_constants.ATTRIBUTES,
-        subscription_fields.IS_ACTIVE,
-      ],
-      [
-        api_constants.SCHEMA,
-        api_constants.MODELS,
-        Subscription.__name__,
-        schema_constants.INSTANCES,
-        subscription._id,
-        schema_constants.ATTRIBUTES,
-        subscription_fields.HAS_BEEN_ACTIVATED,
-      ],
-    ]
-
-    self.assertEqual(len(paths), len(expected_paths))
-    for path in paths:
-      print('PATH... ', path)
-      self.assertTrue(path in expected_paths)
+    self.assertTrue(subscription is not None)
 
   def test_subscription_activate(self):
-    pass
+    subscription = self.account.subscriptions.create(
+      duration_in_days=1,
+      activation_date=parse_datetime('1990-1-1 00:00:00UTC'),
+    )
+    address = Address.objects.create(value='address_value', is_active=True)
+    self.account.payments.create(
+      address=address,
+      origin=subscription.origin,
+      is_open=False,
+      has_been_used=False,
+    )
+
+    activate_payload = {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
+          Subscription.__name__: {
+            schema_constants.METHODS: {
+              subscription_method_constants.ACTIVATE: {
+                subscription_activate_constants.SUBSCRIPTION_ID: subscription._id,
+              },
+            },
+          },
+        },
+      },
+    }
+
+    activate_response = self.schema.respond(
+      system=self.system,
+      connection=self.connection,
+      payload=activate_payload,
+    )
+
+    subscription.refresh_from_db()
+
+    self.assertFalse(subscription.is_active)
+    self.assertTrue(subscription.has_been_activated)
 
   def test_subscription_get(self):
     get_payload = {
@@ -1205,25 +1148,408 @@ class SubscribedTestCase(TestCase):
       self.assertTrue(path in expected_paths)
 
   def test_fee_report_create(self):
-    pass
+    self.account.challenges.create(
+      origin=fee_report_create_constants.ORIGIN,
+      is_open=False,
+      has_been_used=False,
+    )
+
+    blocks_to_include = 1
+    is_active = True
+
+    create_payload = {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
+          FeeReport.__name__: {
+            schema_constants.METHODS: {
+              method_constants.CREATE: {
+                fee_report_fields.BLOCKS_TO_INCLUDE: blocks_to_include,
+                fee_report_fields.IS_ACTIVE: is_active,
+              },
+            },
+          },
+        },
+      },
+    }
+
+    create_response = self.schema.respond(
+      system=self.system,
+      connection=self.connection,
+      payload=create_payload,
+    )
+
+    fee_report = self.account.fee_reports.get(
+      blocks_to_include=blocks_to_include,
+      is_active=is_active,
+    )
+
+    self.assertTrue(fee_report is not None)
 
   def test_fee_report_delete(self):
-    pass
+    self.account.challenges.create(
+      origin=fee_report_delete_constants.ORIGIN,
+      is_open=False,
+      has_been_used=False,
+    )
+    fee_report = self.account.fee_reports.create(
+      blocks_to_include=1,
+      is_active=True,
+    )
+
+    delete_payload = {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
+          FeeReport.__name__: {
+            schema_constants.METHODS: {
+              method_constants.DELETE: {
+                fee_report_delete_constants.FEE_REPORT_ID: fee_report._id,
+              },
+            },
+          },
+        },
+      },
+    }
+
+    delete_response = self.schema.respond(
+      system=self.system,
+      connection=self.connection,
+      payload=delete_payload,
+    )
+
+    self.assertFalse(self.account.fee_reports.filter(id=fee_report._id).exists())
 
   def test_fee_report_get(self):
-    pass
+    fee_report = self.account.fee_reports.create(
+      blocks_to_include=1,
+      is_active=True,
+    )
+
+    get_payload = {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
+          FeeReport.__name__: {
+            schema_constants.METHODS: {
+              method_constants.GET: {},
+            },
+          },
+        },
+      },
+    }
+
+    get_response = self.schema.respond(
+      system=self.system,
+      connection=self.connection,
+      payload=get_payload,
+    )
+
+    paths = extract_schema_paths(get_response.render(), null=False)
+
+    expected_paths = [
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        FeeReport.__name__,
+        schema_constants.METHODS,
+        method_constants.GET,
+        fee_report_get_constants.FEE_REPORT_ID,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        FeeReport.__name__,
+        schema_constants.METHODS,
+        method_constants.GET,
+        fee_report_fields.IS_ACTIVE,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        FeeReport.__name__,
+        schema_constants.INSTANCES,
+        fee_report._id,
+        schema_constants.ATTRIBUTES,
+        fee_report_fields.IS_ACTIVE,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        FeeReport.__name__,
+        schema_constants.INSTANCES,
+        fee_report._id,
+        schema_constants.ATTRIBUTES,
+        fee_report_fields.IS_PROCESSING,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        FeeReport.__name__,
+        schema_constants.INSTANCES,
+        fee_report._id,
+        schema_constants.ATTRIBUTES,
+        fee_report_fields.BLOCKS_TO_INCLUDE,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        FeeReport.__name__,
+        schema_constants.INSTANCES,
+        fee_report._id,
+        schema_constants.ATTRIBUTES,
+        fee_report_fields.AVERAGE_TX_FEE,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        FeeReport.__name__,
+        schema_constants.INSTANCES,
+        fee_report._id,
+        schema_constants.ATTRIBUTES,
+        fee_report_fields.AVERAGE_TX_FEE_DENSITY,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        FeeReport.__name__,
+        schema_constants.INSTANCES,
+        fee_report._id,
+        schema_constants.ATTRIBUTES,
+        fee_report_fields.LAST_UPDATE_END_TIME,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        FeeReport.__name__,
+        schema_constants.INSTANCES,
+        fee_report._id,
+        schema_constants.ATTRIBUTES,
+        fee_report_fields.LATEST_BLOCK_HASH,
+      ],
+    ]
+
+    self.assertEqual(len(paths), len(expected_paths))
+    for path in paths:
+      print('PATH... ', path)
+      self.assertTrue(path in expected_paths)
 
   def test_transaction_report_create(self):
-    pass
+    self.account.challenges.create(
+      origin=transaction_report_create_constants.ORIGIN,
+      is_open=False,
+      has_been_used=False,
+    )
+
+    is_active = True
+    target_address = 'target_address'
+    value_equal_to = 1
+
+    create_payload = {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
+          TransactionReport.__name__: {
+            schema_constants.METHODS: {
+              method_constants.CREATE: {
+                transaction_report_fields.IS_ACTIVE: is_active,
+                transaction_report_fields.TARGET_ADDRESS: target_address,
+                transaction_report_fields.VALUE_EQUAL_TO: value_equal_to,
+              },
+            },
+          },
+        },
+      },
+    }
+
+    create_response = self.schema.respond(
+      system=self.system,
+      connection=self.connection,
+      payload=create_payload,
+    )
+
+    transaction_report = self.account.transaction_reports.get(
+      is_active=is_active,
+      target_address=target_address,
+      value_equal_to=value_equal_to,
+    )
+
+    self.assertTrue(transaction_report is not None)
 
   def test_transaction_report_delete(self):
-    pass
+    self.account.challenges.create(
+      origin=transaction_report_delete_constants.ORIGIN,
+      is_open=False,
+      has_been_used=False,
+    )
+    transaction_report = self.account.transaction_reports.create(
+      is_active=True,
+      target_address='target_address',
+      value_equal_to=1,
+    )
+
+    delete_payload = {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
+          TransactionReport.__name__: {
+            schema_constants.METHODS: {
+              method_constants.DELETE: {
+                transaction_report_delete_constants.TRANSACTION_REPORT_ID: transaction_report._id,
+              },
+            },
+          },
+        },
+      },
+    }
+
+    delete_response = self.schema.respond(
+      system=self.system,
+      connection=self.connection,
+      payload=delete_payload,
+    )
+
+    self.assertFalse(self.account.transaction_reports.filter(id=transaction_report._id).exists())
 
   def test_transaction_report_get(self):
-    pass
+    transaction_report = self.account.transaction_reports.create(
+      is_active=True,
+      target_address='target_address',
+      value_equal_to=1,
+    )
+
+    get_payload = {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
+          TransactionReport.__name__: {
+            schema_constants.METHODS: {
+              method_constants.GET: {},
+            },
+          },
+        },
+      },
+    }
+
+    get_response = self.schema.respond(
+      system=self.system,
+      connection=self.connection,
+      payload=get_payload,
+    )
+
+    paths = extract_schema_paths(get_response.render(), null=False)
+
+    expected_paths = [
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionReport.__name__,
+        schema_constants.METHODS,
+        method_constants.GET,
+        transaction_report_get_constants.TRANSACTION_REPORT_ID,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionReport.__name__,
+        schema_constants.METHODS,
+        method_constants.GET,
+        transaction_report_fields.IS_ACTIVE,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionReport.__name__,
+        schema_constants.INSTANCES,
+        transaction_report._id,
+        schema_constants.ATTRIBUTES,
+        transaction_report_fields.IS_ACTIVE,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionReport.__name__,
+        schema_constants.INSTANCES,
+        transaction_report._id,
+        schema_constants.ATTRIBUTES,
+        transaction_report_fields.TARGET_ADDRESS,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionReport.__name__,
+        schema_constants.INSTANCES,
+        transaction_report._id,
+        schema_constants.ATTRIBUTES,
+        transaction_report_fields.VALUE_EQUAL_TO,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionReport.__name__,
+        schema_constants.INSTANCES,
+        transaction_report._id,
+        schema_constants.ATTRIBUTES,
+        transaction_report_fields.VALUE_LESS_THAN,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionReport.__name__,
+        schema_constants.INSTANCES,
+        transaction_report._id,
+        schema_constants.ATTRIBUTES,
+        transaction_report_fields.VALUE_GREATER_THAN,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        TransactionReport.__name__,
+        schema_constants.INSTANCES,
+        transaction_report._id,
+        schema_constants.ATTRIBUTES,
+        transaction_report_fields.LATEST_BLOCK_HASH,
+      ],
+    ]
+
+    # self.assertEqual(len(paths), len(expected_paths))
+    for path in paths:
+      print('PATH... ', path)
+      self.assertTrue(path in expected_paths)
 
   def test_transaction_report_activate(self):
-    pass
+    self.account.challenges.create(
+      origin=transaction_report_activate_constants.ORIGIN,
+      is_open=False,
+      has_been_used=False,
+    )
+    transaction_report = self.account.transaction_reports.create(
+      is_active=True,
+      target_address='target_address',
+      value_equal_to=1,
+    )
+
+    activate_payload = {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
+          TransactionReport.__name__: {
+            schema_constants.METHODS: {
+              transaction_report_subscribed_method_constants.ACTIVATE: {
+                transaction_report_activate_constants.TRANSACTION_REPORT_ID: transaction_report._id,
+                transaction_report_fields.IS_ACTIVE: False,
+              },
+            },
+          },
+        },
+      },
+    }
+
+    activate_response = self.schema.respond(
+      system=self.system,
+      connection=self.connection,
+      payload=activate_payload,
+    )
+
+    transaction_report.refresh_from_db()
+
+    self.assertFalse(transaction_report.is_active)
 
   def transaction_match_get(self):
+    pass
+
+  def transaction_match_dismiss(self):
     pass

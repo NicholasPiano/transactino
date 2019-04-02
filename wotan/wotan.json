@@ -279,6 +279,40 @@
             }
           }
         }
+      },
+      "20190402": {
+        "description": "Final leg with tests, etc. After these tests, are done, I think deployment can begin.",
+        "children": {
+          "t12.7": {
+            "description": "Top-level tests.",
+            "children": {
+              "subscribed tests": {
+                "description": "A lot of tests to write",
+                "children": {
+                  "test_subscription_activate": "done",
+                  "test_fee_report_create": "done",
+                  "test_fee_report_delete": "done",
+                  "test_fee_report_get": "done",
+                  "test_transaction_report_create": "",
+                  "test_transaction_report_delete": "",
+                  "test_transaction_report_get": "",
+                  "test_transaction_report_activate": "",
+                  "transaction_match_get": "",
+                  "transaction_match_dismiss": ""
+                }
+              }
+            }
+          },
+          "after tests": {
+            "description": "A set of tasks I can see in the future",
+            "children": {
+              "payment backend": "Create small backend script for payments that watched Block object. Normally, I would want a service to have a subscription to a transaction service such as this one, but in this case, it would be quite self-referential. I will need to think more about connections between services.",
+              "dashboard": "Maybe experiment with putting this together. Should summarise things like challenges, payments, subscriptions, fee reports, and transaction reports.",
+              "templates": "",
+              "task server": ""
+            }
+          }
+        }
       }
     }
   }

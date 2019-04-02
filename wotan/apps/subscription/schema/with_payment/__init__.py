@@ -80,7 +80,7 @@ class WithPayment(Schema):
     open_payment = context.get_account().payments.get(origin=origin, is_open=True)
     if open_payment is not None:
       self.active_response.add_error(
-        with_flexible_payment_errors.OPEN_PAYMENT_EXISTS_WITH_ORIGIN(id=open_payment._id, origin=origin),
+        with_payment_errors.OPEN_PAYMENT_EXISTS_WITH_ORIGIN(id=open_payment._id, origin=origin),
       )
       return False
 
@@ -103,7 +103,7 @@ class WithPayment(Schema):
 
     if not address:
       self.active_response.add_error(
-        with_flexible_payment_errors.PAYMENTS_UNAVAILABLE(),
+        with_payment_errors.PAYMENTS_UNAVAILABLE(),
       )
       return
 
