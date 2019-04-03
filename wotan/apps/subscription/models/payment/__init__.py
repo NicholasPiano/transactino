@@ -6,8 +6,6 @@ from django.db import models
 from django.conf import settings
 scheduler = settings.SCHEDULER
 
-from util.blockchaininfo import get_latest_block_hash, Block
-
 from apps.base.models import Model, Manager, model_fields
 from apps.base.schema.constants import schema_constants
 
@@ -15,8 +13,9 @@ from ...constants import mode_constants, APP_LABEL
 from .constants import payment_constants, payment_fields
 from .schema.common import PaymentModelSchema
 from .schema.superadmin import PaymentSuperadminModelSchema
+from .backend import WithPaymentCheck
 
-class PaymentManager(Manager):
+class PaymentManager(Manager, WithPaymentCheck):
   def attributes(self, mode=None):
     attributes = super().attributes(mode=mode)
 
@@ -130,3 +129,16 @@ class Payment(Model):
       self.unique_btc_amount = self.address.get_open_unique_btc_amount()
       self.full_btc_amount = self.base_amount + self.unique_btc_amount
       self.save()
+
+def payment_task():
+  if scheduler is not None:
+    Payment.objects.check_payments()
+
+if scheduler is not None:
+  scheduler.add_job(
+    payment_task,
+    trigger='interval',
+    seconds=120,
+    id=payment_constants.PAYMENT_TASK,
+    replace_existing=True,
+  )

@@ -64,6 +64,7 @@ class Delta():
     self.value = int(prev_out.get('value'))
 
   def outgoing(self, vout_json):
+    self.index = int(vout_json.get('n'))
     self.value = int(vout_json.get('value'))
     self.addresses = force_array(vout_json.get('addr'))
 

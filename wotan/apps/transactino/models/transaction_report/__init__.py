@@ -108,12 +108,12 @@ class TransactionReport(Model):
     deltas = block.find_deltas_with_address(self.target_address)
 
     for delta in deltas:
-      if self.match(value):
+      if self.match(delta.value):
         self.matches.create(
           block_hash=block.hash,
           txid=delta.out_txid,
           index=delta.index,
-          value=value,
+          value=delta.value,
         )
 
 def transaction_report_task():

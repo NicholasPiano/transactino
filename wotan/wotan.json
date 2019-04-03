@@ -320,11 +320,15 @@
             "description": "A set of tasks I can see in the future",
             "children": {
               "payment backend": "Create small backend script for payments that watched Block object. Normally, I would want a service to have a subscription to a transaction service such as this one, but in this case, it would be quite self-referential. I will need to think more about connections between services.",
-              "dashboard": "Maybe experiment with putting this together. Should summarise things like challenges, payments, subscriptions, fee reports, and transaction reports.",
-              "templates": "",
-              "task server": ""
+              "dashboard": "Maybe experiment with putting this together. Should summarise things like challenges, payments, subscriptions, fee reports, and transaction reports."
             }
           }
+        }
+      },
+      "20190403": {
+        "description": "Most coding completed. Just need to add the payment backend.",
+        "children": {
+          "payment backend": "Very similar to what I had before. The purpose of segregating the backend implementation from the payment model is to prepare for the backend to be external."
         }
       }
     }
