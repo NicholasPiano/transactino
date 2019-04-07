@@ -10,10 +10,9 @@ Named for the Norse World-serpent that brings about Ragnarok, Jormungand is the 
 URL: http://35.178.206.19/api/
 ```
 
-## Releases
+## LATEST RELEASE
 
-<a href="{% static 'jormungand_1.0.0.zip' %}">1.0.0</a>
-<a href="{% static 'jormungand_1.2.0.zip' %}">1.2.0</a>
+<a href="{% static 'jormungand_1.3.0.zip' %}">1.3.0</a>
 
 ## Usage
 ### Setup
@@ -24,24 +23,27 @@ URL: http://35.178.206.19/api/
 ```json
 {
   "url": "http://35.178.206.19/api/",
-  "public_key": "/path/to/public_key.asc"
+  "public_key": "/path/to/public_key.asc",
+  "challenge_path": "/path/to/dump/challenge/messages"
 }
 ```
 
 3. Install Python3.5+
 4. Create virtualenv `~$ python3.5 -m venv .`
 5. Activate virtualenv `~$ source bin/activate`
-6. Run script with arguments `~$ python jormungand.py arg1 arg2`
+6. Install dependencies with `pip` `~$ pip install -r requirements/common.txt`
+6. Run script with arguments `~$ python jormungand.py arg1 arg2 ...`
 
 ### Commands
 
-The order of the arguments does not matter `account verify == verify account`
+The order of the arguments does not matter: `account verify == verify account`
 
 ```
 schema
 schema reduced
 account create
 account verify
+system get
 challenge get
 challenge get closed
 challenge respond
@@ -63,13 +65,21 @@ fee_report get
 ```json
 {
   "schema": {
+    "readme": "Run this method to obtain the README for the system",
+    "socket": "Run this method to obtain the information about the active socket if it exists.",
     "models": {
       "Account": {
         "methods": {
           "create": {
-            "public_key": "Tests for a valid public key"
+            "public_key": "A valid GPG public key in ASCII armor format with newlines replaced by their escaped equivalent (\\n)"
           }
         }
+      },
+      "System": {
+        "methods": {
+          "get": "The schema for the System get method. Returns details about the system including the public key and long key id."
+        },
+        "instances": "The schema for reporting details of instances of the System model. This schema takes no input and does not trigger any methods or any interaction with the API."
       }
     }
   }
@@ -103,18 +113,66 @@ fee_report get
        corroborated.
 ```
 
-3. Verify account (no challenge):
+3. Check the schema to see the changes:
+
+`~$ python jormungand.py schema reduced`
+
+```json
+{
+  "schema": {
+    "readme": "Run this method to obtain the README for the system",
+    "socket": "Run this method to obtain the information about the active socket if it exists.",
+    "system": "This schema takes no input, but will display a message indicating that changes have been made to the system.",
+    "announcements": "This schema takes no input, but will display a message when there are active announcements.",
+    "models": {
+      "Account": {
+        "methods": {
+          "verify": "The schema for the Account verify method. This method takes no arguments, but does require a challenge to be solved.",
+          "delete": "The schema for the Account delete method. This method takes no arguments, but does require a challenge to be solved."
+        }
+      },
+      "Announcement": {
+        "methods": {
+          "get": "The schema for the Announcement get method. Returns details about the active announcements."
+        },
+        "instances": "The schema for reporting details of instances of the Announcement model. This schema takes no input and does not trigger any methods or any interaction with the API."
+      },
+      "Challenge": {
+        "methods": {
+          "respond": {
+            "challenge_id": "The ID of the challenge in question",
+            "content": "The decrypted text of the challenge, having been re-encrypted to the public key of the service and put into ascii armor format."
+          },
+          "get": {
+            "challenge_id": "The challenge ID",
+            "is_open": "Filter the list of challenges by their open states."
+          }
+        },
+        "instances": "The schema for reporting details of instances of the Challenge model. This schema takes no input and does not trigger any methods or any interaction with the API."
+      },
+      "System": {
+        "methods": {
+          "get": "The schema for the System get method. Returns details about the system including the public key and long key id."
+        },
+        "instances": "The schema for reporting details of instances of the System model. This schema takes no input and does not trigger any methods or any interaction with the API."
+      }
+    }
+  }
+}
+```
+
+4. Verify account (initially with no completed challenge):
 
 `~$ python jormungand.py verify account`
 
 ```json
 {
   "open_challenge_id": "f5368309256f4394b44803539f309aa0",
-  "verification_complete": false
+  "challenge_complete": false
 }
 ```
 
-4. Look for challenge with corresponding ID:
+5. Look for challenge with corresponding ID:
 
 `~$ python jormungand.py get challenge`
 
@@ -148,99 +206,180 @@ tcLzE0isT71eCpBpVhqOlC668eKnedPqfr4M3JMAUH3L6nb1zn9j9cVHQWlHn/ZB
 -----END PGP MESSAGE-----
 ```
 
-Copy this into a file and decrypt (assuming private key has been added to GPG):
+6. Copy this into a file and decrypt (assuming private key has been added to GPG):
 
-`~$ gpg --decrypt file_with_challenge > output`
+`~$ gpg --output decrypted.asc --decrypt file/with/challenge/message.asc`
 
-The string needed to respond to the challenge can be found in `output`:
+7. Alternatively, run the `challenge get` command with `save` to save the contents of the challenge message to the directory specified in `env.json`:
+
+`~$ python jormungand.py get challenge save`
+
+8. Fetch the public key of the system (using the `system get` command) for the purposes of re-encrypting the decrypted challenge message:
+
+`~$ python jormungand.py system get`
 
 ```
-9DA54E27F0AC496A7F6853B11B2D2FEB5D51767F3DA7C8B482EDFABE5D20D99A88A494BACEC00FBDD92F6DD994AC9923ED50F5DC2BCF94774A83AA5625A3ED9D9AC47B8F8F991A874D97C01F1E98196C1342049EAE865120F328E9603EA0E6EE289061D6D96FBC85CC6C32CE7A9C57BEA31C122BB8E2ED80BED41D55146395159FD31CB2418E0597B46FC62A25FF2041C4DF623B9ADA5123B82C7BCF7F85DDE2E1FC9BB298D824025C7BE69E3A3FF6EF484C5153B94E0E9AA3341489841E41AA5A0A8C2CC115E00432E18AD9DF13857A500A2FA6441DE0EC0678FC6BDE7EF1D7432461625068402BBE164A7BFFCF810BA5726CFB861B6D88450966149FB13E48
+System ID:  a53be67160cd43b9b9bd39ff8aba5187
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+mQENBFyUlYcBCADn2eSAR8mJlIGkxIS780Qki/vaUAk7hFxdaNNDVVvWxMZh2o7j
+XAfGDxRayWXOR+oJE/Ro9YEyHWGHpN9sYx+V7z1WHAG++qWSfW1ORb3stmVFAfMJ
+vF5sDtNO7PeUdLTtDg4l7zwXfnjXG1+ROInsAgxKz8seqWkg8LvQweC8+UU94eiP
+581O8Yo1A+xTiXpHf431SxRR6hqfEWVm0BhePSrHSD8dFTqFqI1K5QATU5w1xPU7
+IVs/ycmBbeJELOu1MdRAO5IKJ/drnH0RB89PpM4ufugJKT9p+tRyNBm13ajQlNW+
+021OAbB6UH/I/ZRHl9Stt6AT+h9NOu+bRohNABEBAAG0BnN5c3RlbYkBVAQTAQgA
+PhYhBKkIh90bYRz18wzDJYYwvsF9/1r9BQJclJWHAhsDBQkDwmcABQsJCAcCBhUK
+CQgLAgQWAgMBAh4BAheAAAoJEIYwvsF9/1r9WE4IAM1VYYFzjnY6M4pL7S66RGIj
+TzJj5w+GcE78h90Hkr+7KYnGfgG1nj+CKF885KZZcabKBoLCOUxmmgcw9Gvf/mYP
+qe4/Duh77CBRxHjHx0kb2XryNhm3u6PwjaFbDXKsjb0Em7VZ4hXRu5OaTvjMpu7r
+ygDxFvT0Ks+VBPMzicVKXfysA1fNaM5cskM/wFB1ODbAsdwOxGFa1WsJByEoWHOb
+Sc94NimiEiktXIJkr7Tz954HKRpA2Bs6haZfdg6T3NTEVeiNd1UUZAv97FOvZhmq
+ZeqLq7t0eSTzl0znp1TJ3YvomQF4OfDczONBQtlYnN/zXDMv/MqirTTGvdA/TLu5
+AQ0EXJSVhwEIALkNUhTcaBrdAoA2brJdIdf9xwRIXys5hvSaFj9tB4pvfrEw093z
+9rZTjvm3drhvBQknMuXCBOYCWdGpcMDwIJ9hOs3vOJx2NgHG7W3gUbhF69ZfKUeN
+osEaaap+zAaJxHOJpTj4kZrnQvW0T/OCwR67JrHbc2vLXhXZeJowPW4BndZJipwe
+ab9c1KT5vL1pZjFkqYMgWoJMRzN+JreGvagW81pGZpahF0rc/6k/t3VnmZFmSlVr
+sKwCsXjRBaXGgIq/U7ziZBqpE2Ap29lfaKSk48ocDZuTU0Xixkr+5aHX11Z68Xez
+XIhvFjC7bUD0HnO9NlX/LeSR2C03OZdqV+UAEQEAAYkBPAQYAQgAJhYhBKkIh90b
+YRz18wzDJYYwvsF9/1r9BQJclJWHAhsMBQkDwmcAAAoJEIYwvsF9/1r9mQ4H/iB6
+7p8xGtnKyUQnBbwCKaMyr4MoE9oOVaj8rijQ2svRQflqP081EcE7p6o7sBf3dWwl
+AGsYyg5zVdFxotMvUzpdK2swuHkC2+kV6M66KIgwbrSNOv5Z9HYatyR+C3cgVYeP
+tuIJw3aT7W31pdBDNUNVmTjiae5mVnlG/ie932mgR2wpE59wXJmTPcVy3zqMWldG
+0klMsNS5G+l0ATK/M8Z/vbMi/CO6R/7nqYd9IeH2ijOCRKhANB+W/d2P0yO2LsP9
+nC3PIMuVGc2ongSNF5mOVJfQ1UpyZe0SG4UOcs9t3G695cPxWOQKFQ9cjI0B7tIm
+sdhlBYG0oGQQV5IxfsY=
+=yuG5
+-----END PGP PUBLIC KEY BLOCK-----
 ```
 
-5. Respond to the challenge:
+9. Save the public key and import it into GPG:
+
+`~$ gpg --import saved/public/key.asc`
+
+Remember to make a note of the LONG KEY ID for use in the `--encrypt` command.
+
+10. Re-encrypt the contents of the decrypted message using the LONG KEY ID:
+
+`~$ gpg --encrypt --output encrypted.asc --recipient $LONG_KEY_ID --armor decrypted.asc`
+
+11. If the resulting file is named correctly (`encrypted.asc`), it can be placed into the challenge directory where the original encrypted message was placed after running `challenge get save`. Make sure to place it in the correct challenge directory. If this is done, run the `challenge respond read` command. The `read` option will attempt to read the re-encrypted challenge from the corresponding challenge directory.
+
+`~$ python jormungand.py respond challenge read`
+
+```
+Please enter a challenge ID: f5368309256f4394b44803539f309aa0
+```
+
+```json
+{
+  "challenge_complete": true,
+  "challenge_id": "f5368309256f4394b44803539f309aa0"
+}
+```
+
+12. If you choose not to do this, you must copy the text for the armor formatted re-encrypted challenge and paste it into the terminal as the answer to the second prompt. To do this, newlines in the text must be replaced by escaped newlines (`\n`):
 
 `~$ python jormungand.py respond challenge`
 
 ```
 Please enter a challenge ID: f5368309256f4394b44803539f309aa0
-Please enter the decrypted string: 9DA54E27F0AC496A7F6853B11B2D2FEB5D51767F3DA7C8B482EDFABE5D20D99A88A494BACEC00FBDD92F6DD994AC9923ED50F5DC2BCF94774A83AA5625A3ED9D9AC47B8F8F991A874D97C01F1E98196C1342049EAE865120F328E9603EA0E6EE289061D6D96FBC85CC6C32CE7A9C57BEA31C122BB8E2ED80BED41D55146395159FD31CB2418E0597B46FC62A25FF2041C4DF623B9ADA5123B82C7BCF7F85DDE2E1FC9BB298D824025C7BE69E3A3FF6EF484C5153B94E0E9AA3341489841E41AA5A0A8C2CC115E00432E18AD9DF13857A500A2FA6441DE0EC0678FC6BDE7EF1D7432461625068402BBE164A7BFFCF810BA5726CFB861B6D88450966149FB13E48
+Please enter the decrypted string that has been re-encrypted to the public key of the System model. It should be in ASCII armor format with any newlines replaced with their escaped equivalents (\n). This is for the purposes of pasting the text into the command line:
+
+-----BEGIN PGP MESSAGE-----\n\nhQEMA2wTbiAzUAymAQf/b9PtAFcoTeq3n4o1iiYlpRoTHskp4ZhVhfqmc60rVdJM\nNldYPyXOzD3EUB1XvK86eGOzjEeo8ewSoAgKLA3StDtxm3mEfBcxuHiPSpYBTTkv\nEo5zMDJxUmRqmj7MDlOiG3JWEKAY+s1l937nsAsQPwHCwU77Mibm0nEpESurHai7\nWrjvg80eiJNfEmrlTzeRKJeVkhu0xPmrnPLt3jn33PBPQF+oIsU0yC3/uf195EQM\n7oNzJU9X1Od6S29eRMyRFzWf7T41Eo6Eo0Gayi5hk4UYBxdfn2uWJaaVaewfNVVU\n94twHJM/2ZZqfzVcQB/MEckXw35CJOtz8pb/NnIc59LAuQG3teyBf1GCLb5CgS5C\nWOIl/sfVhoR1Gjj7vj3ecUpFpD9h76Z6d0wyq/ImAQsH4kfffQlQz1GGVLWmT8DO\nnw6Mvb6eBE5WYJqdyNnD07npx28qSMjssQLYJF7InhOfzXbezEE3TBPmQJnDeyVV\n2y0xCu5paMZ4w3qb2+nyUYc7obWpIL4NzxKb8YnMF+AmMStD//ieVsHaOTVKdQRb\nMOCnF1gmXe27sKr7LoW3MsrzxcD2TjQCOULbbtm91Sp+nlTblB1jPTEGgJHX++Mz\n8IWX4y3PSF968lJFj/ympTBRrZvwKJWeR6HbylZStbyP0xgYCOAKSivnukLM/DzG\n2DDI7YcbhOoM7JRWE1lbwUGY030WZhRFfJg4XzAnOX+jCAsUe39ltt5g2hRPR8de\nsq85n2VZaDCKB6Mas8KDSGjPZVW5ji4ELVCK79fsdUjMji9ER69ksoS9GZoUBqQ6\nVLXhp6ECZ2OlAOb0l0nls3tw58SbstXPOnF0\n=MeAf\n-----END PGP MESSAGE-----
+
 ```
 ```json
 {
-  "is_verified": true,
+  "challenge_complete": true,
   "challenge_id": "f5368309256f4394b44803539f309aa0"
 }
 ```
 
-6. Run `verify account` again now that the challenge has been solved:
+13. Run `verify account` again now that the challenge has been solved:
 
 `~$ python jormungand.py verify account`
 
 ```json
 {
-  "verification_complete": true
+  "challenge_complete": true
 }
 ```
 
-7. Check schema again to see changes:
+14. Check schema again to see changes:
 
 `~$ python jormungand.py reduced schema`
 
 ```json
 {
   "schema": {
+    "readme": "Run this method to obtain the README for the system",
+    "socket": "Run this method to obtain the information about the active socket if it exists.",
+    "system": "This schema takes no input, but will display a message indicating that changes have been made to the system.",
+    "announcements": "This schema takes no input, but will display a message when there are active announcements.",
     "models": {
-      "Payment": {
+      "Account": {
         "methods": {
-          "get": {
-            "is_open": null,
-            "id": null
-          }
-        },
-        "instances": null
+          "verify": "The schema for the Account verify method. This method takes no arguments, but does require a challenge to be solved.",
+          "delete": "The schema for the Account delete method. This method takes no arguments, but does require a challenge to be solved."
+        }
       },
-      "Subscription": {
+      "Announcement": {
         "methods": {
-          "activate": {
-            "subscription_id": null
-          },
-          "get": {
-            "id": null,
-            "is_active": null
-          },
-          "create": {
-            "activation_date": null,
-            "duration_in_days": null
-          }
+          "get": "The schema for the Announcement get method. Returns details about the active announcements."
         },
-        "instances": null
+        "instances": "The schema for reporting details of instances of the Announcement model. This schema takes no input and does not trigger any methods or any interaction with the API."
       },
       "Challenge": {
         "methods": {
           "respond": {
-            "armor": null,
-            "challenge_id": null,
-            "plaintext": null
+            "challenge_id": "The ID of the challenge in question",
+            "content": "The decrypted text of the challenge, having been re-encrypted to the public key of the service and put into ascii armor format."
           },
           "get": {
-            "is_open": null
+            "challenge_id": "The challenge ID",
+            "is_open": "Filter the list of challenges by their open states."
           }
         },
-        "instances": null
+        "instances": "The schema for reporting details of instances of the Challenge model. This schema takes no input and does not trigger any methods or any interaction with the API."
       },
-      "Account": {
+      "System": {
         "methods": {
-          "delete": null,
-          "verify": null
-        }
+          "get": "The schema for the System get method. Returns details about the system including the public key and long key id."
+        },
+        "instances": "The schema for reporting details of instances of the System model. This schema takes no input and does not trigger any methods or any interaction with the API."
+      },
+      "Subscription": {
+        "methods": {
+          "create": {
+            "duration_in_days": "The duration, measured in periods of 24 hours from the date of activation.",
+            "activation_date": "The activation date. This can be given as any valid date string. Once this date is passed, a process will run that verifies and activates the subscription. From this point, a request made from any IP address associated with the account will be responded to accordingly."
+          },
+          "activate": {
+            "subscription_id": "The ID of the Subscription"
+          },
+          "get": {
+            "subscription_id": "The subscription ID",
+            "is_active": "The subscription active status. If omitted, all subscriptions are returned."
+          }
+        },
+        "instances": "The schema for reporting details of instances of the Subscription model. This schema takes no input and does not trigger any methods or any interaction with the API."
+      },
+      "Payment": {
+        "methods": {
+          "get": {
+            "payment_id": "The payment ID",
+            "is_open": "The payment open status"
+          }
+        },
+        "instances": "The schema for reporting details of instances of the Payment model. This schema takes no input and does not trigger any methods or any interaction with the API."
       }
     }
   }
 }
 ```
 
-8. Create subscription:
+15. Create subscription:
 
 `~$ python jormungand.py create subscription`
 
@@ -248,12 +387,12 @@ Run initially without arguments until a challenge has been solved.
 
 ```json
 {
-  "create_complete": false,
+  "challenge_complete": false,
   "open_challenge_id": "dea4dc47bad74a85aeda4fca47cdf3ab"
 }
 ```
 
-9. Repeat steps 4 and 5, then run the command again:
+16. Repeat the challenge response process in steps 5-12, then run the command again:
 
 `~$ python jormungand.py create subscription`
 
@@ -263,7 +402,7 @@ Enter the activation date: 2/12/2018
 ```
 ```json
 {
-  "create_complete": true
+  "challenge_complete": true
 }
 {
   "051daa7553134f2db5aa1f8178d6e2af": {
@@ -280,7 +419,7 @@ Enter the activation date: 2/12/2018
 }
 ```
 
-10. Activate the subscription
+17. Activate the subscription
 
 `~$ python jormungand.py activate subscription`
 
@@ -290,13 +429,13 @@ Enter a subscription ID: 051daa7553134f2db5aa1f8178d6e2af
 ```json
 {
   "open_payment_id": "f741940a260d4241832fb080727a4f8c",
-  "activation_complete": false
+  "payment_complete": false
 }
 ```
 
 A payment functions like a challenge, but there is no respond function.
 
-11. View the payment to get the relevant details
+18. View the payment to get the relevant details
 
 `~$ python jormungand.py get payment`
 
@@ -304,7 +443,7 @@ A payment functions like a challenge, but there is no respond function.
 {
   "f741940a260d4241832fb080727a4f8c": {
     "attributes": {
-      "address": "example_address",
+      "address": "Address.6932c72d9d15494288b2969324e22bdf",
       "origin": "dd495ee2-581c-4382-b7d5-8dc33a48aced",
       "full_btc_amount": 406734
     }
@@ -312,11 +451,28 @@ A payment functions like a challenge, but there is no respond function.
 }
 ```
 
-The amount shown is a combination of a base amount, in this case `40000` satoshi, and `6734` satoshi, the randomly generated amount meant to identify the payment.
+The amount shown is a combination of a base amount, in this case `400000` satoshi, and `6734` satoshi, the randomly generated amount meant to identify the payment.
 
-Create a transaction with this amount to the address specified at the top of this document. Once the transaction has been added to a block, the payment will be closed, and any action blocked by the payment can be run successfully.
+Create a transaction with this amount to the address found in the next step. Once the transaction has been added to a block, the payment will be closed, and any action blocked by the payment can be run successfully.
 
-12. The payment can also be checked by running the get subscription command with inactive:
+19. Find the address needed to make the payment by running the `address get` method.
+
+`~$ python jormungand.py get address`
+
+```
+Enter an address ID: 88148b738d8f40c7a7752eec0792598d
+```
+```json
+{
+  "88148b738d8f40c7a7752eec0792598d": {
+    "attributes": {
+      "value": "16FzUdcw2HVnwXhT73ZbRm57ZqELSTyz2v"
+    }
+  }
+}
+```
+
+20. The payment can also be checked by running the get subscription command with inactive:
 
 `~$ python jormungand.py get subscription inactive`
 
@@ -338,17 +494,17 @@ Create a transaction with this amount to the address specified at the top of thi
 
 `is_payment_confirmed` will read `true` when the payment has gone through.
 
-13. Once the payment has been closed, activate the subscription.
+21. Once the payment has been closed, activate the subscription.
 
 `~$ python jormungand.py activate subscription`
 
 ```json
 {
-  "activation_complete": true
+  "payment_complete": true
 }
 ```
 
-14. Check the subscription again:
+22. Check the subscription again:
 
 `~$ python jormungand.py get subscription`
 
@@ -357,7 +513,7 @@ Create a transaction with this amount to the address specified at the top of thi
   "051daa7553134f2db5aa1f8178d6e2af": {
     "attributes": {
       "activation_date": "2018-12-02 20:59:59.559503+00:00",
-      "is_active": true,
+      "is_active": false,
       "duration_in_days": 10,
       "is_payment_confirmed": true,
       "has_been_activated": true,
@@ -368,86 +524,164 @@ Create a transaction with this amount to the address specified at the top of thi
 }
 ```
 
-Note that `is_active` is set to `true`. It will now possible to create a Fee report.
+Note that `has_been_activated` is set to `true`. After a short duration, the system will update the active status of the subscription and it will possible to create a Fee report.
 
-15. Check the available schema again:
+23. Check the available schema again:
 
 `~$ python jormungand.py reduced schema`
 
 ```json
 {
   "schema": {
+    "readme": "Run this method to obtain the README for the system",
+    "socket": "Run this method to obtain the information about the active socket if it exists.",
+    "system": "This schema takes no input, but will display a message indicating that changes have been made to the system.",
+    "announcements": "This schema takes no input, but will display a message when there are active announcements.",
     "models": {
       "Account": {
         "methods": {
-          "lock": null
-        }
-      },
-      "Subscription": {
-        "instances": null,
-        "methods": {
-          "get": {
-            "is_active": null,
-            "id": null
-          },
-          "activate": {
-            "subscription_id": null
-          },
-          "create": {
-            "activation_date": null,
-            "duration_in_days": null
+          "lock": {
+            "lock": "Value specifying the desired lock state of the account"
           }
         }
       },
-      "FeeReport": {
-        "instances": null,
+      "Address": {
         "methods": {
           "get": {
-            "is_active": null,
-            "id": null
-          },
-          "activate": {
-            "fee_report_id": null,
-            "is_active": null
-          },
-          "create": {
-            "blocks_to_include": null,
-            "is_active": null
-          },
-          "delete": null
-        }
+            "address_id": "The address ID"
+          }
+        },
+        "instances": "The schema for reporting details of instances of the Address model. This schema takes no input and does not trigger any methods or any interaction with the API."
+      },
+      "Announcement": {
+        "methods": {
+          "get": "The schema for the Announcement get method. Returns details about the active announcements."
+        },
+        "instances": "The schema for reporting details of instances of the Announcement model. This schema takes no input and does not trigger any methods or any interaction with the API."
+      },
+      "System": {
+        "methods": {
+          "get": "The schema for the System get method. Returns details about the system including the public key and long key id."
+        },
+        "instances": "The schema for reporting details of instances of the System model. This schema takes no input and does not trigger any methods or any interaction with the API."
       },
       "Challenge": {
-        "instances": null,
         "methods": {
           "respond": {
-            "armor": null,
-            "challenge_id": null,
-            "plaintext": null
+            "challenge_id": "The ID of the challenge in question",
+            "content": "The decrypted text of the challenge, having been re-encrypted to the public key of the service and put into ascii armor format."
           },
           "get": {
-            "is_open": null
+            "challenge_id": "The challenge ID",
+            "is_open": "Filter the list of challenges by their open states."
+          },
+          "delete": {
+            "challenge_id": "The challenge ID to delete"
           }
-        }
+        },
+        "instances": "The schema for reporting details of instances of the Challenge model. This schema takes no input and does not trigger any methods or any interaction with the API."
       },
       "IP": {
-        "instances": null,
         "methods": {
-          "get": null,
           "create": {
-            "value": null
+            "value": "Must be a valid IPv4 address."
           },
-          "delete": null
-        }
+          "delete": {
+            "ip_id": "The IP address ID"
+          },
+          "get": {
+            "ip_id": "The IP address ID"
+          }
+        },
+        "instances": "The schema for reporting details of instances of the IP model. This schema takes no input and does not trigger any methods or any interaction with the API."
       },
       "Payment": {
-        "instances": null,
         "methods": {
           "get": {
-            "is_open": null,
-            "id": null
+            "payment_id": "The payment ID",
+            "is_open": "The payment open status"
           }
-        }
+        },
+        "instances": "The schema for reporting details of instances of the Payment model. This schema takes no input and does not trigger any methods or any interaction with the API."
+      },
+      "Subscription": {
+        "methods": {
+          "create": {
+            "duration_in_days": "The duration, measured in periods of 24 hours from the date of activation.",
+            "activation_date": "The activation date. This can be given as any valid date string. Once this date is passed, a process will run that verifies and activates the subscription. From this point, a request made from any IP address associated with the account will be responded to accordingly."
+          },
+          "activate": {
+            "subscription_id": "The ID of the Subscription"
+          },
+          "get": {
+            "subscription_id": "The subscription ID",
+            "is_active": "The subscription active status. If omitted, all subscriptions are returned."
+          }
+        },
+        "instances": "The schema for reporting details of instances of the Subscription model. This schema takes no input and does not trigger any methods or any interaction with the API."
+      },
+      "FeeReport": {
+        "methods": {
+          "create": {
+            "blocks_to_include": "The number of blocks over which to calculate the average. Defaults to 1 if omitted.",
+            "is_active": "Whether or not the report should be initially active. Defaults to true if omitted."
+          },
+          "delete": {
+            "fee_report_id": "The ID of the FeeReport object to delete."
+          },
+          "get": {
+            "fee_report_id": "The ID of the FeeReport in question.",
+            "is_active": "The active status of the FeeReport."
+          },
+          "activate": {
+            "fee_report_id": "The ID of the FeeReport is question.",
+            "is_active": "A boolean value that designates whether the report should be active."
+          }
+        },
+        "instances": "The schema for reporting details of instances of the FeeReport model. This schema takes no input and does not trigger any methods or any interaction with the API."
+      },
+      "TransactionReport": {
+        "methods": {
+          "create": {
+            "is_active": "Whether or not the report should be initially active.",
+            "target_address": "The address to watch",
+            "value_equal_to": "A match will be recorded if the integer Satoshi amount of an output to the target address is equal to this value. WARNING: cannot be used in conjunction with the value_less_than or value_greater_than properties.",
+            "value_less_than": "A match will be recorded if the integer Satoshi amount of an output to the target address is less than this value, depending on the value of the value_greater_than property. WARNING: cannot be used in conjunction with the value_equal_to property.",
+            "value_greater_than": "A match will be recorded if the integer Satoshi amount of an output to the target address is greater than this value, depending on the value of the value_less_than property. WARNING: cannot be used in conjunction with the value_equal_to property."
+          },
+          "delete": {
+            "transaction_report_id": "The ID of the TransactionReport object to delete."
+          },
+          "get": {
+            "transaction_report_id": "The ID of the TransactionReport in question.",
+            "is_active": "The active status of the TransactionReport."
+          },
+          "activate": {
+            "transaction_report_id": "The ID of the TransactionReport is question.",
+            "is_active": "A boolean value that designates whether the report should be active. Defaults to true if omitted."
+          }
+        },
+        "instances": "The schema for reporting details of instances of the TransactionReport model. This schema takes no input and does not trigger any methods or any interaction with the API."
+      },
+      "TransactionMatch": {
+        "methods": {
+          "get": {
+            "transaction_report_id": "Filter by the ID of the parent TransactionReport.",
+            "transaction_report_target_address": "Filter by the target address of the parent TransactionReport.",
+            "transaction_report_is_active": "Filter by the active status of the parent TransactionReport.",
+            "transaction_match_id": "The ID of the TransactionMatch in question. This value will override any filters applied.",
+            "is_new": "Filter by the new status of the TransactionMatch.",
+            "block_hash": "Filter by the block hash of the TransactionMatch."
+          },
+          "dismiss": {
+            "transaction_report_id": "Filter by the ID of the parent TransactionReport.",
+            "transaction_report_target_address": "Filter by the target address of the parent TransactionReport.",
+            "transaction_report_is_active": "Filter by the active status of the parent TransactionReport.",
+            "transaction_match_id": "The ID of the TransactionMatch in question. This value will override any filters applied.",
+            "block_hash": "Filter by the block hash of the TransactionMatch."
+          }
+        },
+        "instances": "The schema for reporting details of instances of the TransactionMatch model. This schema takes no input and does not trigger any methods or any interaction with the API."
       }
     }
   }
@@ -456,7 +690,7 @@ Note that `is_active` is set to `true`. It will now possible to create a Fee rep
 
 Fee report methods are now available.
 
-16. Create a Fee report
+24. Create a Fee report
 
 `~$ python jormungand.py create fee_report`
 
@@ -464,19 +698,21 @@ Run initially without arguments until a challenge has been solved.
 
 ```json
 {
-  "create_complete": false,
+  "challenge_complete": false,
   "open_challenge_id": "20e2f57049ad439787d061a76ac3499a"
 }
 ```
 
-Complete the challenge following steps 4 and 5. Finally:
+Complete the challenge as before in steps 5-12. Finally:
+
+`~$ python jormungand.py create fee_report`
 
 ```
 Enter the number of blocks to include in the report: 1
 ```
 ```json
 {
-  "create_complete": true,
+  "challenge_complete": true,
 }
 ```
 
@@ -487,15 +723,15 @@ Enter the number of blocks to include in the report: 1
 ```json
 Enter fee report ID or leave blank for all:
 {
-  "45977183ea644ad4969d50e24c4400d1": {
+  "086e57572dcd4eb6bcd6d55871764c8e": {
     "attributes": {
       "is_active": true,
-      "date_created": "2018-12-02 21:09:54.379962+00:00",
-      "last_update_end_time": "None",
-      "average_tx_fee_density": 0.0,
-      "latest_block_hash": "0000000000000000001aa23222738c5213183ed0f6ae44dae3fbcb821ec817ab",
       "blocks_to_include": 1,
-      "average_tx_fee": 0.0
+      "latest_block_hash": "",
+      "is_processing": true,
+      "average_tx_fee": 0.0,
+      "average_tx_fee_density": 0.0,
+      "last_update_end_time": "__null"
     }
   }
 }
@@ -506,15 +742,15 @@ Finally, the result should be similar to:
 ```json
 Enter fee report ID or leave blank for all:
 {
-  "45977183ea644ad4969d50e24c4400d1": {
+  "086e57572dcd4eb6bcd6d55871764c8e": {
     "attributes": {
       "is_active": true,
-      "date_created": "2018-12-02 21:09:54.379962+00:00",
-      "last_update_end_time": "2018-12-02 21:16:16.901939+00:00",
-      "average_tx_fee_density": 216.140251362626,
-      "latest_block_hash": "00000000000000000024f408b05838d9f5f3cbb0da9b7fe776d99a79558613bd",
       "blocks_to_include": 1,
-      "average_tx_fee": 92225.4427454978
+      "latest_block_hash": "00000000000000000027859408d4f0a27ceb982f13c8dc7e2b8516301ad055f8",
+      "is_processing": false,
+      "average_tx_fee": 14407.0524934383,
+      "average_tx_fee_density": 32.1095516538207,
+      "last_update_end_time": "2019-04-07 17:52:45.073935+00:00"
     }
   }
 }

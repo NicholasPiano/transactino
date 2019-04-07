@@ -137,6 +137,9 @@ class GPG:
     decrypt_id = uuid.uuid4().hex
     decrypt_path = join(self.decrypt_path, decrypt_id)
     with open(decrypt_path, 'w+') as decrypt_file:
+      if '\\n' in content:
+        content = content.replace('\\n', '\n')
+
       decrypt_file.write(content)
 
     decrypted_path = join(self.decrypted_path, '{}.gpg'.format(decrypt_id))

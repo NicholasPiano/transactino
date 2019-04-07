@@ -9,3 +9,6 @@ class respond_constants:
 
 class get_constants:
   CHALLENGE_ID = 'challenge_id'
+
+class delete_constants:
+  CHALLENGE_ID = 'challenge_id'

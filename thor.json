@@ -31,6 +31,14 @@
           "admin backdoor": "The problem with adding a backdoor, is that despite any precaution taken to prevent an intruder from discovering it, its chance of discovery is still proportional to how easy it is to use. It will be found, especially if any part of the source code is shared. What might make more sense is to simply create an admin account and follow the path to fully encrypted communications.",
           "encrypted channel": "Just like the 'schema' section of the schema, there should be an 'encrypted' section fo the schema that takes only a string input. It assumes this string is an encrypted blob of data representing the same JSON structure that would have been sent to the 'schema' section, but instead encrypted to the public key of the system and signed by the private key of the user. This should be accepted from any IP address or source, and would return an encrypted blob of data with exactly the same structure as would have been returned as the response to a normal request, except that it will appear only as a single string."
         }
+      },
+      "20190405": {
+        "description": "Some future plans for handling payments",
+        "children": {
+          "address generation": "Addresses can be generated on the fly, and the level of security for an address only needs to be proportional to the amount of time holdings will be tied to it. For this reason, a low-sec address can be generated online for each payment, or for a fixed number of payments, and the resulting holdings can be moved to a high-sec address on a regular basis. Once the funds are associated with the high-sec address, there is no longer a security risk for the low-sec addresses.",
+          "freezing": "The command to freeze a number of unfrozen payments should take the value of the high-sec address as an argument, and return a transaction signed by any number of low-sec addresses that have unfrozen payments. This transaction can then be broadcast immediately. A transaction report can be created to watch for the successful delivery of the funds.",
+          "hot wallet": "16FzUdcw2HVnwXhT73ZbRm57ZqELSTyz2v"
+        }
       }
     }
   }

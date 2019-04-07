@@ -6,6 +6,7 @@ from apps.base.schema import ModelsSchemaWithExternal
 from apps.subscription.constants import mode_constants
 from apps.subscription.models import (
   Account,
+  Address,
   Announcement,
   System,
   Subscription,
@@ -22,6 +23,7 @@ class UnsubscribedSchema(StructureSchema):
 
     models = [
       Account,
+      Address,
       Announcement,
       Challenge,
       System,

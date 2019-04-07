@@ -50,8 +50,9 @@ class ChallengeRespondSchema(StructureSchema):
         ),
         respond_constants.CONTENT: Schema(
           description=(
-            'The decrypted text of the challenge in ascii armor format,'
-            ' having been re-encrypted to the public key of the service.'
+            'The decrypted text of the challenge,'
+            ' having been re-encrypted to the public'
+            ' key of the service and put into ascii armor format.'
           ),
         ),
       },
@@ -59,6 +60,9 @@ class ChallengeRespondSchema(StructureSchema):
 
   def passes_pre_response_checks(self, payload, context):
     passes_pre_response_checks = super().passes_pre_response_checks(payload, context)
+
+    if not passes_pre_response_checks:
+      return False
 
     if respond_constants.CHALLENGE_ID not in payload:
       self.active_response.add_error(respond_errors.CHALLENGE_ID_NOT_INCLUDED())
@@ -69,22 +73,7 @@ class ChallengeRespondSchema(StructureSchema):
     if self.active_response.has_errors():
       return False
 
-    challenge_id = payload.get(respond_constants.CHALLENGE_ID)
-    challenge = context.get_account().challenges.get(id=challenge_id)
-
-    if challenge is None:
-      self.active_response.add_error(
-        respond_errors.CHALLENGE_DOES_NOT_EXIST(id=challenge_id),
-      )
-      return False
-
-    if challenge.has_been_used:
-      self.active_response.add_error(
-        respond_errors.CLOSED_CHALLENGE_HAS_BEEN_USED(id=challenge_id),
-      )
-      return False
-
-    return passes_pre_response_checks
+    return True
 
   def responds_to_valid_payload(self, payload, context):
     super().responds_to_valid_payload(payload, context)
@@ -95,6 +84,18 @@ class ChallengeRespondSchema(StructureSchema):
     content_to_verify = self.active_response.get_child(respond_constants.CONTENT).render()
     challenge_id = self.active_response.get_child(respond_constants.CHALLENGE_ID).render()
     challenge = context.get_account().challenges.get(id=challenge_id)
+
+    if challenge is None:
+      self.active_response.add_error(
+        respond_errors.CHALLENGE_DOES_NOT_EXIST(id=challenge_id),
+      )
+      return
+
+    if challenge.has_been_used:
+      self.active_response.add_error(
+        respond_errors.CLOSED_CHALLENGE_HAS_BEEN_USED(id=challenge_id),
+      )
+      return
 
     is_verified = challenge.verify_content(content_to_verify)
 

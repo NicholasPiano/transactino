@@ -31,7 +31,10 @@ class IPDeleteSchema(WithOrigin, WithChallenge, StructureSchema):
       origin=delete_constants.ORIGIN,
       response=IPDeleteResponse,
       children={
-        delete_constants.IP_ID: Schema(types=types.UUID()),
+        delete_constants.IP_ID: Schema(
+          description='The IP address ID',
+          types=types.UUID(),
+        ),
       },
     )
 

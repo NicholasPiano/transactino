@@ -5,17 +5,15 @@ def match_delta(payment, delta):
   return payment.full_btc_amount == delta.value
 
 def process_payment(payment, block):
-  if block.hash is None or block.hash == payment.latest_block_hash:
+  if block.hash is None:
     return
-
-  payment.latest_block_hash = block.hash
-  payment.save()
 
   deltas = block.find_deltas_with_address(payment.address.value)
 
   for delta in deltas:
     if match_delta(payment, delta):
       payment.close(block.hash, delta.txid)
+      return
 
 class WithPaymentCheck:
   def check_payments(self):

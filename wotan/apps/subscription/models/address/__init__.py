@@ -59,11 +59,15 @@ class Address(Model):
   def get_open_unique_btc_amount(self):
     while True:
       random_btc_amount = random.randrange(address_constants.MAX_UNIQUE_BTC_AMOUNT)
-      payment_exists_with_amount = self.payments_received.filter(
+      payment_exists_with_amount = self.payments.filter(
         is_open=False,
         has_been_used=True,
         unique_btc_amount=random_btc_amount,
       ).exists()
+
+      if self.payments.count() > 0.9 * address_constants.MAX_UNIQUE_BTC_AMOUNT:
+        self.is_flagged_for_saturation = True
+        self.save()
 
       if not payment_exists_with_amount:
         return random_btc_amount

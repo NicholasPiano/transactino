@@ -45,12 +45,19 @@ class ChallengeGetSchema(StructureSchema):
       },
     )
 
+  def get_available_errors(self):
+    return set.union(
+      super().get_available_errors(),
+      {
+        get_errors.CHALLENGE_DOES_NOT_EXIST(),
+      },
+    )
+
   def responds_to_valid_payload(self, payload, context):
     super().responds_to_valid_payload(payload, context)
 
     challenge_id = self.get_child_value(get_constants.CHALLENGE_ID)
 
-    queryset = []
     if challenge_id is not None:
       queryset = context.get_account().challenges.filter(id=challenge_id)
 
@@ -60,12 +67,14 @@ class ChallengeGetSchema(StructureSchema):
         )
         return
 
-    else:
-      is_open = self.get_child_value(challenge_fields.IS_OPEN)
+      self.active_response.add_internal_queryset(queryset)
+      return
 
-      if is_open is None:
-        queryset = context.get_account().challenges.all()
-      else:
-        queryset = context.get_account().challenges.filter(is_open=is_open)
+    queryset = context.get_account().challenges.all()
+
+    is_open = self.get_child_value(challenge_fields.IS_OPEN)
+
+    if is_open is not None:
+      queryset = queryset.filter(is_open=is_open)
 
     self.active_response.add_internal_queryset(queryset)

@@ -6,7 +6,7 @@ class payment_constants:
   ACCOUNT_RELATED_MODEL = 'subscription.Account'
   ACCOUNT_RELATED_NAME = 'payments'
   ADDRESS_RELATED_MODEL = 'subscription.Address'
-  ADDRESS_RELATED_NAME = 'payments_received'
+  ADDRESS_RELATED_NAME = 'payments'
   PAYMENT_TASK = 'payment_task'
 
 class payment_fields:

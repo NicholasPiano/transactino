@@ -1,5 +1,6 @@
 # Environment file
 env.json
+challenges/
 
 # Python
 __pycache__/

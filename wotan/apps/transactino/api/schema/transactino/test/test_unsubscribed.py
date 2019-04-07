@@ -31,6 +31,7 @@ from apps.subscription.models.challenge.schema.common.methods.constants import (
   challenge_method_constants,
   respond_constants as challenge_respond_constants,
   get_constants as challenge_get_constants,
+  delete_constants as challenge_delete_constants,
 )
 from apps.subscription.models.system.constants import system_fields
 from apps.subscription.models.subscription.constants import subscription_fields
@@ -152,6 +153,14 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
         schema_constants.METHODS,
         method_constants.GET,
         challenge_fields.IS_OPEN,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        Challenge.__name__,
+        schema_constants.METHODS,
+        method_constants.DELETE,
+        challenge_delete_constants.CHALLENGE_ID,
       ],
       [
         api_constants.SCHEMA,
@@ -401,6 +410,34 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
       print('PATH... ', path)
       self.assertTrue(path in expected_paths)
 
+  def test_challenge_delete(self):
+    challenge = self.account.challenges.create(
+      is_open=True,
+      encrypted_content='encrypted_content',
+    )
+
+    delete_payload = {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
+          Challenge.__name__: {
+            schema_constants.METHODS: {
+              method_constants.DELETE: {
+                challenge_delete_constants.CHALLENGE_ID: challenge._id,
+              },
+            },
+          },
+        },
+      },
+    }
+
+    delete_response = self.schema.respond(
+      system=self.system,
+      connection=self.connection,
+      payload=delete_payload,
+    )
+
+    self.assertFalse(self.account.challenges.filter(id=challenge._id).exists())
+
   def test_system_get(self):
     get_payload = {
       api_constants.SCHEMA: {
@@ -549,6 +586,14 @@ class UnsubscribedAccountVerifiedTestCase(TestCase):
         schema_constants.METHODS,
         method_constants.GET,
         challenge_fields.IS_OPEN,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        Challenge.__name__,
+        schema_constants.METHODS,
+        method_constants.DELETE,
+        challenge_delete_constants.CHALLENGE_ID,
       ],
       [
         api_constants.SCHEMA,

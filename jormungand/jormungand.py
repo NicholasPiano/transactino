@@ -9,6 +9,8 @@ from commands.challenge import challenge
 from commands.subscription import subscription
 from commands.payment import payment
 from commands.fee_report import fee_report
+from commands.system import system
+from commands.address import address
 
 def respond(args):
   if commands.ACCOUNT in args:
@@ -23,5 +25,9 @@ def respond(args):
     payment(args)
   elif commands.FEE_REPORT in args:
     fee_report(args)
+  elif commands.SYSTEM in args:
+    system(args)
+  elif commands.ADDRESS in args:
+    address(args)
 
 respond(argv[1:])

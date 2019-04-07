@@ -20,10 +20,20 @@ class AccountSubscribedLockSchema(WithOrigin, WithChallenge, StructureSchema):
   def __init__(self, Model):
     self.model = Model
     super().__init__(
+      description=(
+        'Schema for the Account lock method.'
+        ' Once lock is set to true, the account will be unusable'
+        ' until lock is set to false by calling this method again.'
+      ),
       response=AccountSubscribedLockResponse,
       origin=lock_constants.ORIGIN,
       children={
-        lock_constants.LOCK: Schema(types=types.BOOLEAN()),
+        lock_constants.LOCK: Schema(
+          description=(
+            'Value specifying the desired lock state of the account'
+          ),
+          types=types.BOOLEAN(),
+        ),
       },
     )
 

@@ -45,3 +45,7 @@ class respond_errors:
 
 class get_errors:
   CHALLENGE_DOES_NOT_EXIST = ChallengeDoesNotExistError
+
+class delete_errors:
+  CHALLENGE_ID_NOT_INCLUDED = ChallengeIDNotIncludedError
+  CHALLENGE_DOES_NOT_EXIST = ChallengeDoesNotExistError

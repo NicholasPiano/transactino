@@ -49,7 +49,10 @@ class AccountCreatePublicKeySchema(Schema):
   def __init__(self, **kwargs):
     super().__init__(
       **kwargs,
-      description='Tests for a valid public key',
+      description=(
+        'A valid GPG public key in ASCII armor format'
+        ' with newlines replaced by their escaped equivalent (\\n)'
+      ),
       response=AccountCreatePublicKeyResponse,
     )
 

@@ -330,6 +330,52 @@
         "children": {
           "payment backend": "Very similar to what I had before. The purpose of segregating the backend implementation from the payment model is to prepare for the backend to be external."
         }
+      },
+      "20190404": {
+        "description": "Generating first address and updating jormungand",
+        "children": {
+          "t12.10": {
+            "description": "Update Jormungand",
+            "children": {
+              "payment schema": "Revert to default instance schema to include relationships"
+            }
+          }
+        }
+      },
+      "20190405": {
+        "description": "Need to establish consistent procedure for making peanut payments.",
+        "children": {
+          "payment testing plan": {
+            "description": "A list of steps for properly testing the payment process",
+            "children": {
+              "create transaction from payment address to localpeanuts": "",
+              "enable test server to watch for payment": "",
+              "make payment from localpeanuts to test address": "",
+              "watch for payment": ""
+            }
+          }
+        }
+      },
+      "20190406": {
+        "description": "Only part of the process left is to test the first address by making a payment.",
+        "children": {
+          "payment test": {
+            "description": "Actually create a real transaction and broadcast it to get the funds out of the address",
+            "children": {
+              "create transaction from payment address to localpeanuts": "",
+              "enable test server to watch for payment": "",
+              "make payment from localpeanuts to test address": "",
+              "watch for payment": ""
+            }
+          }
+        }
+      },
+      "20190407": {
+        "description": "Last day before work again. I'm putting off the actual transaction for fear that it might not work. I should just go ahead with it. I'm also in the park right now, so I'm going to do a couple things that do not require an internet connection.",
+        "children": {
+          "delete payment": "You should be able to delete a payment if you do not intend to make it, similar to deleting a challenge.",
+          "address schema": "remove attributes and relationships"
+        }
       }
     }
   }

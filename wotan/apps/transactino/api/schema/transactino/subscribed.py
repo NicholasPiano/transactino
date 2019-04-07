@@ -5,6 +5,7 @@ from apps.base.schema import ModelsSchemaWithExternal
 from apps.subscription.constants import mode_constants
 from apps.subscription.models import (
   Account,
+  Address,
   Announcement,
   System,
   Challenge,
@@ -41,6 +42,7 @@ class SubscribedSchema(StructureSchema):
                 children={
                   Model.__name__: Model.objects.schema(mode=mode_constants.SUBSCRIBED) for Model in [
                     Account,
+                    Address,
                     Announcement,
                     System,
                     Challenge,

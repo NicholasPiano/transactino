@@ -7,22 +7,15 @@ from constants import transactino_constants, model_constants, method_constants
 from util.get_path import get_path
 from util.make_headers import make_headers
 
-from .constants import fee_report_constants
+from .constants import system_constants
 
 def get(args):
-  fee_report_id = input('Enter fee report ID or leave blank for all: ')
-  get = {}
-  if fee_report_id:
-    get = {
-      fee_report_constants.FEE_REPORT_ID: fee_report_id,
-    }
-
   payload = {
     transactino_constants.SCHEMA: {
       model_constants.MODELS: {
-        model_constants.FEE_REPORT: {
+        model_constants.SYSTEM: {
           method_constants.METHODS: {
-            fee_report_constants.GET: get,
+            system_constants.GET: {},
           },
         },
       },
@@ -36,12 +29,21 @@ def get(args):
   )
 
   response_json = json.loads(response.text)
-
-  get_json = get_path(response_json, [
+  instances_json = get_path(response_json, [
     transactino_constants.SCHEMA,
     model_constants.MODELS,
-    model_constants.FEE_REPORT,
+    model_constants.SYSTEM,
     model_constants.INSTANCES,
   ])
 
-  print(json.dumps(get_json, indent=2))
+  if instances_json is None:
+    print(json.dumps(response_json, indent=2))
+    return
+
+  for system_id, attributes_json in instances_json.items():
+    print('System ID: ', system_id, '\n')
+    public_key = get_path(attributes_json, [
+      model_constants.ATTRIBUTES,
+      system_constants.PUBLIC_KEY,
+    ])
+    print(public_key + '\n')

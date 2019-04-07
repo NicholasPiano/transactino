@@ -33,6 +33,7 @@ from apps.subscription.models.challenge.schema.common.methods.constants import (
   challenge_method_constants,
   respond_constants as challenge_respond_constants,
   get_constants as challenge_get_constants,
+  delete_constants as challenge_delete_constants,
 )
 from apps.subscription.models.system.constants import system_fields
 from apps.subscription.models.subscription.constants import subscription_fields
@@ -197,6 +198,14 @@ class SubscribedTestCase(TestCase):
         schema_constants.METHODS,
         method_constants.GET,
         challenge_fields.IS_OPEN,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        Challenge.__name__,
+        schema_constants.METHODS,
+        method_constants.DELETE,
+        challenge_delete_constants.CHALLENGE_ID,
       ],
       [
         api_constants.SCHEMA,
