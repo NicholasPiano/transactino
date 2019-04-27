@@ -7,24 +7,15 @@ from constants import transactino_constants, model_constants, method_constants
 from util.get_path import get_path
 from util.make_headers import make_headers
 
-from .constants import fee_report_constants
+from .constants import account_constants
 
-def create(args):
-  blocks_to_include = input('Enter the number of blocks to include in the report: ')
-
-  create_request_json = {}
-  if blocks_to_include:
-    create_request_json = {
-      fee_report_constants.BLOCKS_TO_INCLUDE: int(blocks_to_include),
-      fee_report_constants.IS_ACTIVE: True,
-    }
-
+def lock(args):
   payload = {
     transactino_constants.SCHEMA: {
       model_constants.MODELS: {
-        model_constants.FEE_REPORT: {
+        model_constants.ACCOUNT: {
           method_constants.METHODS: {
-            fee_report_constants.CREATE: create_request_json,
+            account_constants.LOCK: {},
           },
         },
       },
@@ -38,12 +29,12 @@ def create(args):
   )
 
   response_json = json.loads(response.text)
-  create_json = get_path(response_json, [
+  lock_json = get_path(response_json, [
     transactino_constants.SCHEMA,
     model_constants.MODELS,
-    model_constants.FEE_REPORT,
+    model_constants.ACCOUNT,
     method_constants.METHODS,
-    fee_report_constants.CREATE,
+    account_constants.LOCK,
   ])
 
-  print(json.dumps(create_json, indent=2))
+  print(json.dumps(lock_json, indent=2))

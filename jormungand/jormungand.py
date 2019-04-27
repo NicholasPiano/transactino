@@ -11,6 +11,8 @@ from commands.payment import payment
 from commands.fee_report import fee_report
 from commands.system import system
 from commands.address import address
+from commands.transaction_report import transaction_report
+from commands.announcement import announcement
 
 def respond(args):
   if commands.ACCOUNT in args:
@@ -29,5 +31,9 @@ def respond(args):
     system(args)
   elif commands.ADDRESS in args:
     address(args)
+  elif commands.TRANSACTION_REPORT in args:
+    transaction_report(args)
+  elif commands.ANNOUNCEMENT in args:
+    announcement(args)
 
 respond(argv[1:])

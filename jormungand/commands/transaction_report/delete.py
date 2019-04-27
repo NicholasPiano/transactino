@@ -7,24 +7,21 @@ from constants import transactino_constants, model_constants, method_constants
 from util.get_path import get_path
 from util.make_headers import make_headers
 
-from .constants import fee_report_constants
+from .constants import transaction_report_constants
 
-def create(args):
-  blocks_to_include = input('Enter the number of blocks to include in the report: ')
+def delete(args):
+  transaction_report_id = input('Enter the transaction report ID: ')
 
-  create_request_json = {}
-  if blocks_to_include:
-    create_request_json = {
-      fee_report_constants.BLOCKS_TO_INCLUDE: int(blocks_to_include),
-      fee_report_constants.IS_ACTIVE: True,
-    }
+  delete_request_json = {
+    transaction_report_constants.TRANSACTION_REPORT_ID: transaction_report_id,
+  }
 
   payload = {
     transactino_constants.SCHEMA: {
       model_constants.MODELS: {
-        model_constants.FEE_REPORT: {
+        model_constants.TRANSACTION_REPORT: {
           method_constants.METHODS: {
-            fee_report_constants.CREATE: create_request_json,
+            transaction_report_constants.DELETE: delete_request_json,
           },
         },
       },
@@ -38,12 +35,12 @@ def create(args):
   )
 
   response_json = json.loads(response.text)
-  create_json = get_path(response_json, [
+  delete_json = get_path(response_json, [
     transactino_constants.SCHEMA,
     model_constants.MODELS,
-    model_constants.FEE_REPORT,
+    model_constants.TRANSACTION_REPORT,
     method_constants.METHODS,
-    fee_report_constants.CREATE,
+    transaction_report_constants.DELETE,
   ])
 
-  print(json.dumps(create_json, indent=2))
+  print(json.dumps(delete_json, indent=2))

@@ -39,6 +39,25 @@
         "children": {
           "display": "Might consider displaying the whole returned schema or larger parts of it rather than parsing it."
         }
+      },
+      "20190427": {
+        "description": "Latest version changes and maybe demo mode if I have the time.",
+        "children": {
+          "differences": {
+            "description": "After so much time, I'm going to need to determine what differences need to be accounted for.",
+            "children": {
+              "check models": "Need transaction_report, announcement",
+              "peripheral stuff": "Support announcements coming in 'header'",
+              "account": "lock",
+              "fee_report": "activate, delete"
+            }
+          },
+          "account lock": "done",
+          "fee_report activate": "done",
+          "fee_report delete": "done",
+          "transaction_report": "done",
+          "announcement": "done"
+        }
       }
     }
   }

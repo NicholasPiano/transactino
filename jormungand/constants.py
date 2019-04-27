@@ -13,6 +13,7 @@ class model_constants:
   SYSTEM = 'System'
   ATTRIBUTES = 'attributes'
   ADDRESS = 'Address'
+  TRANSACTION_REPORT = 'TransactionReport'
 
 class method_constants:
   METHODS = 'methods'

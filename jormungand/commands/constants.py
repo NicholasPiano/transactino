@@ -8,3 +8,5 @@ class commands:
   FEE_REPORT = 'fee_report'
   SYSTEM = 'system'
   ADDRESS = 'address'
+  TRANSACTION_REPORT = 'transaction_report'
+  ANNOUNCEMENT = 'announcement'

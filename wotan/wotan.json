@@ -376,6 +376,12 @@
           "delete payment": "You should be able to delete a payment if you do not intend to make it, similar to deleting a challenge.",
           "address schema": "remove attributes and relationships"
         }
+      },
+      "20190427": {
+        "description": "Demo mode",
+        "children": {
+          
+        }
       }
     }
   }
