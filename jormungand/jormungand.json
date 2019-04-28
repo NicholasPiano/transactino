@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.3.0",
   "date": {
     "description": "logs indexed by date",
     "children": {
@@ -65,7 +65,8 @@
           "t12.10": {
             "description": "Jormungand modifications",
             "children": {
-              "announcements for every response": "done"
+              "announcements for every response": "done",
+              "jormungand generator": "Add a Jormungand version generator to yggdrasil.",
             }
           }
         }
