@@ -58,6 +58,17 @@
           "transaction_report": "done",
           "announcement": "done"
         }
+      },
+      "20190428": {
+        "description": "Still finishing Jormungand modifications",
+        "children": {
+          "t12.10": {
+            "description": "Jormungand modifications",
+            "children": {
+              "announcements for every response": "done"
+            }
+          }
+        }
       }
     }
   }

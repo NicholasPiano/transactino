@@ -1,6 +1,7 @@
 
 class transactino_constants:
   SCHEMA = 'schema'
+  ANNOUNCEMENTS = 'announcements'
 
 class model_constants:
   MODELS = 'models'

@@ -8,6 +8,7 @@ import settings
 from constants import transactino_constants, model_constants, method_constants
 from util.get_path import get_path
 from util.make_headers import make_headers
+from util.check_for_announcements import check_for_announcements
 
 from .constants import challenge_constants
 
@@ -33,6 +34,8 @@ def delete_challenge(args):
     headers=make_headers(settings.URL),
     data=json.dumps(payload),
   )
+
+  check_for_announcements(response)
 
   if '_errors' in response.text:
     print(json.dumps(json.loads(response_json), indent=2))
