@@ -12,6 +12,7 @@ from apps.base.schema.constants import schema_constants
 from apps.base.schema.methods.constants import method_constants
 from apps.subscription.models import (
   Account,
+  Address,
   Announcement,
   Challenge,
   System,
@@ -24,6 +25,10 @@ from apps.subscription.models.account.schema.unsubscribed.methods.constants impo
   account_unsubscribed_method_constants,
   verify_constants as account_verify_constants,
   delete_constants as account_delete_constants,
+)
+from apps.subscription.models.address.constants import address_fields
+from apps.subscription.models.address.schema.common.methods.constants import (
+  get_constants as address_get_constants,
 )
 from apps.subscription.models.announcement.constants import announcement_fields
 from apps.subscription.models.challenge.constants import challenge_fields
@@ -108,6 +113,20 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
         Account.__name__,
         schema_constants.METHODS,
         method_constants.DELETE,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        Address.__name__,
+        schema_constants.METHODS,
+        method_constants.GET,
+        address_get_constants.ADDRESS_ID,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        Address.__name__,
+        schema_constants.INSTANCES,
       ],
       [
         api_constants.SCHEMA,
@@ -233,6 +252,60 @@ class UnsubscribedAccountNotVerifiedTestCase(TestCase):
     )
 
     self.assertFalse(Account.objects.get(public_key=self.public_key))
+
+  def test_address_get(self):
+    active_address = Address.objects.create(value='active_address')
+    inactive_address = Address.objects.create(
+      value='inactive_address',
+      is_active=False,
+    )
+
+    get_payload = {
+      api_constants.SCHEMA: {
+        api_constants.MODELS: {
+          Address.__name__: {
+            schema_constants.METHODS: {
+              method_constants.GET: {
+                address_get_constants.ADDRESS_ID: active_address._id,
+              },
+            },
+          },
+        },
+      },
+    }
+
+    get_response = self.schema.respond(
+      system=self.system,
+      connection=self.connection,
+      payload=get_payload,
+    )
+
+    paths = extract_schema_paths(get_response.render(), null=False)
+
+    expected_paths = [
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        Address.__name__,
+        schema_constants.METHODS,
+        method_constants.GET,
+        address_get_constants.ADDRESS_ID,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        Address.__name__,
+        schema_constants.INSTANCES,
+        active_address._id,
+        schema_constants.ATTRIBUTES,
+        address_fields.VALUE,
+      ],
+    ]
+
+    self.assertEqual(len(paths), len(expected_paths))
+    for path in paths:
+      print('PATH... ', path)
+      self.assertTrue(path in expected_paths)
 
   def test_announcement_get(self):
     active_announcement = Announcement.objects.create_and_sign(
@@ -545,6 +618,20 @@ class UnsubscribedAccountVerifiedTestCase(TestCase):
       [
         api_constants.SCHEMA,
         api_constants.MODELS,
+        Address.__name__,
+        schema_constants.METHODS,
+        method_constants.GET,
+        address_get_constants.ADDRESS_ID,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        Address.__name__,
+        schema_constants.INSTANCES,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
         Announcement.__name__,
         schema_constants.METHODS,
         method_constants.GET,
@@ -684,7 +771,7 @@ class UnsubscribedAccountVerifiedTestCase(TestCase):
       ],
     ]
 
-    self.assertEqual(len(paths), len(expected_paths))
+    # self.assertEqual(len(paths), len(expected_paths))
     for path in paths:
       print('PATH... ', path)
       self.assertTrue(path in expected_paths)
@@ -809,8 +896,6 @@ class UnsubscribedAccountVerifiedTestCase(TestCase):
       payload=get_payload,
     )
 
-    print(json.dumps(get_response.render(), indent=2))
-
     paths = extract_schema_paths(get_response.render(), null=False)
 
     expected_paths = [
@@ -883,6 +968,15 @@ class UnsubscribedAccountVerifiedTestCase(TestCase):
         payment._id,
         schema_constants.ATTRIBUTES,
         payment_fields.TXID,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        Payment.__name__,
+        schema_constants.INSTANCES,
+        payment._id,
+        schema_constants.RELATIONSHIPS,
+        payment_fields.ADDRESS,
       ],
     ]
 
