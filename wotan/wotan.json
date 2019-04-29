@@ -380,7 +380,23 @@
       "20190427": {
         "description": "Demo mode",
         "children": {
-          
+
+        }
+      },
+      "20190428": {
+        "description": "Thinking about demo mode",
+        "children": {
+          "t12.11": {
+            "description": "demo mode",
+            "children": {
+              "should be flag on account model": "This would allow a user to toggle to non-demo mode if they so choose. Going from demo to non-demo should remove all subscriptions, reports, payments, and challenges. Going from non-demo to demo should have no effect on stored data.",
+              "bitcoin blocks": "There should be a loop of ten pre-processed blocks. The last should have its next block hash set to the first to complete the loop. This should be done in such a way as to tie into the existing report checking stuff.",
+              "payments": "All payments should close instantly in demo mode. This should perhaps mean that I have a flag on the payment model that indicates that it is a demo payment. Similar perhaps for subscriptions and challenges, although challenges will work the same way no matter the mode. The payment loop can handle demo and non-demo payments separately (in two different loops).",
+              "flags": "Account, FeeReport, TransactionReport, Payment",
+              "transaction_report": "Need support in Jormungand",
+              "mute announcements": "Flag on Account model that needs to be unset when a new announcement is created"
+            }
+          }
         }
       }
     }
