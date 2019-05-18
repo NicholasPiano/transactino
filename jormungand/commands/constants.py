@@ -9,4 +9,5 @@ class commands:
   SYSTEM = 'system'
   ADDRESS = 'address'
   TRANSACTION_REPORT = 'transaction_report'
+  TRANSACTION_MATCH = 'transaction_match'
   ANNOUNCEMENT = 'announcement'

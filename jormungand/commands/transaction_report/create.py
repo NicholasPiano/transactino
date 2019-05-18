@@ -66,4 +66,7 @@ def create(args):
     transaction_report_constants.CREATE,
   ])
 
-  print(json.dumps(create_json, indent=2))
+  if create_json is not None:
+    print(json.dumps(create_json, indent=2))
+  else:
+    print(json.dumps(response_json, indent=2))

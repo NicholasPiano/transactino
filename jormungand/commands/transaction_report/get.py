@@ -47,4 +47,7 @@ def get(args):
     model_constants.INSTANCES,
   ])
 
-  print(json.dumps(get_json, indent=2))
+  if get_json is not None:
+    print(json.dumps(get_json, indent=2))
+  else:
+    print(json.dumps(response_json, indent=2))

@@ -12,6 +12,7 @@ from commands.fee_report import fee_report
 from commands.system import system
 from commands.address import address
 from commands.transaction_report import transaction_report
+from commands.transaction_match import transaction_match
 from commands.announcement import announcement
 
 def respond(args):
@@ -33,6 +34,8 @@ def respond(args):
     address(args)
   elif commands.TRANSACTION_REPORT in args:
     transaction_report(args)
+  elif commands.TRANSACTION_MATCH in args:
+    transaction_match(args)
   elif commands.ANNOUNCEMENT in args:
     announcement(args)
 

@@ -3,6 +3,8 @@ import json
 
 from constants import transactino_constants
 
+from .get_path import get_path
+
 def check_for_announcements(response):
   response_json = json.loads(response.text)
   announcements = get_path(response_json, [

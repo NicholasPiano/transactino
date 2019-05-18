@@ -15,6 +15,9 @@ class model_constants:
   ATTRIBUTES = 'attributes'
   ADDRESS = 'Address'
   TRANSACTION_REPORT = 'TransactionReport'
+  TRANSACTION_MATCH = 'TransactionMatch'
 
 class method_constants:
   METHODS = 'methods'
+  INPUT = 'input'
+  TYPE = 'type'
