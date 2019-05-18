@@ -40,7 +40,35 @@
           "hot wallet": "16FzUdcw2HVnwXhT73ZbRm57ZqELSTyz2v"
         }
       },
-      "20190427": "Preparations that must be made for release: Jormungand needs to be updated to support the latest Wotan changes. Wotan needs to support a demo mode."
+      "20190427": "Preparations that must be made for release: Jormungand needs to be updated to support the latest Wotan changes. Wotan needs to support a demo mode.",
+      "20190515": {
+        "description": "Several things missing from jormungand and wotan.",
+        "children": {
+          "add payment id to get method in wotan": "",
+          "add payment open flag to get method": "",
+          "add ip methods to jormungand": "",
+          "add active flag to fee_report get in jormungand": "",
+          "add active flag to transaction_report get in jormungand": ""
+        }
+      },
+      "20190518": {
+        "description": "Can't finish today, but have a good idea of the tasks needed to round this out. Need to make sure that all three things; Jormungand, Wotan, and the docs, represent the same information.",
+        "children": {
+          "jormungand transaction match methods": "Should be quick",
+          "jormungand ip methods": "",
+          "add active flag to fee_report get in jormungand": "",
+          "add active flag to transaction_report get in jormungand": "",
+          "docs system": "",
+          "docs address": "",
+          "docs announcement": "",
+          "docs walkthroughs": "",
+          "docs ip": "",
+          "docs update jormungand release": "1.4.0",
+          "docs spelling": "Model names should camel case and code highlighted",
+          "add payment id to get method in wotan": "",
+          "add payment open flag to get method in wotan": ""
+        }
+      }
     }
   }
 }

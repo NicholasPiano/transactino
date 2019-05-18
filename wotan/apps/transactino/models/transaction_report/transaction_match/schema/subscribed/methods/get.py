@@ -52,7 +52,8 @@ class TransactionMatchGetSchema(StructureSchema):
             'Filter by the new status of the TransactionMatch.'
           ),
           types=types.BOOLEAN(),
-        ),transaction_match_fields.BLOCK_HASH: Schema(
+        ),
+        transaction_match_fields.BLOCK_HASH: Schema(
           description='Filter by the block hash of the TransactionMatch.',
         ),
       },

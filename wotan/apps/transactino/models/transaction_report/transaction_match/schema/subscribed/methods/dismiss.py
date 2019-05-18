@@ -20,8 +20,6 @@ class TransactionMatchDismissSchema(TransactionMatchGetSchema):
   def responds_to_valid_payload(self, payload, context):
     super().responds_to_valid_payload(payload, context)
 
-    print(self.active_response.internal_queryset)
-
     for transaction_match in self.active_response.internal_queryset:
       transaction_match.is_new = False
       transaction_match.save()

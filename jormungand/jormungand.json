@@ -70,6 +70,19 @@
             }
           }
         }
+      },
+      "20190502": {
+        "description": "Working on docs",
+        "children": {
+          "payment delete": "Somehow missing. Copied from challenge delete."
+        }
+      },
+      "20190514": {
+        "description": "Forgot a few things",
+        "children": {
+          "ip methods for jormungand": "",
+          "payment get should allow id": "copy challenge get"
+        }
       }
     }
   }

@@ -142,6 +142,39 @@
             }
           }
         }
+      },
+      "20190501": {
+        "description": "Concentrating on generating docs somehow",
+        "children": {
+          "mkdocs": "https://www.mkdocs.org/#getting-started",
+          "mkdocs is good": "It's good, but I need to be able to place the generated files correctly.",
+          "slate is better": "https://github.com/lord/slate/wiki/Deploying-Slate",
+          "slate": {
+            "description": "Pretty easy to use, and the templating looks powerful enough for what I need.",
+            "children": {
+              "changes": "For each set of docs, I can share a common set of static files. The only thing that changes is the index template",
+              "to build": "Place the index in the source directory, name correctly, and run the build command."
+            }
+          }
+        }
+      },
+      "20190502": {
+        "description": "Continuing to build the static docs with Slate",
+        "children": {
+          "t12.12": {
+            "description": "Templates",
+            "children": {
+              "add middleman hot reload": "https://github.com/middleman/middleman-livereload"
+            }
+          }
+        }
+      },
+      "20190514": {
+        "description": "Trying to finish docs",
+        "children": {
+          "ip methods for jormungand": "",
+          "payment get should allow id": "copy challenge get"
+        }
       }
     }
   }
