@@ -4,6 +4,7 @@ import requests
 
 import settings
 from constants import transactino_constants, model_constants, method_constants
+from util.input_args import input_args
 from util.get_path import get_path
 from util.make_headers import make_headers
 from util.check_for_announcements import check_for_announcements
@@ -11,16 +12,19 @@ from util.check_for_announcements import check_for_announcements
 from .constants import address_constants
 
 def get(args):
-  address_id = input('Enter an address ID: ')
+  get_args = input_args({
+    address_constants.ADDRESS_ID: {
+      method_constants.INPUT: 'Enter an Address ID',
+      method_constants.TYPE: str,
+    },
+  })
 
   payload = {
     transactino_constants.SCHEMA: {
       model_constants.MODELS: {
         model_constants.ADDRESS: {
           method_constants.METHODS: {
-            address_constants.GET: {
-              address_constants.ADDRESS_ID: address_id,
-            },
+            address_constants.GET: get_args,
           },
         },
       },

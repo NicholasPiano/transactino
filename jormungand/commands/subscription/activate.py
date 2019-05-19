@@ -4,6 +4,7 @@ import requests
 
 import settings
 from constants import transactino_constants, model_constants, method_constants
+from util.input_args import input_args
 from util.get_path import get_path
 from util.make_headers import make_headers
 from util.check_for_announcements import check_for_announcements
@@ -11,16 +12,19 @@ from util.check_for_announcements import check_for_announcements
 from .constants import subscription_constants
 
 def activate(args):
-  subscription_id = input('Enter a subscription ID: ')
+  activate_args = input_args({
+    subscription_constants.SUBSCRIPTION_ID: {
+      method_constants.INPUT: 'Enter the Subscription ID to activate',
+      method_constants.TYPE: str,
+    },
+  })
 
   payload = {
     transactino_constants.SCHEMA: {
       model_constants.MODELS: {
         model_constants.SUBSCRIPTION: {
           method_constants.METHODS: {
-            subscription_constants.ACTIVATE: {
-              subscription_constants.SUBSCRIPTION_ID: subscription_id,
-            },
+            subscription_constants.ACTIVATE: activate_args,
           },
         },
       },

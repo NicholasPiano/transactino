@@ -83,6 +83,14 @@
           "ip methods for jormungand": "",
           "payment get should allow id": "copy challenge get"
         }
+      },
+      "20190519": {
+        "description": "Setting some standards for methods",
+        "children": {
+          "errors": "Must display whole response if there is an error",
+          "args": "Write common function to collect args",
+          "model names": "All model names must be in camel case"
+        }
       }
     }
   }

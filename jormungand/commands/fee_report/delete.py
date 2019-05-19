@@ -4,6 +4,7 @@ import requests
 
 import settings
 from constants import transactino_constants, model_constants, method_constants
+from util.input_args import input_args
 from util.get_path import get_path
 from util.make_headers import make_headers
 from util.check_for_announcements import check_for_announcements
@@ -11,18 +12,19 @@ from util.check_for_announcements import check_for_announcements
 from .constants import fee_report_constants
 
 def delete(args):
-  fee_report_id = input('Enter the fee report ID: ')
-
-  delete_request_json = {
-    fee_report_constants.FEE_REPORT_ID: fee_report_id,
-  }
+  delete_args = input_args({
+    fee_report_constants.FEE_REPORT_ID: {
+      method_constants.INPUT: 'Enter the FeeReport ID to delete',
+      method_constants.TYPE: str,
+    },
+  })
 
   payload = {
     transactino_constants.SCHEMA: {
       model_constants.MODELS: {
         model_constants.FEE_REPORT: {
           method_constants.METHODS: {
-            fee_report_constants.DELETE: delete_request_json,
+            method_constants.DELETE: delete_args,
           },
         },
       },
@@ -43,7 +45,7 @@ def delete(args):
     model_constants.MODELS,
     model_constants.FEE_REPORT,
     method_constants.METHODS,
-    fee_report_constants.DELETE,
+    method_constants.DELETE,
   ])
 
   print(json.dumps(delete_json, indent=2))

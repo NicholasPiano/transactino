@@ -54,10 +54,15 @@
       "20190518": {
         "description": "Can't finish today, but have a good idea of the tasks needed to round this out. Need to make sure that all three things; Jormungand, Wotan, and the docs, represent the same information.",
         "children": {
-          "jormungand transaction match methods": "Should be quick",
-          "jormungand ip methods": "",
-          "add active flag to fee_report get in jormungand": "",
-          "add active flag to transaction_report get in jormungand": "",
+          "jormungand transaction match methods": "Should be quick"
+        }
+      },
+      "20190519": {
+        "description": "Working through the list",
+        "children": {
+          "jormungand ip methods": "done",
+          "add active flag to fee_report get in jormungand": "done",
+          "add active flag to transaction_report get in jormungand": "done",
           "docs system": "",
           "docs address": "",
           "docs announcement": "",
@@ -66,7 +71,8 @@
           "docs update jormungand release": "1.4.0",
           "docs spelling": "Model names should camel case and code highlighted",
           "add payment id to get method in wotan": "",
-          "add payment open flag to get method in wotan": ""
+          "add payment open flag to get method in wotan": "",
+          "remove token call from wotan and jormungand": ""
         }
       }
     }

@@ -4,6 +4,7 @@ import requests
 
 import settings
 from constants import transactino_constants, model_constants, method_constants
+from util.input_args import input_args
 from util.get_path import get_path
 from util.make_headers import make_headers
 from util.check_for_announcements import check_for_announcements
@@ -13,14 +14,23 @@ from .constants import payment_constants
 def get(args):
   closed = 'closed' in args
 
+  get_args = input_args({
+    payment_constants.PAYMENT_ID: {
+      method_constants.INPUT: 'Enter the Payment ID or leave blank for all',
+      method_constants.TYPE: str,
+    },
+  })
+
+  get_args.update({
+    payment_constants.IS_OPEN: not closed,
+  })
+
   payload = {
     transactino_constants.SCHEMA: {
       model_constants.MODELS: {
         model_constants.PAYMENT: {
           method_constants.METHODS: {
-            payment_constants.GET: {
-              payment_constants.IS_OPEN: not closed,
-            },
+            payment_constants.GET: get_args,
           },
         },
       },
@@ -36,11 +46,15 @@ def get(args):
   check_for_announcements(response)
 
   response_json = json.loads(response.text)
-  get_json = get_path(response_json, [
+  instances_json = get_path(response_json, [
     transactino_constants.SCHEMA,
     model_constants.MODELS,
     model_constants.PAYMENT,
     model_constants.INSTANCES,
   ])
 
-  print(json.dumps(get_json, indent=2))
+  if not instances_json:
+    print(json.dumps(response_json, indent=2))
+    return
+
+  print(json.dumps(instances_json, indent=2))

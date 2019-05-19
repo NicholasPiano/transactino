@@ -4,38 +4,31 @@ import requests
 
 import settings
 from constants import transactino_constants, model_constants, method_constants
+from util.input_args import input_args
 from util.get_path import get_path
 from util.make_headers import make_headers
 from util.check_for_announcements import check_for_announcements
 
 from .constants import fee_report_constants
 
-active_map = {
-  'Y': True,
-  'N': False,
-}
-
-def get_active():
-  return input('Indicate whether the fee report should be active (Y/N): ')
-
 def activate(args):
-  fee_report_id = input('Enter the fee report ID: ')
-
-  is_active = get_active()
-  while is_active not in active_map:
-    is_active = get_active()
-
-  activate_request_json = {
-    fee_report_constants.FEE_REPORT_ID: fee_report_id,
-    fee_report_constants.IS_ACTIVE: active_map.get(is_active),
-  }
+  activate_args = input_args({
+    fee_report_constants.FEE_REPORT_ID: {
+      method_constants.INPUT: 'Enter the FeeReport ID to activate',
+      method_constants.TYPE: str,
+    },
+    fee_report_constants.IS_ACTIVE: {
+      method_constants.INPUT: 'Indicate whether the FeeReport should be active',
+      method_constants.TYPE: bool,
+    },
+  })
 
   payload = {
     transactino_constants.SCHEMA: {
       model_constants.MODELS: {
         model_constants.FEE_REPORT: {
           method_constants.METHODS: {
-            fee_report_constants.ACTIVATE: activate_request_json,
+            fee_report_constants.ACTIVATE: activate_args,
           },
         },
       },

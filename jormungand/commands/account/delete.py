@@ -31,13 +31,7 @@ def delete(args):
 
   check_for_announcements(response)
 
-  response_json = json.loads(response.text)
-  delete_json = get_path(response_json, [
-    transactino_constants.SCHEMA,
-    model_constants.MODELS,
-    model_constants.ACCOUNT,
-    method_constants.METHODS,
-    account_constants.DELETE,
-  ])
-
-  print(json.dumps(delete_json, indent=2))
+  if method_constants.ERRORS in response.text:
+    print(json.dumps(json.loads(response.text), indent=2))
+  else:
+    print('Done.')

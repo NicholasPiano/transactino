@@ -4,6 +4,7 @@ class commands:
   CHALLENGE = 'challenge'
   SCHEMA = 'schema'
   SUBSCRIPTION = 'subscription'
+  IP = 'ip'
   PAYMENT = 'payment'
   FEE_REPORT = 'fee_report'
   SYSTEM = 'system'
