@@ -49,7 +49,7 @@ def create(args):
 
   response = requests.post(
     settings.URL,
-    headers=make_headers(settings.URL),
+    headers=make_headers(),
     data=json.dumps(payload),
   )
 

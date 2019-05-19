@@ -70,9 +70,7 @@
           "docs ip": "",
           "docs update jormungand release": "1.4.0",
           "docs spelling": "Model names should camel case and code highlighted",
-          "add payment id to get method in wotan": "",
-          "add payment open flag to get method in wotan": "",
-          "remove token call from wotan and jormungand": ""
+          "remove token call from wotan and jormungand": "done"
         }
       }
     }

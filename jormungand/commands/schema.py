@@ -20,7 +20,7 @@ def remove_descriptions(dictionary):
 def schema(args):
   response = requests.post(
     settings.URL,
-    headers=make_headers(settings.URL),
+    headers=make_headers(),
     data='null',
   )
 

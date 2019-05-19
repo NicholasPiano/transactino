@@ -55,6 +55,9 @@ class AddressGetSchema(StructureSchema):
   def responds_to_valid_payload(self, payload, context):
     super().responds_to_valid_payload(payload, context)
 
+    if self.active_response.has_errors():
+      return
+
     id = self.get_child_value(get_constants.ADDRESS_ID)
     address = self.model.objects.get(id=id)
 
