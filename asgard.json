@@ -63,14 +63,22 @@
           "jormungand ip methods": "done",
           "add active flag to fee_report get in jormungand": "done",
           "add active flag to transaction_report get in jormungand": "done",
-          "docs system": "",
-          "docs address": "",
-          "docs announcement": "",
+          "remove token call from wotan and jormungand": "done"
+        }
+      },
+      "20190520": {
+        "description": "",
+        "children": {
+          "docs system": "done",
+          "docs address": "done",
+          "docs announcement": "done",
+          "docs update jormungand release": "1.4.0",
           "docs walkthroughs": "",
           "docs ip": "",
-          "docs update jormungand release": "1.4.0",
           "docs spelling": "Model names should camel case and code highlighted",
-          "remove token call from wotan and jormungand": "done"
+          "wotan error and type ids should be uuids": "",
+          "docs moving to wotan templates": "",
+          "docs examples of each function return": ""
         }
       }
     }
