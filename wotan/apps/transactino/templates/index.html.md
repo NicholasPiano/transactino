@@ -9,7 +9,7 @@ search: true
 
 # Introduction
 
-Welcome to Transactino! This application provides useful information about the bitcoin blockchain for an easy-to-use bitcoin subscription with bulletproof security via GPG.
+Welcome to Transactino! This application provides useful information about the Bitcoin blockchain for an easy-to-use Bitcoin subscription with bulletproof security via GPG.
 
 Named for the Norse World-serpent that brings about Ragnarok, Jormungand is the first user client for the Transactino application. Although this client allows a user to take advantage of almost all features of the API, it is highly recommended to access the API through a custom interface for more serious use, as this allows a user to control finer-grained aspects of the API, such as complex error handling.
 
@@ -17,7 +17,7 @@ A more detailed guide to the API can be found here: [API]
 
 ## Latest release
 
-[1.3.0](www.transactino.com/releases/jormungand_1.3.0.zip)
+[1.4.0](www.transactino.com/releases/jormungand_1.4.0.zip)
 
 # Setup
 
@@ -101,7 +101,7 @@ When running commands, the order of the arguments does not matter, so `account v
 
 ### Important note
 
-Any method that requires a challenge to be solved or a payment to be submitted can be run initially with no arguments. In fact, most commands will initially ignore all arguments until its criterion is met.
+Any method that requires a `Challenge` to be solved or a payment to be submitted can be run initially with no arguments. In fact, most commands will initially ignore all arguments until its challenge condition is met.
 
 ## Schema
 
@@ -183,20 +183,20 @@ The Account model holds information about the public key registered on the syste
 
 The `account create` command takes the public key from the path provided in the `env.json` file. Once an account has been created, the IP address used to access the system will be locked to the public key. Any request from the IP address will be treated as though it comes from this account. For this reason, it is prudent to ensure you have complete control of the IP you are using. Sensitive changes to the account data on the system will require GPG challenges for security. You can create more IP addresses for this account once you have an active subscription.
 
-`account verify` takes no arguments and requires a challenge to be solved. This first challenge proves that the account holder has control of a corresponding private key.
+`account verify` takes no arguments and requires a `Challenge` to be solved. This first challenge proves that the account holder has control of a corresponding private key.
 
-`account delete` requires a challenge to be solved and removes all data related to the account on the system.
+`account delete` requires a `Challenge` to be solved and removes all data related to the account on the system.
 
-`account lock` requires a challenge to be solved and prevents all access to the system by the account in question until another command is given to unlock.
+`account lock` requires a `Challenge` to be solved and prevents all access to the system by the account in question until another command is given to unlock.
 
 ## Challenge
 
-A Challenge contains a plaintext piece of data that is delivered once it has been encrypted to the public key of the account. Once the account holder receives this information, it must be decrypted using their private key and re-encrypted to the public key of the system before being sent back to close the challenge. In this way, the holder of the public key proves their possession of the corresponding private key. This process is repeated with a new piece of plaintext every time the user wishes to modify data on the system.
+A `Challenge` contains a plaintext piece of data that is delivered once it has been encrypted to the public key of the account. Once the account holder receives this information, it must be decrypted using their private key and re-encrypted to the public key of the system before being sent back to close the challenge. In this way, the holder of the public key proves their possession of the corresponding private key. This process is repeated with a new piece of plaintext every time the user wishes to modify data on the system.
 
 For clarity, each challenge occurs in the following order:
 
 1. The user submits a request that is restricted for security purposes.
-2. A challenge object is created on the user account, with an `origin` relevant to the action.
+2. A `Challenge` object is created on the user account, with an `origin` relevant to the action.
 3. The user makes a request for the data contained in the challenge, and receives a piece of ascii armor data, `A` encrypted to their public key.
 4. The user decrypts `A` using their private key to yield `B`, proving that they possess it.
 5. The user makes a request for the public key of the system.
@@ -206,7 +206,7 @@ For clarity, each challenge occurs in the following order:
 
 ### challenge get
 
-`challenge get (closed) (save)` returns the set of challenges, either `closed` or not, on the user account. The `save` argument will write the encrypted content of the challenge to the directory specified in `env.json`. A directory will be created if it does not exist, named for the ID of the challenge, containing the file `message.asc`.
+`challenge get (closed) (save)` returns the set of `Challenge` objects, either `closed` or not, on the user account. The `save` argument will write the encrypted content of the challenge to the directory specified in `env.json`. A directory will be created if it does not exist, named for the ID of the challenge, containing the file `message.asc`.
 
 It should be noted that `save` will cause all challenges returned by the request to be saved.
 
@@ -231,15 +231,15 @@ The advantage of using this method is that the user's private key, used in step 
 
 ## Subscription
 
-A subscription is a formal agreement between the user and the system for a set period of time, backed by a fixed bitcoin payment made to a given address. The address to be used for a payment is revealed when the payment is opened. For as long as a subscription is active, the user has access to all offerings available on the system.
+A `Subscription` is a formal agreement between the user and the system for a set period of time, backed by a fixed bitcoin payment made to a given address. The address to be used for a payment is revealed when the payment is opened. For as long as a subscription is active, the user has access to all offerings available on the system.
 
 Multiple subscriptions can be created with different start and end points, and it is theoretically possible for multiple subscriptions to be active simultaneously, although this comes with no additional benefits. The control of this is left to the user's discretion.
 
-The subscription process happens in two stages. In the first stage, a subscription object is created, requiring a challenge. In the second stage, the subscription must be activated, requiring a payment. As a restriction on user actions, a payment behaves in a very similar manner to a challenge, expect for the fact that a user is dependent on the behaviour of the bitcoin blockchain for the payment to be closed.
+The subscription process happens in two stages. In the first stage, a subscription object is created, requiring a `Challenge`. In the second stage, the subscription must be activated, requiring a payment. As a restriction on user actions, a payment behaves in a very similar manner to a challenge, expect for the fact that a user is dependent on the behaviour of the bitcoin blockchain for the payment to be closed.
 
 ### subscription get
 
-`subscription get (inactive)` returns the set of subscriptions, either `inactive` or not, on the user account.
+`subscription get (inactive)` returns the set of `Subscription` objects, either `inactive` or not, on the user account.
 
 Parameter | Default | Description
 --------- | ------- | -----------
@@ -247,7 +247,7 @@ Parameter | Default | Description
 
 ### subscription create
 
-`subscription create` creates a subscription on the user account. This requires a challenge to be solved.
+`subscription create` creates a `Subscription` on the user account. This requires a `Challenge` to be solved.
 
 Parameter | Description
 --------- | -----------
@@ -260,7 +260,7 @@ The date parser on the system supports most common date formats, but it will nor
 
 ### subscription activate
 
-`subscription activate` marks a subscription for activation. If the activation date is in the future, the system will not activate the subscription until that time, but this command must be run to allow that to happen. This method requires a payment to be submitted. Each subscription has a unique `origin` property that can be viewed by using `get`. Only the payment with this `origin` can be closed to allow this specific subscription to be activated.
+`subscription activate` marks a `Subscription` for activation. If the activation date is in the future, the system will not activate the subscription until that time, but this command must be run to allow that to happen. This method requires a payment to be submitted. Each subscription has a unique `origin` property that can be viewed by using `get`. Only the payment with this `origin` can be closed to allow this specific subscription to be activated.
 
 Parameter | Description
 --------- | -----------
@@ -270,7 +270,7 @@ It is important to note that the process of activation is decoupled from user ac
 
 ### subscription delete
 
-`subscription delete` deletes a subscription. This requires a challenge to be solved and is irreversible.
+`subscription delete` deletes a `Subscription`. This requires a `Challenge` to be solved and is irreversible.
 
 Parameter | Description
 --------- | -----------
@@ -280,28 +280,52 @@ This method is **irreversible** and **independent of the status of the subscript
 
 ## IP
 
+An `IP` object stores the IP address used by a user to access their account. An `IP` object is created when a user account is created, but more can be added at the user's discretion. A maximum of five `IP` objects may be on a user account before a payment is required for each subsequent `IP`.
 
+### ip get
+
+`ip get` returns the set of `IP` objects associated with the user account.
+
+Parameter | Description
+--------- | -----------
+`ip_id` | The IP ID to return.
+
+### ip create
+
+`ip create` can be used to create an `IP` object. Only five can be created before a payment is required for each `IP`.
+
+Parameter | Description
+--------- | -----------
+`value` | The IP address value.
+
+### ip delete
+
+`ip delete` deletes an `IP` from the user account. This is irreversible. A challenge must be solved to complete this method.
+
+Parameter | Description
+--------- | -----------
+`ip_id` | The IP ID to delete.
 
 ## Payment
 
-A payment is needed to allow access to several offerings within this application. All payments are mediated by the bitcoin blockchain. A typical payment is made by creating a transaction with an output that specifies the correct address given and the correct unique amount. The unique amount acts as an identifier that allows an automatic system
+A `Payment` is needed to allow access to several offerings within this application. All payments are mediated by the bitcoin blockchain. A typical payment is made by creating a transaction with an output that specifies the correct address given and the correct unique amount. The unique amount acts as an identifier that allows an automatic system
 to differentiate payments. Payment amounts will be given as an integer representing the number of Satoshi required.
 
-Payments on an account cannot be interacted with or modified in any way, except in the case of deletion.
+`Payment` objects on an account cannot be interacted with or modified in any way, except in the case of deletion.
 
 The lifetime of a typical payment follows this series of steps:
 
 1. The user attempts an action that is restricted by a payment.
-2. A payment is opened with an `origin` property that connects it to the action.
-3. The user makes a request for the `Address` object referenced in the payment.
-3. The user creates a transaction with the value of the address and the unique amount specified in the payment.
+2. A `Payment` is opened with an `origin` property that connects it to the action.
+3. The user makes a request for the `Address` object referenced in the `Payment`.
+3. The user creates a transaction with the value of the address and the unique amount specified in the `Payment`.
 4. The user waits for the transaction to be mined.
-5. Once the transaction is detected on the blockchain, the payment will be closed on the system.
+5. Once the transaction is detected on the blockchain, the `Payment` will be closed on the system.
 6. The user re-attempts the action.
 
 ### payment get
 
-`payment get (closed)` returns details of open payments, unless the `closed` argument is included. This can be used to find the `origin` and `unique_btc_amount` properties for a specific payment.
+`payment get (closed)` returns details of open `Payment` objects, unless the `closed` argument is included. This can be used to find the `origin` and `unique_btc_amount` properties for a specific `Payment`.
 
 Parameter | Default | Description
 --------- | ------- | -----------
@@ -309,7 +333,7 @@ Parameter | Default | Description
 
 ### payment delete
 
-`payment delete` deletes a payment. This command should be used if you do not wish to continue with an open payment in order to enable a method. For example, if making a payment for `subscription activate`, the payment can be removed to reset the method.
+`payment delete` deletes a `Payment`. This command should be used if you do not wish to continue with an open payment in order to enable a method. For example, if making a payment for `subscription activate`, the payment can be removed to reset the method.
 
 Parameter | Description
 --------- | -----------
@@ -319,11 +343,11 @@ This is **irreversible** and is left to the user's discretion.
 
 ## Fee Report
 
-A fee report contains regularly updated statistical details about the fee information contained in bitcoin blocks. For example, the average fee in Satoshi and the average fee weight in Satoshi per byte are provided. When creating a fee report, the user has the option to specify that this average should be calculated over a certain number of blocks, e.g. ten. Thus, the updated average fee would be that of all transactions in the latest ten blocks. This moving average is meant to give users planning to submit transactions an idea of what fee they should provide. These values are updated as soon as possible following the mining of a new block.
+A `FeeReport` contains regularly updated statistical details about the fee information contained in bitcoin blocks. For example, the average fee in Satoshi and the average fee weight in Satoshi per byte are provided. When creating a fee report, the user has the option to specify that this average should be calculated over a certain number of blocks, e.g. ten. Thus, the updated average fee would be that of all transactions in the latest ten blocks. This moving average is meant to give users planning to submit transactions an idea of what fee they should provide. These values are updated as soon as possible following the mining of a new block.
 
 ### fee_report get
 
-`fee_report get (inactive)` returns details about fee reports on the account. The `inactive` flag will return inactive fee reports. Use the `activate` method to set the active status of a fee report to add or remove it from your focus.
+`fee_report get (inactive)` returns details about `FeeReport` objects on the account. The `inactive` flag will return inactive fee reports. Use the `activate` method to set the active status of a `FeeReport` to add or remove it from your focus.
 
 Parameter | Description
 --------- | -----------
@@ -341,7 +365,7 @@ Parameter | Description
 
 ### fee_report activate
 
-The `activate` method controls the active status of the fee report.
+The `activate` method controls the active status of the `FeeReport`.
 
 Parameter | Description
 --------- | -----------
@@ -350,7 +374,7 @@ Parameter | Description
 
 ### fee_report delete
 
-The `delete` method permanently deletes the fee report from the user account.
+The `delete` method permanently deletes the `FeeReport` from the user account.
 
 Parameter | Description
 --------- | -----------
@@ -358,11 +382,11 @@ Parameter | Description
 
 ## Transaction Report
 
-A transaction report monitors the blockchain for transaction outputs that match its requirements. A single address to watch must be specified, along with upper and lower bounds, or alternatively an exact value, for the integer output in Satoshi. A successful match will yield TransactionMatch objects.
+A `TransactionReport` monitors the blockchain for transaction outputs that match its requirements. A single address to watch must be specified, along with upper and lower bounds, or alternatively an exact value, for the integer output in Satoshi. A successful match will yield TransactionMatch objects.
 
 ### transaction_report get
 
-`transaction_report get (inactive)` returns details about transaction reports on the account. The `inactive` flag will return inactive transaction reports. Use the `activate` method to set the active status of a transaction report to add or remove it.
+`transaction_report get (inactive)` returns details about `TransactionReport` objects on the account. The `inactive` flag will return inactive transaction reports. Use the `activate` method to set the active status of a transaction report to add or remove it.
 
 Parameter | Description
 --------- | -----------
@@ -383,7 +407,7 @@ Parameter | Description
 
 ### transaction_report activate
 
-The `activate` method controls the active status of the transaction report.
+The `activate` method controls the active status of the `TransactionReport`.
 
 Parameter | Description
 --------- | -----------
@@ -392,7 +416,7 @@ Parameter | Description
 
 ### transaction_report delete
 
-The `delete` method permanently deletes the transaction report from the user account.
+The `delete` method permanently deletes the `TransactionReport` from the user account.
 
 Parameter | Description
 --------- | -----------
@@ -400,7 +424,7 @@ Parameter | Description
 
 ## Transaction Match
 
-Transaction match objects represent successful matches of their corresponding transaction report objects. They can be filtered by a variety of useful parameters including their parent address and the hash of the block they occurred in.
+`TransactionMatch` objects represent successful matches of their corresponding `TransactionReport` objects. They can be filtered by a variety of useful parameters including their parent address and the hash of the block they occurred in.
 
 ### transaction_match get
 
@@ -408,10 +432,10 @@ The `get` method makes several filters available to find the correct results fro
 
 Parameter | Description
 --------- | -----------
-`transaction_report_id` | The ID of the parent transaction report.
-`transaction_report_target_address` | The target address of the parent transaction report.
-`transaction_report_is_active` | The active status of the parent transaction report.
-`transaction_match_id` | The ID of the transaction match object.
+`transaction_report_id` | The ID of the parent `TransactionReport`.
+`transaction_report_target_address` | The target address of the parent `TransactionReport`.
+`transaction_report_is_active` | The active status of the parent `TransactionReport`.
+`transaction_match_id` | The ID of the `TransactionMatch` object.
 `is_new` | The new status of the transaction match.
 `block_hash` | The block hash of the transaction match.
 

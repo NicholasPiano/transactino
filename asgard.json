@@ -67,18 +67,18 @@
         }
       },
       "20190520": {
-        "description": "",
+        "description": "List",
         "children": {
           "docs system": "done",
           "docs address": "done",
           "docs announcement": "done",
-          "docs update jormungand release": "1.4.0",
-          "docs walkthroughs": "",
-          "docs ip": "",
-          "docs spelling": "Model names should camel case and code highlighted",
+          "docs update jormungand release": "1.4.0, done",
+          "docs ip": "done",
+          "docs spelling": "Model names should camel case and code highlighted, done",
+          "docs moving to wotan templates": "done",
           "wotan error and type ids should be uuids": "",
-          "docs moving to wotan templates": "",
-          "docs examples of each function return": ""
+          "docs examples of each function return": "",
+          "docs walkthroughs": ""
         }
       }
     }
