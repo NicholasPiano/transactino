@@ -2,12 +2,12 @@
 from util.api import Error
 
 class FeeReportIDNotIncludedError(Error):
-  code = '1029'
+  code = '19d3845a6da8487082a29e292259f3ec'
   name = 'fee_report_id_not_included'
   description = 'FeeReport ID must be included'
 
 class FeeReportDoesNotExistError(Error):
-  code = '1028'
+  code = 'a559b6b4e6884695b37bb586dcd60ca2'
   name = 'fee_report_does_not_exist'
   description = 'FeeReport does not exist'
   description_with_arguments = 'FeeReport with id [{}] does not exist'

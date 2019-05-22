@@ -2,22 +2,22 @@
 from util.api import Error
 
 class QueryKeyValueNotPresentError(Error):
-  code = '008'
+  code = 'bd305cb76f854a618de799fbba1c994f'
   name = 'query_key_value_not_present'
   description = 'Both key and value must be present'
 
 class QueryAndOrPresentWithKeyValueError(Error):
-  code = '009'
+  code = '660b412116bb4975a1fccfbef6cec276'
   name = 'query_and_or_present_with_key_value'
   description = 'AND and OR keys must not be present with key or value keys'
 
 class QueryAndOrPresentError(Error):
-  code = '010'
+  code = '146b16d874174273bd73e306493b34f5'
   name = 'query_and_or_present'
   description = 'A query cannot contain both AND and OR keys'
 
 class InvalidQueryDirectiveError(Error):
-  code = '013'
+  code = '4aea11e69a0847bab55483d95b5928a1'
   name = 'invalid_query_directive'
   description = 'Unrecognised directive'
   description_with_arguments = 'Invalid directive given for field [{}.{}]: [{}]'
@@ -36,7 +36,7 @@ class filter_errors:
   INVALID_QUERY_DIRECTIVE = InvalidQueryDirectiveError
 
 class NonNullableNotIncludedError(Error):
-  code = '006'
+  code = 'a20531d1bbac4412ba026599b34ce617'
   name = 'non_nullable_not_included'
   description = 'All non-nullable fields must be included'
   description_with_arguments = 'Non-nullable fields [{}] must be included'
@@ -50,7 +50,7 @@ class NonNullableNotIncludedError(Error):
     )
 
 class MustContainAllNonNullableKeysError(Error):
-  code = '007'
+  code = '209dd1efbb1445b6bcc6a80c455ce79c'
   name = 'must_contain_non_nullable'
   description = 'All keys with non-nullable fields must be included'
   description_with_arguments = 'Keys with non-nullable fields [{}] must be included'
@@ -68,7 +68,7 @@ class create_errors:
   MUST_CONTAIN_ALL_NON_NULLABLE = MustContainAllNonNullableKeysError
 
 class NullableMustContainKeyError(Error):
-  code = '014'
+  code = 'b557465fbf7e46a4b0bc6877922ccdec'
   name = 'model_nullable_must_contain_key'
   description = 'Nullable field command must contain null key'
   description_with_arguments = 'Nullable for field [{}] must contain null key'
@@ -81,7 +81,7 @@ class NullableMustContainKeyError(Error):
     )
 
 class NullableMustBeTrueError(Error):
-  code = '015'
+  code = 'fad441c0fd3f466d90aac0623fcbfb7e'
   name = 'model_nullable_must_be_true'
   description = 'Nullable field must be true'
   description_with_arguments = 'Nullable for field [{}] must be true'
@@ -98,7 +98,7 @@ class set_errors:
   NULLABLE_MUST_BE_TRUE = NullableMustBeTrueError
 
 class DoesNotExistError(Error):
-  code = '017'
+  code = '71a90b01d0c24f79bc5a56678ba8a9e9'
   name = 'does_not_exist'
   description = 'Resource does not exist'
   description_with_arguments = 'Resource with id [{}] does not exist'

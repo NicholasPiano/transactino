@@ -2,12 +2,12 @@
 from util.api import Error
 
 class ChallengeIDNotIncludedError(Error):
-  code = '624'
+  code = '749072d97e7a4d7c82b840e106f85255'
   name = 'challenge_id_not_included'
   description = 'The challenge ID is not included'
 
 class ChallengeDoesNotExistError(Error):
-  code = '625'
+  code = 'b67071706ef04eeeb85af1f1c77798e9'
   name = 'challenge_does_not_exist'
   description = 'The challenge does not exist'
   description_with_arguments = 'The challenge with ID [{}] does not exist'
@@ -20,7 +20,7 @@ class ChallengeDoesNotExistError(Error):
     )
 
 class ClosedChallengeHasBeenUsedError(Error):
-  code = '626'
+  code = 'ef4bb57cee2647259251ef8f923f7b5b'
   name = 'closed_challenge_has_been_used'
   description = 'Closed challenge has been used'
   description_with_arguments = 'The challenge with ID [{}] has been used'
@@ -33,7 +33,7 @@ class ClosedChallengeHasBeenUsedError(Error):
     )
 
 class ContentNotIncludedError(Error):
-  code = '628'
+  code = '994ca615ff8745f3a1a3e8dc6cd2b60c'
   name = 'content_not_included'
   description = 'Content not included'
 

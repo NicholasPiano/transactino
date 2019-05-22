@@ -33,7 +33,7 @@ class Type():
     return rendered
 
 class Boolean(Type):
-  code = '001'
+  code = 'b23d20a4a80c4b9cbdd4fff0b7eaca6a'
   description = 'A true or false value'
   type = '__boolean'
 
@@ -41,7 +41,7 @@ class Boolean(Type):
     return isinstance(value, bool)
 
 class Integer(Type):
-  code = '002'
+  code = '2f4bb82ad1a443bc92e7333fb7bf24e9'
   description = 'A whole number value'
   type = '__integer'
 
@@ -49,7 +49,7 @@ class Integer(Type):
     return isinstance(value, int)
 
 class PositiveInteger(Type):
-  code = '003'
+  code = '8d149f0c77074800a96956c01713a97e'
   description = 'A whole number value greater than zero'
   type = '__positiveinteger'
 
@@ -57,7 +57,7 @@ class PositiveInteger(Type):
     return isinstance(value, int) and value >= 0
 
 class Float(Type):
-  code = '004'
+  code = '9f5887b56e714757afac757858b64bcb'
   description = 'A floating point number value'
   type = '__float'
 
@@ -65,7 +65,7 @@ class Float(Type):
     return value == 0 or isinstance(value, float)
 
 class String(Type):
-  code = '005'
+  code = 'a772eb3c72e64abc9ab0d2f48f39147d'
   description = 'A string of characters'
   type = '__string'
 
@@ -73,7 +73,7 @@ class String(Type):
     return isinstance(value, str)
 
 class Structure(Type):
-  code = '006'
+  code = '330875c47a1a4f0f81257c39cf3c3b45'
   description = 'A JSON object'
   type = '__structure'
 
@@ -81,7 +81,7 @@ class Structure(Type):
     return isinstance(value, dict)
 
 class Array(Type):
-  code = '007'
+  code = '079d6693779f404980cf30ccf72d7622'
   description = 'A JSON array'
   type = '__array'
 
@@ -89,7 +89,7 @@ class Array(Type):
     return isinstance(value, list)
 
 class UUID(Type):
-  code = '008'
+  code = 'b2d05f3f871343d7ac28ee2708d60448'
   description = 'A valid UUID'
   type = '__uuid'
 
@@ -97,7 +97,7 @@ class UUID(Type):
     return is_valid_uuid(value)
 
 class IpAddress(Type):
-  code = '0081'
+  code = '8b79a16e55894c85bf62453d310fbc59'
   description = 'A valid IPv4 address'
   type = '__ip'
 
@@ -105,7 +105,7 @@ class IpAddress(Type):
     return is_valid_ip_address(value)
 
 class Time(Type):
-  code = '009'
+  code = '674c1ee5ece247939fc206d7813a496a'
   description = (
     'A valid timestamp - either an integer timestamp'
     ' or a string that formats to a valid datetime.'
@@ -122,7 +122,7 @@ class Model(Type):
   pass
 
 class Ref(Type):
-  code = '011'
+  code = 'a05f5976ca3949f68c8509ec8c415a30'
   description = 'A string composed of a model name and uuid separated by a point'
   type = '__ref'
 
@@ -142,7 +142,7 @@ class Immutable(Type):
   pass
 
 class Any(Type):
-  code = '014'
+  code = '57a5da6928d04817bbcffc1ba9975b0b'
   description = 'Any value'
   type = '__any'
 
@@ -150,7 +150,7 @@ class Any(Type):
     return True
 
 class Null(Type):
-  code = '015'
+  code = '07275ce06d1a4def82ecfd53140168a7'
   description = 'Null value'
   type = '__null'
 

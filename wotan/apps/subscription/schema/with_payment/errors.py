@@ -2,7 +2,7 @@
 from util.api import Error
 
 class OpenPaymentExistsWithOriginError(Error):
-  code = '725'
+  code = '8edc8d8edde64d12a454d78886367905'
   name = 'open_payment_exists_with_origin'
   description = 'Open payment exists with the given origin'
   description_with_arguments = 'Open payment [{}] exists with origin [{}]'
@@ -15,7 +15,7 @@ class OpenPaymentExistsWithOriginError(Error):
     )
 
 class PaymentsUnavailableError(Error):
-  code = '727'
+  code = 'adf56cb06c7f417b86c2611399015a5e'
   name = 'payments_unavailable'
   description = 'Payments are temporarily unavailable'
 

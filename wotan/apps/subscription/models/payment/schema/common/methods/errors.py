@@ -2,7 +2,7 @@
 from util.api import Error
 
 class PaymentDoesNotExistError(Error):
-  code = '10091'
+  code = 'bc0d1bcc75974281a533d9bbd43c5fec'
   name = 'payment_does_not_exist'
   description = 'Payment does not exist'
   description_with_arguments = 'Payment with id [{}] does not exist'

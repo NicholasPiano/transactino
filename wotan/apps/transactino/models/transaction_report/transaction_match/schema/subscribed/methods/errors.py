@@ -2,7 +2,7 @@
 from util.api import Error
 
 class TransactionMatchDoesNotExistError(Error):
-  code = '10281'
+  code = 'a14ebb6b5f33461d8a189ca2886bb121'
   name = 'transaction_match_does_not_exist'
   description = 'TransactionMatch does not exist'
   description_with_arguments = 'TransactionMatch with id [{}] does not exist'
