@@ -76,6 +76,7 @@
           "docs ip": "done",
           "docs spelling": "Model names should camel case and code highlighted, done",
           "docs moving to wotan templates": "done",
+          "wotan add fields to system object": "done",
           "wotan error and type ids should be uuids": "",
           "docs examples of each function return": "",
           "docs walkthroughs": ""

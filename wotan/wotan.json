@@ -377,12 +377,6 @@
           "address schema": "remove attributes and relationships"
         }
       },
-      "20190427": {
-        "description": "Demo mode",
-        "children": {
-
-        }
-      },
       "20190428": {
         "description": "Thinking about demo mode",
         "children": {
@@ -397,6 +391,19 @@
               "mute announcements": "Flag on Account model that needs to be unset when a new announcement is created"
             }
           }
+        }
+      },
+      "20190520": {
+        "description": "Add fields to system",
+        "children": {
+          "guarantee": "done",
+          "disclaimer": "done"
+        }
+      },
+      "20190522": {
+        "description": "",
+        "children": {
+
         }
       }
     }

@@ -45,8 +45,48 @@ def get(args):
 
   for system_id, attributes_json in instances_json.items():
     print('System ID: ', system_id, '\n')
+
     public_key = get_path(attributes_json, [
       model_constants.ATTRIBUTES,
       system_constants.PUBLIC_KEY,
     ])
+
+    print('PUBLIC KEY:')
     print(public_key + '\n')
+    print('--------')
+
+    guarantee = get_path(attributes_json, [
+      model_constants.ATTRIBUTES,
+      system_constants.GUARANTEE,
+    ])
+
+    print('GUARANTEE')
+    print(guarantee + '\n')
+    print('--------')
+
+    guarantee_signature = get_path(attributes_json, [
+      model_constants.ATTRIBUTES,
+      system_constants.GUARANTEE_SIGNATURE,
+    ])
+
+    print('GUARANTEE SIGNATURE')
+    print(guarantee_signature + '\n')
+    print('--------')
+
+    disclaimer = get_path(attributes_json, [
+      model_constants.ATTRIBUTES,
+      system_constants.DISCLAIMER,
+    ])
+
+    print('DISCLAIMER')
+    print(disclaimer + '\n')
+    print('--------')
+
+    disclaimer_signature = get_path(attributes_json, [
+      model_constants.ATTRIBUTES,
+      system_constants.DISCLAIMER_SIGNATURE,
+    ])
+    
+    print('DISCLAIMER SIGNATURE')
+    print(disclaimer_signature + '\n')
+    print('--------')

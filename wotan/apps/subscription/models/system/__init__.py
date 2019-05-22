@@ -26,6 +26,10 @@ class SystemManager(Manager):
   def attributes(self, mode=None):
     fields = [
       system_fields.PUBLIC_KEY,
+      system_fields.GUARANTEE,
+      system_fields.GUARANTEE_SIGNATURE,
+      system_fields.DISCLAIMER,
+      system_fields.DISCLAIMER_SIGNATURE,
     ]
 
     return [
@@ -66,6 +70,22 @@ class System(Model):
     max_length=255,
     default='',
     verbose_name='The GPG long key id corresponding to the public key',
+  )
+  guarantee = models.TextField(
+    default='',
+    verbose_name='The Transactino guarantee',
+  )
+  guarantee_signature = models.TextField(
+    default='',
+    verbose_name='The guarantee signature',
+  )
+  disclaimer = models.TextField(
+    default='',
+    verbose_name='The disclaimer',
+  )
+  disclaimer_signature = models.TextField(
+    default='',
+    verbose_name='The disclaimer signature',
   )
   is_active = models.BooleanField(default=True)
 

@@ -9,6 +9,7 @@ from util.api import (
   constants,
 )
 
+from .....system import System
 from .....ip import IP
 from ....constants import account_fields
 from .errors import account_anonymous_method_errors
@@ -88,11 +89,28 @@ class AccountCreateSchema(StructureSchema):
         ' specified public key. This account will be bound to the public key'
         ' from which the request or connection originates.'
       ),
-      client=Schema(
+      client=StructureSchema(
         description=(
           'If successful, the create function will return an acknowledgement'
           ' of the created account and a disclaimer.'
         ),
+        children={
+          create_constants.DISCLAIMER: Schema(
+            description=(
+              'The system disclaimer. This can also be found by accessing the System object.'
+            ),
+          ),
+          create_constants.IP: Schema(
+            description=(
+              'The IP address used to create this account'
+            ),
+          ),
+          create_constants.LONG_KEY_ID: Schema(
+            description=(
+              'The long key id of the GPG public key used to create this account'
+            ),
+          ),
+        }
       ),
       children={
         account_fields.PUBLIC_KEY: AccountCreatePublicKeySchema(),
@@ -151,9 +169,11 @@ class AccountCreateSchema(StructureSchema):
     ip = account.ips.create(value=context.connection.ip_value)
     context.connection.ip = ip
 
+    active_system = System.objects.active()
     self.active_response = self.client.respond(
-      payload=disclaimer(
-        ip=context.connection.ip.value,
-        long_key_id=public_key_long_key_id,
-      ),
+      payload={
+        create_constants.DISCLAIMER: active_system.disclaimer,
+        create_constants.IP: context.connection.ip_value,
+        create_constants.LONG_KEY_ID: public_key_long_key_id,
+      },
     )
