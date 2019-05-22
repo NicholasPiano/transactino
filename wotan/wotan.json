@@ -401,9 +401,23 @@
         }
       },
       "20190522": {
-        "description": "",
+        "description": "Wrapping up before deployment",
         "children": {
-
+          "t12.12.4": {
+            "description": "System fields",
+            "children": {
+              "tests": {
+                "description": "A bunch of paths added obviously",
+                "children": {
+                  "apps.transactino.api.schema.transactino.test.test_unsubscribed": "done",
+                  "apps.transactino.api.schema.transactino.test.test_subscribed": "done",
+                  "apps.transactino.api.schema.transactino.test.test_anonymous": "done",
+                  "apps.transactino.api.schema.transactino.test.test_transactino": "done",
+                  "apps.subscription.models.account.schema.anonymous.methods.test.test_create": "done"
+                }
+              }
+            }
+          }
         }
       }
     }

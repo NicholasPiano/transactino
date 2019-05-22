@@ -573,7 +573,7 @@ class SubscribedTestCase(TestCase):
       ],
     ]
 
-    # self.assertEqual(len(paths), len(expected_paths))
+    self.assertEqual(len(paths), len(expected_paths))
     for path in paths:
       print('PATH... ', path)
       self.assertTrue(path in expected_paths)
@@ -796,6 +796,42 @@ class SubscribedTestCase(TestCase):
         self.system._id,
         schema_constants.ATTRIBUTES,
         system_fields.PUBLIC_KEY,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        System.__name__,
+        schema_constants.INSTANCES,
+        self.system._id,
+        schema_constants.ATTRIBUTES,
+        system_fields.GUARANTEE,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        System.__name__,
+        schema_constants.INSTANCES,
+        self.system._id,
+        schema_constants.ATTRIBUTES,
+        system_fields.GUARANTEE_SIGNATURE,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        System.__name__,
+        schema_constants.INSTANCES,
+        self.system._id,
+        schema_constants.ATTRIBUTES,
+        system_fields.DISCLAIMER,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        System.__name__,
+        schema_constants.INSTANCES,
+        self.system._id,
+        schema_constants.ATTRIBUTES,
+        system_fields.DISCLAIMER_SIGNATURE,
       ],
     ]
 
@@ -1153,7 +1189,7 @@ class SubscribedTestCase(TestCase):
       ],
     ]
 
-    # self.assertEqual(len(paths), len(expected_paths))
+    self.assertEqual(len(paths), len(expected_paths))
     for path in paths:
       print('PATH... ', path)
       self.assertTrue(path in expected_paths)

@@ -7,14 +7,15 @@ from django.conf import settings
 
 from util.api.constants import constants
 
+from ......system import System
 from ..... import Account
 from .....constants import account_fields
+from ..constants import create_constants
 from ..errors import account_anonymous_method_errors
 from ..create import (
   AccountCreatePublicKeyResponse,
   AccountCreatePublicKeySchema,
   AccountCreateSchema,
-  disclaimer,
 )
 
 class AccountCreatePublicKeyResponseTestCase(TestCase):
@@ -67,6 +68,10 @@ class TestContext2():
 class AccountCreateSchemaTestCase(TestCase):
   def setUp(self):
     self.schema = AccountCreateSchema(Account)
+    self.system = System.objects.create_and_import(
+      public_key=settings.TEST_SYSTEM_PUBLIC_KEY,
+      private_key=settings.TEST_SYSTEM_PRIVATE_KEY,
+    )
     self.public_key = settings.TEST_PUBLIC_KEY
 
   def test_create_no_public_key(self):
@@ -95,10 +100,11 @@ class AccountCreateSchemaTestCase(TestCase):
     self.assertEqual(account.public_key, self.public_key)
     self.assertEqual(
       response.render(),
-      disclaimer(
-        ip=TestContext().connection.ip_value,
-        long_key_id=account.long_key_id,
-      ),
+      {
+        create_constants.DISCLAIMER: self.system.disclaimer,
+        create_constants.IP: TestContext().connection.ip_value,
+        create_constants.LONG_KEY_ID: account.long_key_id,
+      },
     )
 
   def test_create_valid_public_key_already_exists(self):

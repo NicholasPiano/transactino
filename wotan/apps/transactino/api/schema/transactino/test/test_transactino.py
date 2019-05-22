@@ -10,7 +10,7 @@ from util.gpg import GPG
 
 from apps.base.schema.constants import schema_constants
 from apps.base.schema.methods.constants import method_constants
-from apps.subscription.models import Account, IP, Challenge, Subscription, Connection
+from apps.subscription.models import System, Account, IP, Challenge, Subscription, Connection
 from apps.subscription.models.account.constants import account_fields
 from apps.subscription.models.challenge.constants import challenge_fields
 from apps.subscription.models.challenge.schema.common.methods.constants import (
@@ -25,6 +25,10 @@ from .. import TransactinoSchema
 class TransactinoSchemaTestCase(TestCase):
   def setUp(self):
     self.schema = TransactinoSchema()
+    self.system = System.objects.create_and_import(
+      public_key=settings.TEST_SYSTEM_PUBLIC_KEY,
+      private_key=settings.TEST_SYSTEM_PRIVATE_KEY,
+    )
     self.public_key = settings.TEST_PUBLIC_KEY
     self.ip_value = 'ip_value'
     self.channel_name = 'channel_name'
@@ -49,6 +53,7 @@ class TransactinoSchemaTestCase(TestCase):
     }
 
     create_account_response = self.schema.respond(
+      system=self.system,
       payload=create_account_payload,
       connection=self.connection,
     )
@@ -74,6 +79,7 @@ class TransactinoSchemaTestCase(TestCase):
     }
 
     create_response = self.schema.respond(
+      system=self.system,
       payload=create_subscription_payload,
       connection=self.connection,
     )
@@ -132,6 +138,7 @@ class TransactinoSchemaTestCase(TestCase):
     }
 
     respond_response = self.schema.respond(
+      system=self.system,
       payload=respond_payload,
       connection=self.connection,
     )
@@ -152,6 +159,7 @@ class TransactinoSchemaTestCase(TestCase):
     }
 
     second_create_response = self.schema.respond(
+      system=self.system,
       payload=second_create_subscription_payload,
       connection=self.connection,
     )

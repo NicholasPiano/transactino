@@ -19,6 +19,10 @@ from .. import TransactinoSchema
 class AnonymousTestCase(TestCase):
   def setUp(self):
     self.schema = TransactinoSchema()
+    self.system = System.objects.create_and_import(
+      public_key=settings.TEST_SYSTEM_PUBLIC_KEY,
+      private_key=settings.TEST_SYSTEM_PRIVATE_KEY,
+    )
     self.public_key = settings.TEST_PUBLIC_KEY
     self.ip_value = 'ip_value'
     self.channel_name = 'channel_name'
@@ -30,7 +34,11 @@ class AnonymousTestCase(TestCase):
   def test_schema_paths(self):
     null_payload = None
 
-    response = self.schema.respond(payload=null_payload, connection=self.connection)
+    response = self.schema.respond(
+      system=self.system,
+      connection=self.connection,
+      payload=null_payload,
+    )
     rendered_response = response.render()
     paths = extract_schema_paths(rendered_response)
 
@@ -87,14 +95,14 @@ class AnonymousTestCase(TestCase):
     }
 
     create_response = self.schema.respond(
-      payload=create_payload,
+      system=self.system,
       connection=self.connection,
+      payload=create_payload,
     )
 
     self.assertTrue(Account.objects.filter(public_key=self.public_key))
 
   def test_system_get(self):
-    system = System.objects.create(public_key=settings.TEST_SYSTEM_PUBLIC_KEY)
     get_payload = {
       api_constants.SCHEMA: {
         api_constants.MODELS: {
@@ -108,8 +116,9 @@ class AnonymousTestCase(TestCase):
     }
 
     get_response = self.schema.respond(
-      payload=get_payload,
+      system=self.system,
       connection=self.connection,
+      payload=get_payload,
     )
 
     paths = extract_schema_paths(get_response.render(), null=False)
@@ -126,9 +135,45 @@ class AnonymousTestCase(TestCase):
         api_constants.MODELS,
         System.__name__,
         schema_constants.INSTANCES,
-        system._id,
+        self.system._id,
         schema_constants.ATTRIBUTES,
         system_fields.PUBLIC_KEY,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        System.__name__,
+        schema_constants.INSTANCES,
+        self.system._id,
+        schema_constants.ATTRIBUTES,
+        system_fields.GUARANTEE,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        System.__name__,
+        schema_constants.INSTANCES,
+        self.system._id,
+        schema_constants.ATTRIBUTES,
+        system_fields.GUARANTEE_SIGNATURE,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        System.__name__,
+        schema_constants.INSTANCES,
+        self.system._id,
+        schema_constants.ATTRIBUTES,
+        system_fields.DISCLAIMER,
+      ],
+      [
+        api_constants.SCHEMA,
+        api_constants.MODELS,
+        System.__name__,
+        schema_constants.INSTANCES,
+        self.system._id,
+        schema_constants.ATTRIBUTES,
+        system_fields.DISCLAIMER_SIGNATURE,
       ],
     ]
 
