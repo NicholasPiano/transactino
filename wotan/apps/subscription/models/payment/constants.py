@@ -21,6 +21,7 @@ class payment_fields:
   FULL_BTC_AMOUNT = 'full_btc_amount'
   BLOCK_HASH = 'block_hash'
   TXID = 'txid'
+  INDEX = 'index'
 
 account_fields.PAYMENTS = payment_constants.ACCOUNT_RELATED_NAME
 address_fields.PAYMENTS_RECEIVED = payment_constants.ADDRESS_RELATED_NAME

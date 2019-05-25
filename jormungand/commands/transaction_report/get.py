@@ -55,4 +55,4 @@ def get(args):
     print(json.dumps(response_json, indent=2))
     return
 
-  print(json.dumps(get_json, indent=2))
+  print(json.dumps(instances_json, indent=2))

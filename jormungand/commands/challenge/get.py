@@ -57,7 +57,7 @@ def get(args):
   ])
 
   if instances_json is None:
-    print(json.dumps(response_json), indent=2)
+    print(json.dumps(response_json, indent=2))
     return
 
   for challenge_id, attributes_json in instances_json.items():

@@ -12,7 +12,7 @@ def process_payment(payment, block):
 
   for delta in deltas:
     if match_delta(payment, delta):
-      payment.close(block.hash, delta.out_txid)
+      payment.close(block.hash, delta.out_txid, delta.index)
       return
 
 class WithPaymentCheck:

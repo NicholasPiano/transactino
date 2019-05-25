@@ -168,6 +168,7 @@ class AccountCreateSchema(StructureSchema):
     )
     ip = account.ips.create(value=context.connection.ip_value)
     context.connection.ip = ip
+    context.connection.save()
 
     active_system = System.objects.active()
     self.active_response = self.client.respond(

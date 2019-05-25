@@ -77,9 +77,23 @@
           "docs spelling": "Model names should camel case and code highlighted, done",
           "docs moving to wotan templates": "done",
           "wotan add fields to system object": "done",
-          "wotan error and type ids should be uuids": "",
+          "wotan error and type ids should be uuids": "done"
+        }
+      },
+      "20190524": "Completed outlines for walkthroughs",
+      "20190525": {
+        "description": "Doing walkthroughs",
+        "children": {
+          "add wotan command to create system and address": "",
           "docs examples of each function return": "",
           "docs walkthroughs": ""
+        }
+      },
+      "20190613": {
+        "description": "Working on docs walkthroughs for Jormungand",
+        "children": {
+          "mistakes": "Every now and then, I encounter a horrible mistake or omission from wotan or jormungand. Quite incredible.",
+          ""
         }
       }
     }

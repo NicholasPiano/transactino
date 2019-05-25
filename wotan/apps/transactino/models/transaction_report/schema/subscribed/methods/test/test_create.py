@@ -31,6 +31,14 @@ class TransactionReportCreateSchemaTestCase(TestCase):
     self.account.import_public_key()
     self.context = TestContext(self.account)
 
+  def test_no_arguments(self):
+    payload = {}
+
+    response = self.schema.respond(payload=payload, context=self.context)
+
+    self.assertTrue(self.account.challenges.filter(origin=create_constants.ORIGIN).exists())
+    self.assertFalse(TransactionReport.objects.exists())
+
   def test_without_target_address(self):
     challenge = self.account.challenges.create(origin=create_constants.ORIGIN, is_open=False, has_been_used=False)
     payload = {}
@@ -64,24 +72,6 @@ class TransactionReportCreateSchemaTestCase(TestCase):
       {
         constants.ERRORS: {
           equal_used_with_range.code: equal_used_with_range.render(),
-        },
-      },
-    )
-
-  def test_without_equal_or_range(self):
-    challenge = self.account.challenges.create(origin=create_constants.ORIGIN, is_open=False, has_been_used=False)
-    payload = {
-      transaction_report_fields.TARGET_ADDRESS: 'target_address',
-    }
-
-    response = self.schema.respond(payload=payload, context=self.context)
-
-    equal_or_range_not_included = create_errors.EQUAL_OR_RANGE_NOT_INCLUDED()
-    self.assertEqual(
-      response.render(),
-      {
-        constants.ERRORS: {
-          equal_or_range_not_included.code: equal_or_range_not_included.render(),
         },
       },
     )
@@ -122,14 +112,6 @@ class TransactionReportCreateSchemaTestCase(TestCase):
         },
       },
     )
-
-  def test_no_arguments(self):
-    payload = {}
-
-    response = self.schema.respond(payload=payload, context=self.context)
-
-    self.assertTrue(self.account.challenges.filter(origin=create_constants.ORIGIN).exists())
-    self.assertFalse(TransactionReport.objects.exists())
 
   def test_create(self):
     response = self.schema.respond(payload={}, context=self.context)

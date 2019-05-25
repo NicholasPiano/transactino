@@ -55,12 +55,18 @@ class TestContext():
   class connection:
     ip_value = 'ip_value'
 
+    def save():
+      pass
+
   def update_from_connection(self):
     pass
 
 class TestContext2():
   class connection:
     ip_value = 'ip_value2'
+
+    def save():
+      pass
 
   def update_from_connection(self):
     pass

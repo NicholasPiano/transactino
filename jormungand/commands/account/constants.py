@@ -5,3 +5,6 @@ class account_constants:
   DELETE = 'delete'
   LOCK = 'lock'
   PUBLIC_KEY = 'public_key'
+  DISCLAIMER = 'disclaimer'
+  IP = 'ip'
+  LONG_KEY_ID = 'long_key_id'

@@ -34,6 +34,7 @@ def respond(args):
     )
 
   if read:
+    challenge_id = respond_args.get(challenge_constants.CHALLENGE_ID)
     challenge_path = join(settings.CHALLENGE_PATH, challenge_id)
     if not exists(challenge_path):
       print('Cannot find saved challenge directory...')

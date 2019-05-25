@@ -55,4 +55,13 @@ def create(args):
 
   check_for_announcements(response)
 
-  print(json.dumps(json.loads(response.text), indent=2))
+  response_json = json.loads(response.text)
+  create_json = get_path(response_json, [
+    transactino_constants.SCHEMA,
+    model_constants.MODELS,
+    model_constants.SUBSCRIPTION,
+    method_constants.METHODS,
+    subscription_constants.CREATE,
+  ])
+
+  print(json.dumps(create_json, indent=2))

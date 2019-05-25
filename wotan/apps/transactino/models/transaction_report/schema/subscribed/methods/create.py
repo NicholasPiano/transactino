@@ -77,7 +77,6 @@ class TransactionReportCreateSchema(WithOrigin, WithChallenge, StructureSchema):
       {
         create_errors.TARGET_ADDRESS_NOT_INCLUDED(),
         create_errors.EQUAL_USED_WITH_RANGE(),
-        create_errors.EQUAL_OR_RANGE_NOT_INCLUDED(),
         create_errors.INVALID_VALUE_RANGE(),
       },
     )
@@ -101,14 +100,6 @@ class TransactionReportCreateSchema(WithOrigin, WithChallenge, StructureSchema):
     if value_equal_to and (value_less_than or value_greater_than):
       self.active_response.add_error(
         create_errors.EQUAL_USED_WITH_RANGE(),
-      )
-      return False
-
-    value_included = value_equal_to or value_less_than or value_greater_than
-
-    if not value_included:
-      self.active_response.add_error(
-        create_errors.EQUAL_OR_RANGE_NOT_INCLUDED(),
       )
       return False
 

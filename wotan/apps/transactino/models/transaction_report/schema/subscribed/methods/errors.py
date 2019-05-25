@@ -28,16 +28,8 @@ class EqualUsedWithRangeError(Error):
   code = 'a81ecc72b1594967a6839f250c8a023e'
   name = 'equal_used_with_range'
   description = (
-    'The property "value_equal_to" cannot be used in conjunction with'
-    ' "value_less_than" or "value_greater_than".'
-  )
-
-class EqualOrRangeNotIncludedError(Error):
-  code = '6dd6e650c583490396af21058aa45d10'
-  name = 'equal_or_range_not_included'
-  description = (
-    'One of "value_equal_to", "value_less_than", or "value_greater_than"'
-    ' must be included.'
+    'The property \'value_equal_to\' cannot be used in conjunction with'
+    ' \'value_less_than\' or \'value_greater_than\'.'
   )
 
 class InvalidValueRangeError(Error):
@@ -60,7 +52,6 @@ class activate_errors:
 class create_errors:
   TARGET_ADDRESS_NOT_INCLUDED = TargetAddressNotIncludedError
   EQUAL_USED_WITH_RANGE = EqualUsedWithRangeError
-  EQUAL_OR_RANGE_NOT_INCLUDED = EqualOrRangeNotIncludedError
   INVALID_VALUE_RANGE = InvalidValueRangeError
 
 class delete_errors:

@@ -38,6 +38,7 @@ def get_block(hash):
     del get_block_hashes[list(get_block_hashes.keys())[0]]
 
   get_response = requests.get(join(root_url, 'rawblock', hash))
+
   data = json.loads(get_response.text)
   get_block_hashes[hash] = data
 

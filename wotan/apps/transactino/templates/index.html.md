@@ -150,35 +150,6 @@ The `schema` command returns the full description of the API. This is useful for
 
 ## Account
 
-```bash
-~$ python jormungand.py create account
-```
-
-> This returns:
-
-```
-#### Disclaimer ####
-
-Your account has been created with the IP address xx.xxx.xxx.xx and long key
-id XXXXXXXX, but you should be aware of the following matters:
-
-1. Until you have an active subscription, your account will be bound to
-   the current IP address. Any user with access to this IP address will
-   be treated equally with respect to this account. For this reason, it
-   is recommended to secure access to an IP address that is restricted
-   to your use only.
-2. This interface is provided with a guarantee on behalf of the published
-   public key. Please refer to this guarantee for more information, but
-   understand that there is no recognised authority that is bound to
-   enforce the terms offered therein. Please exercise caution and ensure
-   that all material transferred to the system is secured cryptographically.
-3. Although the system guarantees the integrity of the information provided
-   via this interface, it is prudent to regularly check the results against
-   other external sources. The information is drawn from a single common
-   source (The Blockchain), allowing the reported data to be easily
-   corroborated.
-```
-
 The Account model holds information about the public key registered on the system.
 
 The `account create` command takes the public key from the path provided in the `env.json` file. Once an account has been created, the IP address used to access the system will be locked to the public key. Any request from the IP address will be treated as though it comes from this account. For this reason, it is prudent to ensure you have complete control of the IP you are using. Sensitive changes to the account data on the system will require GPG challenges for security. You can create more IP addresses for this account once you have an active subscription.
@@ -475,6 +446,411 @@ The `announcement get` method will return all active `Announcement` objects on t
 
 # Walkthroughs
 
+The following walkthroughs are intended to give a new user a comprehensive introduction to the application by showing the commands that might be used as well as the data that could be returned by those commands. Some sample data has been modified to avoid specific references and thus may fail associated validation checks (IP addresses, GPG public keys).
+
+Although the Jormungand client provides a simple way to execute commands, any commands run by Jormungand can also be run using cURL or a REST client such as Postman.
+
 ## Walkthrough from anonymous user to active subscription
-## Walkthrough from active subscriber to Fee Report with data returned
-## Walkthrough from active subscriber to Transaction Report with data returned
+
+When accessing the system for the first time, the user is **anonymous** as far as the system is concerned. The user obviously lacks a subscription or any other form of identification stored on the system. This walkthrough demonstrates the series of commands necessary to progress from this state to an active subscription on the system, allowing the user to access the full offering.
+
+### 1. Schema
+
+> (1) Result of `schema reduced`
+
+```bash
+~(jormungand)$ python jormungand.py schema reduced
+```
+
+```json
+{
+  "schema": {
+    "readme": "Run this method to obtain the README for the system",
+    "socket": "Run this method to obtain the information
+    about the active socket if it exists.",
+    "models": {
+      "Account": {
+        "methods": {
+          "create": {
+            "public_key": "A valid GPG public key in ASCII armor
+            format with newlines replaced by their escaped equivalent (\\n)"
+          }
+        }
+      },
+      "System": {
+        "methods": {
+          "get": "The schema for the System get method.
+          Returns details about the system including
+          the public key and long key id."
+        },
+        "instances": "The schema for reporting details
+        of instances of the System model. This schema
+        takes no input and does not trigger any methods
+        or any interaction with the API."
+      }
+    }
+  }
+}
+```
+
+When reaching any stable state, the user should check the commands available using the `schema` command. In this case, run `schema reduced` for an overview.
+
+### 2. Create an account
+
+> (2) Result of `account create` returns the system disclaimer:
+
+```bash
+~(jormungand)$ python jormungand.py account create
+```
+
+```
+The IP used to create this account: xxx.xxx.xxx.xxx
+The long key ID of your GPG public key: XXXXXXXXXXXXXXXX
+Disclaimer: <DISCLAIMER OMITTED>
+```
+
+An account on the system is represented by a GPG public key. To use the `account create` command with Jormungand, the public key the user wishes to use must be placed in a directory accessible to the client and referenced in the `env.json` configuration file. Refer to the `account create` method documentation for more details.
+
+After running each command, check the schema again by running `schema reduced` to see any changes.
+
+### 3. Attempt to verify the account
+
+> (3) Result of `account verify` returns a challenge ID:
+
+```bash
+~(jormungand)$ python jormungand.py account verify
+```
+
+```json
+{
+  "challenge_complete": false,
+  "open_challenge_id": "1a159673c3a84e8a9299f1037726b871"
+}
+```
+
+In order to progress further, an account must be verified. This is done by solving a single challenge. This method will fail when run for the first time, indicating the ID of the `Challenge` object that must be solved to continue.
+
+### 4. Get `Challenge`
+
+> (4) Result of `challenge get save`:
+
+```bash
+~(jormungand)$ python jormungand.py challenge get save
+Enter the Challenge ID or leave blank for all: 1a159673c3a84e8a9299f1037726b871
+```
+
+```
+Challenge ID:  1a159673c3a84e8a9299f1037726b871
+
+<CHALLENGE PGP MESSAGE OMITTED>
+```
+
+Each method blocked by a `Challenge` object will include the `Challenge` ID. Enter this ID when prompted to fetch this specific challenge.
+
+### 5. Decrypt challenge
+
+> (5) Result of decryption:
+
+```bash
+~$ gpg --output decrypted.asc --decrypt message.asc
+```
+
+```
+gpg: encrypted with 4096-bit RSA key, ID XXXXXXXXXXXXXXXX, created XXXX-XX-XX
+      "xxxxxxxxxxx (xxxxxxxxxxxxx) <xxxxxxxxxxx@xxxx.xxx>"
+```
+
+This step must be done outside Jormungand. For security, it is recommended to perform this operation on an air-gapped computer. The GPG private key corresponding to the public key used to create the account is required.
+
+A. Having used the `get challenge` command with the `save` argument, the challenge text can be found in the `challenge_path/{challenge_id}/message.asc` file, where `challenge_path` is that specified in the `env.json` configuration file.
+B. Assuming your private key has been imported into GPG, run `~$ gpg --output decrypted.asc --decrypt message.asc` to decrypt the `message.asc` file and to place the output into the `decrypted.asc` file.
+C. Preserve `decrypted.asc` for step 7. No data should leave the air-gapped environment until step 7 is complete.
+
+### 6. Get `System`
+
+> (6) Result of `system get`:
+
+```bash
+~(jormungand)$ python jormungand.py system get
+```
+
+```
+System ID:  6503d4615774441085bff7fdc1b4dc4f
+
+PUBLIC KEY:
+
+<PUBLIC KEY OMITTED>
+
+--------
+GUARANTEE
+<GUARANTEE OMITTED>
+
+--------
+GUARANTEE SIGNATURE
+<GUARANTEE SIGNATURE OMITTED>
+
+--------
+DISCLAIMER
+<DISCLAIMER OMITTED>
+
+--------
+DISCLAIMER SIGNATURE
+<DISCLAIMER SIGNATURE OMITTED>
+
+--------
+```
+
+The active `System` object contains the public key to which you should encrypt the content of any challenge. An `Announcement` object will become active if this `System` object becomes inactive or is replaced by another with a different public key, but until then, the public key only needs to be fetched once.
+
+### 7. Re-encrypt challenge
+
+This step should be done within the air-gapped environment to ensure security.
+
+A. Import the system public key into GPG: `~$ gpg --import system_public_key.asc`. Remember to make a note of the LONG KEY ID for use in the `--encrypt` command.
+B. Encrypt the challenge content in `decrypted.asc`: `~$ gpg --encrypt --output encrytped.asc --recipient $LONG_KEY_ID --armor decrypted.asc`. Substitute the LONG KEY ID for `$LONG_KEY_ID` and make a note of the output filename; in this case, `encrypted.asc`. This file can now leave the air-gapped environment.
+
+### 8. Respond to challenge
+
+> (8) Result of `challenge respond read`:
+
+```bash
+~(jormungand)$ python jormungand.py challenge respond read
+Enter the Challenge ID to respond to: 1a159673c3a84e8a9299f1037726b871
+```
+
+```json
+{
+  "challenge_id": "1a159673c3a84e8a9299f1037726b871",
+  "is_verified": true
+}
+```
+
+If the output file from the previous step is named correctly (`encrypted.asc`), Jormungand is configured to read it from the `challenge_path/{challenge_id}` directory simply by using the `read` argument with the command `challenge respond`.
+
+If you choose not to use the `read` argument, the `challenge respond` method will prompt you for the re-encrypted content of the challenge. In this case, newlines (`\n`) in the armor text must be replaced with escaped newlines (`\\n`).
+
+### 9. Verify the account
+
+> (9) Result of `account verify`:
+
+```bash
+~(jormungand)$ python jormungand.py account verify
+```
+
+```json
+{
+  "challenge_complete": true,
+}
+```
+
+The solved `Challenge` will allow the `account verify` method to be run. This method takes no arguments and will complete directly.
+
+### 10. Create a `Subscription`
+
+> (10) Result of `subscription create` returns a challenge ID:
+
+```bash
+~(jormungand)$ python jormungand.py subscription create
+INFO: Run this method leaving arguments blank to generate a Challenge for this method
+Enter the activation date:
+Enter the number of days the Subscription will be active:
+```
+
+```json
+{
+  "challenge_complete": false,
+  "open_challenge_id": "a2f353e65cd74544b1a9c2bc61c55756"
+}
+```
+
+Creating a `Subscription` will allow the user to access the full offering of the application. It requires a challenge to be solved, and the user should follow the same process outlined in steps 4-8.
+
+Once a challenge has been solved, create a subscription using the `subscription create` method and specify the `duration_in_days` and `activation_date` parameters. Refer to the `subscription create` documentation for more information.
+
+### 11. Attempt to activate the subscription
+
+```bash
+~(jormungand)$ python jormungand.py subscription get inactive
+```
+
+```json
+{
+  "415a57638ee54745bcf6f6498840ccbd": {
+    "attributes": {
+      "origin": "63bc4b94-5997-42c8-82e9-253374343fd0",
+      "duration_in_days": 1,
+      "activation_date": "2019-06-06 23:00:00+00:00",
+      "is_valid_until": "__null",
+      "has_been_activated": false,
+      "is_active": false
+    }
+  }
+}
+```
+
+```bash
+~(jormungand)$ python jormungand.py subscription activate
+Enter the Subscription ID to activate: 415a57638ee54745bcf6f6498840ccbd
+```
+
+```json
+{
+  "payment_complete": false,
+  "open_payment_id": "4214fa1e2f1c4396bf4a716403172e90"
+}
+```
+
+Running the `subscription activate` method requires a payment to be made. This is similar to the process of solving a challenge. The `Payment` ID will be specified in the response when the `subscription activate` method fails.
+
+### 12. Get `Payment`
+
+```bash
+~(jormungand)$ python jormungand.py payment get
+Enter the Payment ID or leave blank for all:
+```
+
+```json
+{
+  "4214fa1e2f1c4396bf4a716403172e90": {
+    "attributes": {
+      "origin": "63bc4b94-5997-42c8-82e9-253374343fd0",
+      "is_open": true,
+      "time_confirmed": "__null",
+      "full_btc_amount": 48297,
+      "block_hash": "",
+      "txid": ""
+    },
+    "relationships": {
+      "address": "Address.045fbda176534b678b3e6bd48f9592d9"
+    }
+  }
+}
+```
+
+Each method blocked by a `Payment` object will include the `Payment` ID. Enter this ID when prompted to fetch this specific payment.
+
+### 13. Get `Address`
+
+```bash
+~(jormungand)$ python jormungand.py address get
+Enter an Address ID: 045fbda176534b678b3e6bd48f9592d9
+```
+
+```json
+{
+  "045fbda176534b678b3e6bd48f9592d9": {
+    "attributes": {
+      "value": "16FzUdcw2HVnwXhT73ZbRm57ZqELSTyz2v"
+    }
+  }
+}
+```
+
+The `Payment` object includes a reference to the `Address` object that contains the value needed to make a payment. Enter the ID of the `Address` to fetch its data.
+
+### 14. Make payment
+
+Completing a payment requires the submission of a transaction to the Bitcoin blockchain. The transaction should be made taking account of the `address` value specified in the `Address` object and the integer Satoshi value specified in the `Payment` object. A successfully verified transaction will be matched based on these parameters, after which the `Payment` object will be closed by the system. Once the `Payment` has been closed, the action originally blocked by the payment can be completed.
+
+### 15. Activate the subscription
+
+Once the relevant `Payment` object has been closed, this method can be run successfully. Be careful to check the `origin` value of the `Payment` object matches that of the `Subscription` object. Only a `Subscription` with a closed `Payment` with a matching `origin` property can be activated.
+
+### 16. Get subscription
+
+Run the `subscription get` method to fetch details about the recently activated `Subscription`. Please allow up to two minutes for the system to verify the active status of the `Subscription`.
+
+## Walkthrough from active subscriber to FeeReport with data returned
+
+As an active subscriber, the full offering of the application will be available, so check the schema again using `schema reduced`. A fee report gathers data on the latest bitcoin transactions and summarises them in the form of average transaction fee and average transaction fee density, or fee per byte. This allows decisions about optimal fees to be made with a new transaction.
+
+### 1. Create a `FeeReport`
+
+> (1) Result to `fee_report create` returns a challenge ID:
+
+```bash
+~(jormungand)$ python jormungand.py fee_report create
+INFO: Run this method leaving arguments blank to generate a Challenge for this method
+Enter the number of blocks to include in the FeeReport:
+```
+
+```json
+{
+  "challenge_complete": false,
+  "open_challenge_id": "914761d0597a44c7833da3b82b727bc1"
+}
+```
+
+Once the challenge has been solved, run the method again to create the `FeeReport`.
+
+### 2. Get the fee report until the first update has been made
+
+> (2) Before populating
+
+```bash
+~(jormungand)$ python jormungand.py fee_report get
+Enter the FeeReport ID or leave blank for all:
+Enter the active status of the FeeReport (T/F):
+```
+
+```json
+{
+  "6a5cc43d81504d369e90b4e102ac66af": {
+    "attributes": {
+      "is_active": true,
+      "blocks_to_include": 1,
+      "latest_block_hash": "",
+      "is_processing": true,
+      "average_tx_fee": 0.0,
+      "average_tx_fee_density": 0.0,
+      "last_update_end_time": "__null"
+    }
+  }
+}
+```
+
+> (2) After populating
+
+```json
+{
+  "6a5cc43d81504d369e90b4e102ac66af": {
+    "attributes": {
+      "is_active": true,
+      "blocks_to_include": 1,
+      "latest_block_hash": "0000000000000000000bd68725f1ec180cc40f6ab3292ae468af6fb0c02f5de4",
+      "is_processing": false,
+      "average_tx_fee": 3800.26508447305,
+      "average_tx_fee_density": 10.0123897643769,
+      "last_update_end_time": "2019-06-12 20:49:42.757694+00:00"
+    }
+  }
+}
+```
+
+Running `fee_report get` shows the status of the `FeeReport`. When it is first created, it contains no data and must run calculations before it is first populated.
+
+## Walkthrough from active subscriber to TransactionReport with data returned
+
+A `TransactionReport` allows an address to be watched for transaction outputs that match certain details, such as a value range.
+
+### 1. Create a `TransactionReport`
+
+> (1) Result to `transaction_report create` returns a challenge ID:
+
+```bash
+~(jormungand)$ python jormungand.py transaction_report create
+INFO: Run this method leaving arguments blank to generate a Challenge for this method
+Enter the number of blocks to include in the TransactionReport:
+```
+
+```json
+{
+  "challenge_complete": false,
+  "open_challenge_id": "01d4e60bf23048768e087c54a68a8b0d"
+}
+```
+
+Once the challenge has been solved, run the method again to create the `TransactionReport`.
+
+### 2. Get the transaction report
+### 3. Get associated `TransactionMatch` objects

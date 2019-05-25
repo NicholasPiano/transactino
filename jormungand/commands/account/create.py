@@ -34,16 +34,22 @@ def create(args):
   check_for_announcements(response)
 
   response_json = json.loads(response.text)
-  methods = get_path(response_json, [
+  create_json = get_path(response_json, [
     transactino_constants.SCHEMA,
     model_constants.MODELS,
     model_constants.ACCOUNT,
     method_constants.METHODS,
+    account_constants.CREATE,
   ])
 
-  if account_constants.CREATE in methods:
-    disclaimer = methods.get(account_constants.CREATE)
-    print(disclaimer)
+  if create_json is None:
+    print('Account already exists.')
+    return
 
-  else:
-    print('Account already exists')
+  disclaimer = create_json.get(account_constants.DISCLAIMER)
+  ip = create_json.get(account_constants.IP)
+  long_key_id = create_json.get(account_constants.LONG_KEY_ID)
+
+  print('The IP used to create this account: {}'.format(ip))
+  print('The long key ID of your GPG public key: {}'.format(long_key_id))
+  print('Disclaimer:\n\n{}'.format(disclaimer))

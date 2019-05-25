@@ -26,8 +26,8 @@ def schema(args):
 
   response_json = json.loads(response.text)
 
-  if 'reduced' in args:
-    print(json.dumps(remove_descriptions(response_json), indent=2))
+  if 'reduced' not in args:
+    print(json.dumps(response_json, indent=2))
     return
 
-  print(json.dumps(response_json, indent=2))
+  print(json.dumps(remove_descriptions(response_json), indent=2))

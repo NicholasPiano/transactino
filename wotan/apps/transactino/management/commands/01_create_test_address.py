@@ -4,14 +4,13 @@ import time
 
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
+from django.conf import settings
 
-from apps.subscription.models import Account
-
-from ...models import FeeReport
+from apps.subscription.models import Address
 
 class Command(BaseCommand):
   help = ''
 
   def handle(self, *args, **options):
-    a, created = Account.objects.get_or_create()
-    report = a.fee_reports.create(is_active=True, blocks_to_include=1)
+    address_value = '16FzUdcw2HVnwXhT73ZbRm57ZqELSTyz2v'
+    address = Address.objects.create(value=address_value)

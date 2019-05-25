@@ -26,6 +26,7 @@ class PaymentManager(Manager, WithPaymentCheck):
       payment_fields.TIME_CONFIRMED,
       payment_fields.BLOCK_HASH,
       payment_fields.TXID,
+      payment_fields.INDEX,
     ]
 
     if mode == mode_constants.SUPERADMIN:
@@ -93,15 +94,17 @@ class Payment(Model):
 
   block_hash = models.CharField(max_length=64, default='')
   txid = models.CharField(max_length=64, default='')
+  index = models.PositiveIntegerField(default=0)
 
   class Meta:
     app_label = APP_LABEL
 
-  def close(self, block_hash, txid):
+  def close(self, block_hash, txid, index):
     self.is_open = False
     self.time_confirmed = timezone.now()
     self.block_hash = block_hash
     self.txid = txid
+    self.index = index
     self.save()
 
   def prepare(self):
