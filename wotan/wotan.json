@@ -419,6 +419,12 @@
             }
           }
         }
+      },
+      "20190615": {
+        "description": "Small changes to blockchaininfo requests to handle failure. Also working on end of transaction report walkthroughs.",
+        "children": {
+          "blockchaininfo requests": "Handle failure as None",
+        }
       }
     }
   }

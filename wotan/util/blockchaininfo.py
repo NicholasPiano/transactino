@@ -8,7 +8,23 @@ from django.conf import settings
 
 from util.force_array import force_array
 
-root_url = 'https://blockchain.info/'
+class blockchaininfo_constants:
+  URL = 'https://blockchain.info/'
+  BEST_BLOCK_HASH = 'bestblockhash'
+  LATEST_BLOCK = 'latestblock'
+  HASH = 'hash'
+  RAW_BLOCK = 'rawblock'
+  PREV_BLOCK = 'prev_block'
+  PREV_OUT = 'prev_out'
+  VALUE = 'value'
+  INDEX = 'n'
+  ADDRESS = 'addr'
+  SIZE = 'size'
+  WEIGHT = 'weight'
+  INPUTS = 'inputs'
+  OUT = 'out'
+  HEIGHT = 'height'
+  TRANSACTION = 'tx'
 
 if settings.DEBUG:
   fixture_path = join(settings.DJANGO_PATH, 'util', 'fixture')
@@ -17,11 +33,18 @@ if settings.DEBUG:
 def get_latest_block_hash():
   if settings.DEBUG:
     return {
-      'bestblockhash': block_hash,
+      blockchaininfo_constants.BEST_BLOCK_HASH: block_hash,
     }
 
-  get_response = requests.get(join(root_url, 'latestblock'))
-  return json.loads(get_response.text).get('hash')
+  get_response = requests.get(join(blockchaininfo_constants.URL, blockchaininfo_constants.LATEST_BLOCK))
+
+  json_response = None
+  try:
+    json_response = json.loads(get_response.text)
+  except:
+    return None
+
+  return json_response.get(blockchaininfo_constants.HASH)
 
 get_block_hashes = {}
 if settings.DEBUG:
@@ -37,15 +60,31 @@ def get_block(hash):
   if len(get_block_hashes) > 100:
     del get_block_hashes[list(get_block_hashes.keys())[0]]
 
-  get_response = requests.get(join(root_url, 'rawblock', hash))
+  get_response = requests.get(
+    join(
+      blockchaininfo_constants.URL,
+      blockchaininfo_constants.RAW_BLOCK,
+      hash,
+    ),
+  )
 
-  data = json.loads(get_response.text)
-  get_block_hashes[hash] = data
+  json_response = None
+  try:
+    json_response = json.loads(get_response.text)
+  except:
+    return None
 
-  return data
+  get_block_hashes[hash] = json_response
+
+  return json_response
 
 def get_previous_hash(hash):
-  return get_block(hash).get('prev_block')
+  block_json = get_block(hash)
+
+  if block_json is None:
+    return None
+
+  return block_json.get(blockchaininfo_constants.PREV_BLOCK)
 
 if settings.DEBUG:
   with open(join(fixture_path, 'tx.json')) as transaction_file:
@@ -61,19 +100,19 @@ class Delta():
       self.outgoing(vout_json)
 
   def incoming(self, vin_json):
-    prev_out = vin_json.get('prev_out')
-    self.value = int(prev_out.get('value'))
+    prev_out = vin_json.get(blockchaininfo_constants.PREV_OUT)
+    self.value = int(prev_out.get(blockchaininfo_constants.VALUE))
 
   def outgoing(self, vout_json):
-    self.index = int(vout_json.get('n'))
-    self.value = int(vout_json.get('value'))
-    self.addresses = force_array(vout_json.get('addr'))
+    self.index = int(vout_json.get(blockchaininfo_constants.INDEX))
+    self.value = int(vout_json.get(blockchaininfo_constants.VALUE))
+    self.addresses = force_array(vout_json.get(blockchaininfo_constants.ADDRESS))
 
 class Transaction():
   def __init__(self, transaction_json):
-    self.txid = transaction_json.get('hash')
-    self.size = transaction_json.get('size')
-    self.weight = transaction_json.get('weight')
+    self.txid = transaction_json.get(blockchaininfo_constants.HASH)
+    self.size = transaction_json.get(blockchaininfo_constants.SIZE)
+    self.weight = transaction_json.get(blockchaininfo_constants.WEIGHT)
 
     self.create_deltas(transaction_json)
 
@@ -81,13 +120,13 @@ class Transaction():
     self.incoming_deltas = [
       Delta(vin_json=vin_json)
       for vin_json
-      in transaction_json.get('inputs')
-      if 'prev_out' in vin_json
+      in transaction_json.get(blockchaininfo_constants.INPUTS)
+      if blockchaininfo_constants.PREV_OUT in vin_json
     ]
     self.outgoing_deltas = [
       Delta(vout_json=vout_json, out_txid=self.txid)
       for vout_json
-      in transaction_json.get('out')
+      in transaction_json.get(blockchaininfo_constants.OUT)
     ]
 
   def get_fee(self):
@@ -127,10 +166,15 @@ class Block():
     self.hash = hash
     block_json = get_block(hash)
 
-    self.parent = block_json.get('prev_block')
-    self.height = block_json.get('height')
+    self.has_failed = False
+    if block_json is None:
+      self.has_failed = True
 
-    self.create_transactions(block_json.get('tx'))
+    if block_json is not None:
+      self.parent = block_json.get(blockchaininfo_constants.PREV_BLOCK)
+      self.height = block_json.get(blockchaininfo_constants.HEIGHT)
+
+      self.create_transactions(block_json.get(blockchaininfo_constants.TRANSACTION))
 
   def create_transactions(self, transactions_json):
     self.transactions = [

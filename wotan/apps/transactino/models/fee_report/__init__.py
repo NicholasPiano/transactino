@@ -65,6 +65,8 @@ class FeeReportBlockWrapper(Model):
     self.save()
 
     block = Block(self.hash)
+    if block.has_failed:
+      return False
 
     fees = []
     densities = []

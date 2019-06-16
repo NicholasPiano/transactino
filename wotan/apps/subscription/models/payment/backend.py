@@ -20,5 +20,6 @@ class WithPaymentCheck:
     latest_block_hash = get_latest_block_hash()
     block = Block(latest_block_hash)
 
-    for payment in self.filter(is_open=True):
-      process_payment(payment, block)
+    if not block.has_failed:
+      for payment in self.filter(is_open=True):
+        process_payment(payment, block)
