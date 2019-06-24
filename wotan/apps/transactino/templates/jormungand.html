@@ -1,451 +1,1253 @@
-<p>{% load static %}</p>
-<h1 id="jormungand">JORMUNGAND</h1>
-<p>Named for the Norse World-serpent that brings about Ragnarok, Jormungand is the first user client for the Transactino application. This document contains releases and documentation for its use.</p>
-<h2 id="accessdetails">ACCESS DETAILS</h2>
-<pre><code>URL: http://35.178.206.19/api/
-</code></pre>
-<h2 id="releases">Releases</h2>
-<p><a href="{% static 'jormungand_1.0.0.zip' %}">1.0.0</a>
-<a href="{% static 'jormungand_1.2.0.zip' %}">1.2.0</a></p>
-<h2 id="usage">Usage</h2>
-<h3 id="setup">Setup</h3>
-<ol>
-<li>Unzip the release into DIR</li>
-<li>Create env.json in DIR with the following contents:</li>
-</ol>
-<pre><code class="json language-json">{
-  "url": "http://35.178.206.19/api/",
-  "public_key": "/path/to/public_key.asc"
+{% load static %}
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Start</title>
+
+    <style>
+      .highlight table td { padding: 5px; }
+.highlight table pre { margin: 0; }
+.highlight .gh {
+  color: #999999;
 }
-</code></pre>
-<ol start="3">
-<li>Install Python3.5+</li>
-<li>Create virtualenv <code>~$ python3.5 -m venv .</code></li>
-<li>Activate virtualenv <code>~$ source bin/activate</code></li>
-<li>Run script with arguments <code>~$ python jormungand.py arg1 arg2</code></li>
+.highlight .sr {
+  color: #f6aa11;
+}
+.highlight .go {
+  color: #888888;
+}
+.highlight .gp {
+  color: #555555;
+}
+.highlight .gs {
+}
+.highlight .gu {
+  color: #aaaaaa;
+}
+.highlight .nb {
+  color: #f6aa11;
+}
+.highlight .cm {
+  color: #75715e;
+}
+.highlight .cp {
+  color: #75715e;
+}
+.highlight .c1 {
+  color: #75715e;
+}
+.highlight .cs {
+  color: #75715e;
+}
+.highlight .c, .highlight .cd {
+  color: #75715e;
+}
+.highlight .err {
+  color: #960050;
+}
+.highlight .gr {
+  color: #960050;
+}
+.highlight .gt {
+  color: #960050;
+}
+.highlight .gd {
+  color: #49483e;
+}
+.highlight .gi {
+  color: #49483e;
+}
+.highlight .ge {
+  color: #49483e;
+}
+.highlight .kc {
+  color: #66d9ef;
+}
+.highlight .kd {
+  color: #66d9ef;
+}
+.highlight .kr {
+  color: #66d9ef;
+}
+.highlight .no {
+  color: #66d9ef;
+}
+.highlight .kt {
+  color: #66d9ef;
+}
+.highlight .mf {
+  color: #ae81ff;
+}
+.highlight .mh {
+  color: #ae81ff;
+}
+.highlight .il {
+  color: #ae81ff;
+}
+.highlight .mi {
+  color: #ae81ff;
+}
+.highlight .mo {
+  color: #ae81ff;
+}
+.highlight .m, .highlight .mb, .highlight .mx {
+  color: #ae81ff;
+}
+.highlight .sc {
+  color: #ae81ff;
+}
+.highlight .se {
+  color: #ae81ff;
+}
+.highlight .ss {
+  color: #ae81ff;
+}
+.highlight .sd {
+  color: #e6db74;
+}
+.highlight .s2 {
+  color: #e6db74;
+}
+.highlight .sb {
+  color: #e6db74;
+}
+.highlight .sh {
+  color: #e6db74;
+}
+.highlight .si {
+  color: #e6db74;
+}
+.highlight .sx {
+  color: #e6db74;
+}
+.highlight .s1 {
+  color: #e6db74;
+}
+.highlight .s {
+  color: #e6db74;
+}
+.highlight .na {
+  color: #a6e22e;
+}
+.highlight .nc {
+  color: #a6e22e;
+}
+.highlight .nd {
+  color: #a6e22e;
+}
+.highlight .ne {
+  color: #a6e22e;
+}
+.highlight .nf {
+  color: #a6e22e;
+}
+.highlight .vc {
+  color: #ffffff;
+}
+.highlight .nn {
+  color: #ffffff;
+}
+.highlight .nl {
+  color: #ffffff;
+}
+.highlight .ni {
+  color: #ffffff;
+}
+.highlight .bp {
+  color: #ffffff;
+}
+.highlight .vg {
+  color: #ffffff;
+}
+.highlight .vi {
+  color: #ffffff;
+}
+.highlight .nv {
+  color: #ffffff;
+}
+.highlight .w {
+  color: #ffffff;
+}
+.highlight {
+  color: #ffffff;
+}
+.highlight .n, .highlight .py, .highlight .nx {
+  color: #ffffff;
+}
+.highlight .ow {
+  color: #f92672;
+}
+.highlight .nt {
+  color: #f92672;
+}
+.highlight .k, .highlight .kv {
+  color: #f92672;
+}
+.highlight .kn {
+  color: #f92672;
+}
+.highlight .kp {
+  color: #f92672;
+}
+.highlight .o {
+  color: #f92672;
+}
+    </style>
+    <link href="{% static 'stylesheets/screen.css' %}" rel="stylesheet" media="screen" />
+    <link href="{% static 'stylesheets/print.css' %}" rel="stylesheet" media="print" />
+      <script src="{% static 'javascripts/all.js' %}"></script>
+  </head>
+
+  <body class="index" data-languages="[]">
+    <a href="#" id="nav-button">
+      <span>
+        NAV
+        <img src="{% static 'images/navbar.png' %}" alt="Navbar" />
+      </span>
+    </a>
+    <div class="toc-wrapper">
+        <div class="search">
+          <input type="text" class="search" id="input-search" placeholder="Search">
+        </div>
+        <ul class="search-results"></ul>
+      <ul id="toc" class="toc-list-h1">
+          <li>
+            <a href="#introduction" class="toc-h1 toc-link" data-title="Introduction">Introduction</a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#latest-release" class="toc-h2 toc-link" data-title="Latest release">Latest release</a>
+                  </li>
+              </ul>
+          </li>
+          <li>
+            <a href="#setup" class="toc-h1 toc-link" data-title="Setup">Setup</a>
+          </li>
+          <li>
+            <a href="#commands" class="toc-h1 toc-link" data-title="Commands">Commands</a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#important-note" class="toc-h2 toc-link" data-title="Important note">Important note</a>
+                  </li>
+                  <li>
+                    <a href="#schema" class="toc-h2 toc-link" data-title="Schema">Schema</a>
+                  </li>
+                  <li>
+                    <a href="#account" class="toc-h2 toc-link" data-title="Account">Account</a>
+                  </li>
+                  <li>
+                    <a href="#challenge" class="toc-h2 toc-link" data-title="Challenge">Challenge</a>
+                  </li>
+                  <li>
+                    <a href="#subscription" class="toc-h2 toc-link" data-title="Subscription">Subscription</a>
+                  </li>
+                  <li>
+                    <a href="#ip" class="toc-h2 toc-link" data-title="IP">IP</a>
+                  </li>
+                  <li>
+                    <a href="#payment" class="toc-h2 toc-link" data-title="Payment">Payment</a>
+                  </li>
+                  <li>
+                    <a href="#fee-report" class="toc-h2 toc-link" data-title="Fee Report">Fee Report</a>
+                  </li>
+                  <li>
+                    <a href="#transaction-report" class="toc-h2 toc-link" data-title="Transaction Report">Transaction Report</a>
+                  </li>
+                  <li>
+                    <a href="#transaction-match" class="toc-h2 toc-link" data-title="Transaction Match">Transaction Match</a>
+                  </li>
+                  <li>
+                    <a href="#system" class="toc-h2 toc-link" data-title="System">System</a>
+                  </li>
+                  <li>
+                    <a href="#address" class="toc-h2 toc-link" data-title="Address">Address</a>
+                  </li>
+                  <li>
+                    <a href="#announcement" class="toc-h2 toc-link" data-title="Announcement">Announcement</a>
+                  </li>
+              </ul>
+          </li>
+          <li>
+            <a href="#walkthroughs" class="toc-h1 toc-link" data-title="Walkthroughs">Walkthroughs</a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#walkthrough-from-anonymous-user-to-active-subscription" class="toc-h2 toc-link" data-title="Walkthrough from anonymous user to active subscription">Walkthrough from anonymous user to active subscription</a>
+                  </li>
+                  <li>
+                    <a href="#walkthrough-from-active-subscriber-to-feereport-with-data-returned" class="toc-h2 toc-link" data-title="Walkthrough from active subscriber to FeeReport with data returned">Walkthrough from active subscriber to FeeReport with data returned</a>
+                  </li>
+                  <li>
+                    <a href="#walkthrough-from-active-subscriber-to-transactionreport-with-data-returned" class="toc-h2 toc-link" data-title="Walkthrough from active subscriber to TransactionReport with data returned">Walkthrough from active subscriber to TransactionReport with data returned</a>
+                  </li>
+              </ul>
+          </li>
+      </ul>
+        <ul class="toc-footer">
+            <li><a href='https://github.com/lord/slate'>Documentation Powered by Slate</a></li>
+        </ul>
+    </div>
+    <div class="page-wrapper">
+      <div class="dark-box"></div>
+      <div class="content">
+        <h1 id='introduction'>Introduction</h1>
+<p>Welcome to Transactino! This application provides useful information about the Bitcoin blockchain for an easy-to-use Bitcoin subscription with bulletproof security via GPG.</p>
+
+<p>Named for the Norse World-serpent that brings about Ragnarok, Jormungand is the first user client for the Transactino application. Although this client allows a user to take advantage of almost all features of the API, it is highly recommended to access the API through a custom interface for more serious use, as this allows a user to control finer-grained aspects of the API, such as complex error handling.</p>
+
+<p>A more detailed guide to the API can be found here: [API]</p>
+<h2 id='latest-release'>Latest release</h2>
+<p><a href="www.transactino.com/releases/jormungand_1.4.0.zip">1.4.0</a></p>
+<h1 id='setup'>Setup</h1>
+<blockquote>
+<p>Sample env.json</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://www.transactino.com/api/"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"public_key"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/path/to/your_public_key.asc"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"challenge_path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/path/to/dump/challenge/messages"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<ol>
+<li>Unpack the release into <code>PATH</code></li>
+<li>Create <code>PATH/env.json</code></li>
+<li>Install Python 3.7+</li>
+<li>Create a virtualenv</li>
 </ol>
-<h3 id="commands">Commands</h3>
-<p>The order of the arguments does not matter <code>account verify == verify account</code></p>
-<pre><code>schema
+
+<p><code>~$ python3.7 -m venv .</code></p>
+
+<ol>
+<li>Activate the virtualenv</li>
+</ol>
+
+<p><code>~$ source bin/activate</code></p>
+
+<ol>
+<li>Install dependencies</li>
+</ol>
+
+<p><code>~(jormungand)$ pip install -r requirements/common.txt</code></p>
+
+<ol>
+<li>Run the <code>Jormungand</code> script with desired arguments</li>
+</ol>
+
+<p><code>~(jormungand)$ python jormungand.py arg1 arg2 ...</code></p>
+<h1 id='commands'>Commands</h1>
+<blockquote>
+<p>All available commands</p>
+</blockquote>
+<pre class="highlight plaintext"><code>schema
 schema reduced
+
 account create
+account delete
+account lock
 account verify
-challenge get
-challenge get closed
-challenge respond
-payment get
-payment get closed
+
+challenge get (closed) (save)
+challenge respond (read)
+challenge delete
+
+subscription get (inactive)
 subscription create
-subscription get
-subscription get inactive
-fee_report create
+subscription activate
+subscription delete
+
+ip get
+ip create
+ip delete
+
+payment get (closed)
+payment delete
+
 fee_report get
+fee_report create
+fee_report activate
+fee_report delete
+
+transaction_report get
+transaction_report create
+transaction_report activate
+transaction_report delete
+
+transaction_match get
+transaction_match dismiss
+
+system get
+address get
+announcement get
 </code></pre>
-<h3 id="exampleseriesofcommandsfromcreatinganaccounttocheckingafeereport">Example series of commands from creating an account to checking a fee report</h3>
+<p>When running commands, the order of the arguments does not matter, so <code>account verify === verify account</code>. Individual commands are discussed in detail below.</p>
+<h3 id='important-note'>Important note</h3>
+<p>Any method that requires a <code>Challenge</code> to be solved or a payment to be submitted can be run initially with no arguments. In fact, most commands will initially ignore all arguments until its challenge condition is met.</p>
+<h2 id='schema'>Schema</h2><pre class="highlight shell"><code><span class="gp">~(jormungand)$ </span>python jormungand.py schema reduced
+</code></pre>
+<blockquote>
+<p>This returns:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"schema"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"readme"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Run this method to obtain the
+    README for the system"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"socket"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Run this method to obtain the
+    information about the active socket if it exists."</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"models"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"Account"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"methods"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"create"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"public_key"</span><span class="p">:</span><span class="w"> </span><span class="s2">"A valid GPG public
+            key in ASCII armor format with newlines
+            replaced by their escaped equivalent (</span><span class="se">\\</span><span class="s2">n)"</span><span class="w">
+          </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="s2">"System"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"methods"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"get"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The schema for the System get method.
+          Returns details about the system including the
+          public key and long key id."</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="s2">"instances"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The schema for reporting details
+        of instances of the System model. This schema
+        takes no input and does not trigger any methods
+        or any interaction with the API."</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>The <code>schema</code> command returns the full description of the API. This is useful for checking function definitions and accepted data types for arguments. When new access is granted to different parts of the application when creating an account or subscribing, the changes to the schema will be visible with this command.</p>
+
+<p><code>schema reduced</code> removes all information regarding data types and supported errors, but retains some descriptions. This makes the overall structure easier to view at a glance.</p>
+<h2 id='account'>Account</h2>
+<p>The Account model holds information about the public key registered on the system.</p>
+
+<p>The <code>account create</code> command takes the public key from the path provided in the <code>env.json</code> file. Once an account has been created, the IP address used to access the system will be locked to the public key. Any request from the IP address will be treated as though it comes from this account. For this reason, it is prudent to ensure you have complete control of the IP you are using. Sensitive changes to the account data on the system will require GPG challenges for security. You can create more IP addresses for this account once you have an active subscription.</p>
+
+<p><code>account verify</code> takes no arguments and requires a <code>Challenge</code> to be solved. This first challenge proves that the account holder has control of a corresponding private key.</p>
+
+<p><code>account delete</code> requires a <code>Challenge</code> to be solved and removes all data related to the account on the system.</p>
+
+<p><code>account lock</code> requires a <code>Challenge</code> to be solved and prevents all access to the system by the account in question until another command is given to unlock.</p>
+<h2 id='challenge'>Challenge</h2>
+<p>A <code>Challenge</code> contains a plaintext piece of data that is delivered once it has been encrypted to the public key of the account. Once the account holder receives this information, it must be decrypted using their private key and re-encrypted to the public key of the system before being sent back to close the challenge. In this way, the holder of the public key proves their possession of the corresponding private key. This process is repeated with a new piece of plaintext every time the user wishes to modify data on the system.</p>
+
+<p>For clarity, each challenge occurs in the following order:</p>
+
 <ol>
-<li>Look at the schema to see available commands:</li>
+<li>The user submits a request that is restricted for security purposes.</li>
+<li>A <code>Challenge</code> object is created on the user account, with an <code>origin</code> relevant to the action.</li>
+<li>The user makes a request for the data contained in the challenge, and receives a piece of ascii armor data, <code>A</code> encrypted to their public key.</li>
+<li>The user decrypts <code>A</code> using their private key to yield <code>B</code>, proving that they possess it.</li>
+<li>The user makes a request for the public key of the system.</li>
+<li>The user encrypts <code>B</code> to the public key of the system, yielding <code>C</code>.</li>
+<li>The user makes a request containing <code>C</code> to respond to the challenge.</li>
+<li>The user re-attempts the action attempted in step 1.</li>
 </ol>
-<p><code>~$ python jormungand.py schema reduced</code></p>
-<pre><code class="json language-json">{
-  "schema": {
-    "models": {
-      "Account": {
-        "methods": {
-          "create": {
-            "public_key": "Tests for a valid public key"
-          }
-        }
-      }
-    }
-  }
-}
-</code></pre>
-<ol start="2">
-<li>Create account (<code>env.json</code> points to valid gpg public key):</li>
-</ol>
-<p><code>~$ python jormungand.py create account</code></p>
-<pre><code>    #### Disclaimer ####
+<h3 id='challenge-get'>challenge get</h3>
+<p><code>challenge get (closed) (save)</code> returns the set of <code>Challenge</code> objects, either <code>closed</code> or not, on the user account. The <code>save</code> argument will write the encrypted content of the challenge to the directory specified in <code>env.json</code>. A directory will be created if it does not exist, named for the ID of the challenge, containing the file <code>message.asc</code>.</p>
 
-    Your account has been created with the IP address xx.xxx.xxx.xx and long key
-    id XXXXXXXX, but you should be aware of the following matters:
+<p>It should be noted that <code>save</code> will cause all challenges returned by the request to be saved.</p>
 
-    1. Until you have an active subscription, your account will be bound to
-       the current IP address. Any user with access to this IP address will
-       be treated equally with respect to this account. For this reason, it
-       is recommended to secure access to an IP address that is restricted
-       to your use only.
-    2. This interface is provided with a guarantee on behalf of the published
-       public key. Please refer to this guarantee for more information, but
-       understand that there is no recognised authority that is bound to
-       enforce the terms offered therein. Please exercise caution and ensure
-       that all material transferred to the system is secured cryptographically.
-    3. Although the system guarantees the integrity of the information provided
-       via this interface, it is prudent to regularly check the results against
-       other external sources. The information is drawn from a single common
-       source (The Blockchain), allowing the reported data to be easily
-       corroborated.
-</code></pre>
-<ol start="3">
-<li>Verify account (no challenge):</li>
-</ol>
-<p><code>~$ python jormungand.py verify account</code></p>
-<pre><code class="json language-json">{
-  "open_challenge_id": "f5368309256f4394b44803539f309aa0",
-  "verification_complete": false
-}
-</code></pre>
-<ol start="4">
-<li>Look for challenge with corresponding ID:</li>
-</ol>
-<p><code>~$ python jormungand.py get challenge</code></p>
-<pre><code>Challenge ID:  f5368309256f4394b44803539f309aa0
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>challenge_id</code></td>
+<td><code>null</code></td>
+<td>Optional, specifies the challenge ID to get.</td>
+</tr>
+</tbody></table>
+<h3 id='challenge-respond'>challenge respond</h3>
+<p><code>challenge respond (read)</code> allows the user to close a challenge using the challenge ID and the required data packet. With Jormungand, the result of the challenge can be written to a file named <code>encrypted.asc</code> in the challenge ID directory. This file will be sent to the system. The <code>read</code> argument must be included to control this.</p>
 
------BEGIN PGP MESSAGE-----
-Version: GnuPG v1
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>challenge_id</code></td>
+<td>The ID of the challenge to respond to.</td>
+</tr>
+<tr>
+<td><code>content</code></td>
+<td>The content of the challenge that has been re-encrypted to the public key of the system.</td>
+</tr>
+</tbody></table>
+<h3 id='why-are-challenges-needed'>Why are challenges needed?</h3>
+<p>A challenge harnesses the security of GPG to verify that a user holds the private key for the public key they have provided to the system. When changes are made to a user&#39;s data, challenges may be required in order to confirm the identity of the request origin and prevent intrusive attempts to modify data on the system.</p>
 
-hQIMA7gX9tabJKqzAQ//UiAgM1jHpHFLkcHcQn4IcD4NJmxDGBJeIhdFi+vXyVW1
-GG+DT6ZHs+fdi1AFl2liupcmKtGaBr+pxb+hmkCIIu6D1PXqhMUrtdN3MTltWdAa
-qxaD/lXz6oLNdnFhLtq5iKw6VzOLAQOiBhx6bGAvSKu9Y3F/w4xQobY/YN5YsDxQ
-CEedBpcCJX2DgEsAepkG3n/UYXjQ0nEOMGeAqdtu819LVcn9A6eBzAu12f3gaGHd
-QMUzEYm/2zO0Y4pVHtm2TZtxezqCsaswfgCZ1IEQS064OgY0BOzNfHOCO07Y+Xyw
-nNcSHr/CDvgJjtsawxYU0fIR1daou/xHtTq9RmlIVjt3zJyavX2PaEkwIDozPfyl
-RFwrMqr/6udNRDil715zPHs6zLUeNvpZ3Hf/nS5oNCyeud2I0VNl55/7ANwfeNiy
-wbZaTorkNNgK0BNAVwfhM/ZJKk768xUo7Nk/Me2l8NUFD+J4qsWDqnFPQgKgPsa8
-4HT2OcZrIqlilRMwCSCqVC1os+eswDMOHKqijVo6f20GTsriAzMuR77NgqCznqQb
-HE1IrfljZWMCqIF9xVbERl7M99DBQ8J8Per6cGL8HVYBTcYsdysterV0X/NOyX1I
-W1pH5EOXiZ+RBANwTNfoLSaa61DmgPDdfWhdK4cJmoWngQ3GJz38z+pjqCG70b3S
-wMEBxKSVBS0bwsY6ImQKc1JmA2mw1cMJdB91LJbaK5vZcF3sxixZKxp0G3QmSL83
-iGm+0PGlKO5U2AzWM2JNcLT8767bAFVpqcO8kBk+9MCBXtSAQdvVNDQn6Znxnz05
-crkMQ8e3xk5gZoAYbbSNp5TC0WR5fC1V6qTrWOaR4F+HV9M1rQooNrekABdOzMbw
-S7GZII308YL2kMt+pZYPA9LqOF6brKqw0FtUP5iX8mtvGTMlIlT2W6h80bIKpt0A
-b1up/aHPM6nJA3ibfHHTCqdtzi4yzkg8bDvEmq6xHPfFo5l7gNqyM/f8dOxde8bn
-MhHkZADZuupWS+TvAOGXKoOLa8lhj14S73ifdSwpcLOj/gneXeLhE2flnVV+QqGG
-mK/gkDcaGaQ2pvrtx+rPbeOsDo8M3c+FsFRlFcxCW/bVsXuuElsWE+owHTxytbL3
-tcLzE0isT71eCpBpVhqOlC668eKnedPqfr4M3JMAUH3L6nb1zn9j9cVHQWlHn/ZB
-+3VS
-=FFmP
------END PGP MESSAGE-----
-</code></pre>
-<p>Copy this into a file and decrypt (assuming private key has been added to GPG):</p>
-<p><code>~$ gpg --decrypt file_with_challenge &gt; output</code></p>
-<p>The string needed to respond to the challenge can be found in <code>output</code>:</p>
-<pre><code>9DA54E27F0AC496A7F6853B11B2D2FEB5D51767F3DA7C8B482EDFABE5D20D99A88A494BACEC00FBDD92F6DD994AC9923ED50F5DC2BCF94774A83AA5625A3ED9D9AC47B8F8F991A874D97C01F1E98196C1342049EAE865120F328E9603EA0E6EE289061D6D96FBC85CC6C32CE7A9C57BEA31C122BB8E2ED80BED41D55146395159FD31CB2418E0597B46FC62A25FF2041C4DF623B9ADA5123B82C7BCF7F85DDE2E1FC9BB298D824025C7BE69E3A3FF6EF484C5153B94E0E9AA3341489841E41AA5A0A8C2CC115E00432E18AD9DF13857A500A2FA6441DE0EC0678FC6BDE7EF1D7432461625068402BBE164A7BFFCF810BA5726CFB861B6D88450966149FB13E48
-</code></pre>
-<ol start="5">
-<li>Respond to the challenge:</li>
+<p>The advantage of using this method is that the user&#39;s private key, used in step 4 above, can be kept completely offline to ensure security of the process. This is the same for the re-encryption process in step 6.</p>
+<h2 id='subscription'>Subscription</h2>
+<p>A <code>Subscription</code> is a formal agreement between the user and the system for a set period of time, backed by a fixed bitcoin payment made to a given address. The address to be used for a payment is revealed when the payment is opened. For as long as a subscription is active, the user has access to all offerings available on the system.</p>
+
+<p>Multiple subscriptions can be created with different start and end points, and it is theoretically possible for multiple subscriptions to be active simultaneously, although this comes with no additional benefits. The control of this is left to the user&#39;s discretion.</p>
+
+<p>The subscription process happens in two stages. In the first stage, a subscription object is created, requiring a <code>Challenge</code>. In the second stage, the subscription must be activated, requiring a payment. As a restriction on user actions, a payment behaves in a very similar manner to a challenge, expect for the fact that a user is dependent on the behaviour of the bitcoin blockchain for the payment to be closed.</p>
+<h3 id='subscription-get'>subscription get</h3>
+<p><code>subscription get (inactive)</code> returns the set of <code>Subscription</code> objects, either <code>inactive</code> or not, on the user account.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>subscription_id</code></td>
+<td><code>null</code></td>
+<td>Optional, specifies the subscription ID to get.</td>
+</tr>
+</tbody></table>
+<h3 id='subscription-create'>subscription create</h3>
+<p><code>subscription create</code> creates a <code>Subscription</code> on the user account. This requires a <code>Challenge</code> to be solved.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>duration_in_days</code></td>
+<td>The number of days for which the subscription should be active.</td>
+</tr>
+<tr>
+<td><code>activation_date</code></td>
+<td>The date on which the subscription should start. The Jormungand client forces the timezone of the date to be set to the timezone of the local user system, but the remote system will accept any valid datetime for this parameter.</td>
+</tr>
+</tbody></table>
+
+<p>It is important to note that the date value submitted to the system is left to the user&#39;s discretion. It is possible to enter a date before the current date, in which case the subscription will activate immediately upon closure of the payment, as though the activation date had been the moment of payment closure. It is also possible to set an activation date in the future, in which case the system will not activate the subscription until that date has passed, even if the payment has been closed. This can be used to chain subscriptions if needed.</p>
+
+<p>The date parser on the system supports most common date formats, but it will normalise the date entered into a common format. Check this date using <code>get</code> to satisfy yourself that the activation date the system has interpreted is correct. If it is not, use <code>delete</code> to remove the subscription and create a new one. If the system is unable to parse the date you have entered, it will return an error.</p>
+<h3 id='subscription-activate'>subscription activate</h3>
+<p><code>subscription activate</code> marks a <code>Subscription</code> for activation. If the activation date is in the future, the system will not activate the subscription until that time, but this command must be run to allow that to happen. This method requires a payment to be submitted. Each subscription has a unique <code>origin</code> property that can be viewed by using <code>get</code>. Only the payment with this <code>origin</code> can be closed to allow this specific subscription to be activated.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>subscription_id</code></td>
+<td>The ID of the subscription to be activated.</td>
+</tr>
+</tbody></table>
+
+<p>It is important to note that the process of activation is decoupled from user action via this method and relies only on the system&#39;s cycle of verification to determine the status of each subscription. The user must wait for the timing of this cycle to address the subscription in question. This can take up to two minutes. The status of the subscription can be checked using <code>get</code>.</p>
+<h3 id='subscription-delete'>subscription delete</h3>
+<p><code>subscription delete</code> deletes a <code>Subscription</code>. This requires a <code>Challenge</code> to be solved and is irreversible.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>subscription_id</code></td>
+<td>The ID of the subscription to be deleted.</td>
+</tr>
+</tbody></table>
+
+<p>This method is <strong>irreversible</strong> and <strong>independent of the status of the subscription</strong>. This means that a subscription that is active and paid-for can still be deleted. This is left to the user&#39;s discretion.</p>
+<h2 id='ip'>IP</h2>
+<p>An <code>IP</code> object stores the IP address used by a user to access their account. An <code>IP</code> object is created when a user account is created, but more can be added at the user&#39;s discretion. A maximum of five <code>IP</code> objects may be on a user account before a payment is required for each subsequent <code>IP</code>.</p>
+<h3 id='ip-get'>ip get</h3>
+<p><code>ip get</code> returns the set of <code>IP</code> objects associated with the user account.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>ip_id</code></td>
+<td>The IP ID to return.</td>
+</tr>
+</tbody></table>
+<h3 id='ip-create'>ip create</h3>
+<p><code>ip create</code> can be used to create an <code>IP</code> object. Only five can be created before a payment is required for each <code>IP</code>.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>value</code></td>
+<td>The IP address value.</td>
+</tr>
+</tbody></table>
+<h3 id='ip-delete'>ip delete</h3>
+<p><code>ip delete</code> deletes an <code>IP</code> from the user account. This is irreversible. A challenge must be solved to complete this method.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>ip_id</code></td>
+<td>The IP ID to delete.</td>
+</tr>
+</tbody></table>
+<h2 id='payment'>Payment</h2>
+<p>A <code>Payment</code> is needed to allow access to several offerings within this application. All payments are mediated by the bitcoin blockchain. A typical payment is made by creating a transaction with an output that specifies the correct address given and the correct unique amount. The unique amount acts as an identifier that allows an automatic system
+to differentiate payments. Payment amounts will be given as an integer representing the number of Satoshi required.</p>
+
+<p><code>Payment</code> objects on an account cannot be interacted with or modified in any way, except in the case of deletion.</p>
+
+<p>The lifetime of a typical payment follows this series of steps:</p>
+
+<ol>
+<li>The user attempts an action that is restricted by a payment.</li>
+<li>A <code>Payment</code> is opened with an <code>origin</code> property that connects it to the action.</li>
+<li>The user makes a request for the <code>Address</code> object referenced in the <code>Payment</code>.</li>
+<li>The user creates a transaction with the value of the address and the unique amount specified in the <code>Payment</code>.</li>
+<li>The user waits for the transaction to be mined.</li>
+<li>Once the transaction is detected on the blockchain, the <code>Payment</code> will be closed on the system.</li>
+<li>The user re-attempts the action.</li>
 </ol>
-<p><code>~$ python jormungand.py respond challenge</code></p>
-<pre><code>Please enter a challenge ID: f5368309256f4394b44803539f309aa0
-Please enter the decrypted string: 9DA54E27F0AC496A7F6853B11B2D2FEB5D51767F3DA7C8B482EDFABE5D20D99A88A494BACEC00FBDD92F6DD994AC9923ED50F5DC2BCF94774A83AA5625A3ED9D9AC47B8F8F991A874D97C01F1E98196C1342049EAE865120F328E9603EA0E6EE289061D6D96FBC85CC6C32CE7A9C57BEA31C122BB8E2ED80BED41D55146395159FD31CB2418E0597B46FC62A25FF2041C4DF623B9ADA5123B82C7BCF7F85DDE2E1FC9BB298D824025C7BE69E3A3FF6EF484C5153B94E0E9AA3341489841E41AA5A0A8C2CC115E00432E18AD9DF13857A500A2FA6441DE0EC0678FC6BDE7EF1D7432461625068402BBE164A7BFFCF810BA5726CFB861B6D88450966149FB13E48
+<h3 id='payment-get'>payment get</h3>
+<p><code>payment get (closed)</code> returns details of open <code>Payment</code> objects, unless the <code>closed</code> argument is included. This can be used to find the <code>origin</code> and <code>unique_btc_amount</code> properties for a specific <code>Payment</code>.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>payment_id</code></td>
+<td>null</td>
+<td>Optional, specifies the payment ID to get.</td>
+</tr>
+</tbody></table>
+<h3 id='payment-delete'>payment delete</h3>
+<p><code>payment delete</code> deletes a <code>Payment</code>. This command should be used if you do not wish to continue with an open payment in order to enable a method. For example, if making a payment for <code>subscription activate</code>, the payment can be removed to reset the method.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>payment_id</code></td>
+<td>The ID of the payment to be deleted.</td>
+</tr>
+</tbody></table>
+
+<p>This is <strong>irreversible</strong> and is left to the user&#39;s discretion.</p>
+<h2 id='fee-report'>Fee Report</h2>
+<p>A <code>FeeReport</code> contains regularly updated statistical details about the fee information contained in bitcoin blocks. For example, the average fee in Satoshi and the average fee weight in Satoshi per byte are provided. When creating a fee report, the user has the option to specify that this average should be calculated over a certain number of blocks, e.g. ten. Thus, the updated average fee would be that of all transactions in the latest ten blocks. This moving average is meant to give users planning to submit transactions an idea of what fee they should provide. These values are updated as soon as possible following the mining of a new block.</p>
+<h3 id='fee_report-get'>fee_report get</h3>
+<p><code>fee_report get (inactive)</code> returns details about <code>FeeReport</code> objects on the account. The <code>inactive</code> flag will return inactive fee reports. Use the <code>activate</code> method to set the active status of a <code>FeeReport</code> to add or remove it from your focus.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>fee_report_id</code></td>
+<td>The ID of the fee report to be returned.</td>
+</tr>
+<tr>
+<td><code>is_active</code></td>
+<td>The active status of the fee reports to return.</td>
+</tr>
+</tbody></table>
+<h3 id='fee_report-create'>fee_report create</h3>
+<p>Fee reports can be created in an <code>inactive</code> state, but by default, Jormungand will submit an active status to the system.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>blocks_to_include</code></td>
+<td>The number of blocks to include in the updating fee report.</td>
+</tr>
+<tr>
+<td><code>is_active</code></td>
+<td>The initial active status of the fee report.</td>
+</tr>
+</tbody></table>
+<h3 id='fee_report-activate'>fee_report activate</h3>
+<p>The <code>activate</code> method controls the active status of the <code>FeeReport</code>.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>fee_report_id</code></td>
+<td>The ID of the fee report.</td>
+</tr>
+<tr>
+<td><code>is_active</code></td>
+<td>The active status of the fee report to set.</td>
+</tr>
+</tbody></table>
+<h3 id='fee_report-delete'>fee_report delete</h3>
+<p>The <code>delete</code> method permanently deletes the <code>FeeReport</code> from the user account.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>fee_report_id</code></td>
+<td>The ID of the fee report to delete.</td>
+</tr>
+</tbody></table>
+<h2 id='transaction-report'>Transaction Report</h2>
+<p>A <code>TransactionReport</code> monitors the blockchain for transaction outputs that match its requirements. A single address to watch must be specified, along with upper and lower bounds, or alternatively an exact value, for the integer output in Satoshi. A successful match will yield TransactionMatch objects.</p>
+<h3 id='transaction_report-get'>transaction_report get</h3>
+<p><code>transaction_report get (inactive)</code> returns details about <code>TransactionReport</code> objects on the account. The <code>inactive</code> flag will return inactive transaction reports. Use the <code>activate</code> method to set the active status of a transaction report to add or remove it.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>transaction_report_id</code></td>
+<td>The ID of the transaction report to be returned.</td>
+</tr>
+<tr>
+<td><code>is_active</code></td>
+<td>The active status of the transaction reports to return.</td>
+</tr>
+</tbody></table>
+<h3 id='transaction_report-create'>transaction_report create</h3>
+<p>Fee reports can be created in an <code>inactive</code> state, but by default, Jormungand will submit an active status to the system.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>target_address</code></td>
+<td>The address to use for matching transactions.</td>
+</tr>
+<tr>
+<td><code>value_equal_to</code></td>
+<td>Any match must have exactly this integer Satoshi value.</td>
+</tr>
+<tr>
+<td><code>value_less_than</code></td>
+<td>Any match must have an integer Satoshi value less than this.</td>
+</tr>
+<tr>
+<td><code>value_greater_than</code></td>
+<td>Any match must have an integer Satoshi value greater than this.</td>
+</tr>
+<tr>
+<td><code>is_active</code></td>
+<td>The initial active status of the transaction report.</td>
+</tr>
+</tbody></table>
+<h3 id='transaction_report-activate'>transaction_report activate</h3>
+<p>The <code>activate</code> method controls the active status of the <code>TransactionReport</code>.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>transaction_report_id</code></td>
+<td>The ID of the transaction report.</td>
+</tr>
+<tr>
+<td><code>is_active</code></td>
+<td>The active status of the transaction report to set.</td>
+</tr>
+</tbody></table>
+<h3 id='transaction_report-delete'>transaction_report delete</h3>
+<p>The <code>delete</code> method permanently deletes the <code>TransactionReport</code> from the user account.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>transaction_report_id</code></td>
+<td>The ID of the transaction report to delete.</td>
+</tr>
+</tbody></table>
+<h2 id='transaction-match'>Transaction Match</h2>
+<p><code>TransactionMatch</code> objects represent successful matches of their corresponding <code>TransactionReport</code> objects. They can be filtered by a variety of useful parameters including their parent address and the hash of the block they occurred in.</p>
+<h3 id='transaction_match-get'>transaction_match get</h3>
+<p>The <code>get</code> method makes several filters available to find the correct results from transaction reports.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>transaction_report_id</code></td>
+<td>The ID of the parent <code>TransactionReport</code>.</td>
+</tr>
+<tr>
+<td><code>transaction_report_target_address</code></td>
+<td>The target address of the parent <code>TransactionReport</code>.</td>
+</tr>
+<tr>
+<td><code>transaction_report_is_active</code></td>
+<td>The active status of the parent <code>TransactionReport</code>.</td>
+</tr>
+<tr>
+<td><code>transaction_match_id</code></td>
+<td>The ID of the <code>TransactionMatch</code> object.</td>
+</tr>
+<tr>
+<td><code>is_new</code></td>
+<td>The new status of the transaction match.</td>
+</tr>
+<tr>
+<td><code>block_hash</code></td>
+<td>The block hash of the transaction match.</td>
+</tr>
+</tbody></table>
+
+<p>These filters can be combined in various ways to narrow the set of transaction matches returned.</p>
+<h3 id='transaction_match-dismiss'>transaction_match dismiss</h3>
+<p>The <code>dismiss</code> method functions in exactly the same way as the <code>get</code> method, but it returns no results and all results matched by the parameters have their <code>is_new</code> status set to <code>False</code>. This allows filtering by this parameter for newer results.</p>
+<h2 id='system'>System</h2>
+<p>The <code>System</code> object represents the current identity of the system. Updates will be announced prior to any concrete change.</p>
+<h3 id='system-get'>system get</h3>
+<p>The <code>system get</code> method returns the details of the active <code>System</code> object, including the GPG public key used to verify and encrypt data.</p>
+<h2 id='address'>Address</h2>
+<p>The <code>Address</code> object stores information about a Bitcoin address used as part of a payment. This API remains mostly closed to the user, but addresses can be accessed by their ID in order to make a payment. In each <code>Payment</code> object, the <code>Address</code> object that the user should use is referenced as a relationship.</p>
+<h3 id='address-get'>address get</h3>
+<p>The <code>address get</code> method returns details about an <code>Address</code> object and requires an ID.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>address_id</code></td>
+<td>The ID of the <code>Address</code> object.</td>
+</tr>
+</tbody></table>
+<h2 id='announcement'>Announcement</h2>
+<p><code>Announcement</code> objects contain up-to-date communications between the maintainer of the system and the user. A message will be included with any query while the announcement is active.</p>
+<h3 id='announcement-get'>announcement get</h3>
+<p>The <code>announcement get</code> method will return all active <code>Announcement</code> objects on the system.</p>
+<h1 id='walkthroughs'>Walkthroughs</h1>
+<p>The following walkthroughs are intended to give a new user a comprehensive introduction to the application by showing the commands that might be used as well as the data that could be returned by those commands. Some sample data has been modified to avoid specific references and thus may fail associated validation checks (IP addresses, GPG public keys).</p>
+
+<p>Although the Jormungand client provides a simple way to execute commands, any commands run by Jormungand can also be run using cURL or a REST client such as Postman.</p>
+<h2 id='walkthrough-from-anonymous-user-to-active-subscription'>Walkthrough from anonymous user to active subscription</h2>
+<p>When accessing the system for the first time, the user is <strong>anonymous</strong> as far as the system is concerned. The user obviously lacks a subscription or any other form of identification stored on the system. This walkthrough demonstrates the series of commands necessary to progress from this state to an active subscription on the system, allowing the user to access the full offering.</p>
+<h3 id='1-schema'>1. Schema</h3>
+<blockquote>
+<p>(1) Result of <code>schema reduced</code></p>
+</blockquote>
+<pre class="highlight shell"><code><span class="gp">~(jormungand)$ </span>python jormungand.py schema reduced
+</code></pre><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"schema"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"readme"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Run this method to obtain the README for the system"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"socket"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Run this method to obtain the information
+    about the active socket if it exists."</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"models"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"Account"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"methods"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"create"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"public_key"</span><span class="p">:</span><span class="w"> </span><span class="s2">"A valid GPG public key in ASCII armor
+            format with newlines replaced by their escaped equivalent (</span><span class="se">\\</span><span class="s2">n)"</span><span class="w">
+          </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="s2">"System"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"methods"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"get"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The schema for the System get method.
+          Returns details about the system including
+          the public key and long key id."</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="s2">"instances"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The schema for reporting details
+        of instances of the System model. This schema
+        takes no input and does not trigger any methods
+        or any interaction with the API."</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>When reaching any stable state, the user should check the commands available using the <code>schema</code> command. In this case, run <code>schema reduced</code> for an overview.</p>
+<h3 id='2-create-an-account'>2. Create an account</h3>
+<blockquote>
+<p>(2) Result of <code>account create</code> returns the system disclaimer:</p>
+</blockquote>
+<pre class="highlight shell"><code><span class="gp">~(jormungand)$ </span>python jormungand.py account create
+</code></pre><pre class="highlight plaintext"><code>The IP used to create this account: xxx.xxx.xxx.xxx
+The long key ID of your GPG public key: XXXXXXXXXXXXXXXX
+Disclaimer: &lt;DISCLAIMER OMITTED&gt;
 </code></pre>
-<pre><code class="json language-json">{
-  "is_verified": true,
-  "challenge_id": "f5368309256f4394b44803539f309aa0"
-}
+<p>An account on the system is represented by a GPG public key. To use the <code>account create</code> command with Jormungand, the public key the user wishes to use must be placed in a directory accessible to the client and referenced in the <code>env.json</code> configuration file. Refer to the <code>account create</code> method documentation for more details.</p>
+
+<p>After running each command, check the schema again by running <code>schema reduced</code> to see any changes.</p>
+<h3 id='3-attempt-to-verify-the-account'>3. Attempt to verify the account</h3>
+<blockquote>
+<p>(3) Result of <code>account verify</code> returns a challenge ID:</p>
+</blockquote>
+<pre class="highlight shell"><code><span class="gp">~(jormungand)$ </span>python jormungand.py account verify
+</code></pre><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"challenge_complete"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"open_challenge_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1a159673c3a84e8a9299f1037726b871"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>In order to progress further, an account must be verified. This is done by solving a single challenge. This method will fail when run for the first time, indicating the ID of the <code>Challenge</code> object that must be solved to continue.</p>
+<h3 id='4-get-challenge'>4. Get <code>Challenge</code></h3>
+<blockquote>
+<p>(4) Result of <code>challenge get save</code>:</p>
+</blockquote>
+<pre class="highlight shell"><code><span class="gp">~(jormungand)$ </span>python jormungand.py challenge get save
+Enter the Challenge ID or leave blank <span class="k">for </span>all: 1a159673c3a84e8a9299f1037726b871
+</code></pre><pre class="highlight plaintext"><code>Challenge ID:  1a159673c3a84e8a9299f1037726b871
+
+&lt;CHALLENGE PGP MESSAGE OMITTED&gt;
 </code></pre>
-<ol start="6">
-<li>Run <code>verify account</code> again now that the challenge has been solved:</li>
-</ol>
-<p><code>~$ python jormungand.py verify account</code></p>
-<pre><code class="json language-json">{
-  "verification_complete": true
-}
+<p>Each method blocked by a <code>Challenge</code> object will include the <code>Challenge</code> ID. Enter this ID when prompted to fetch this specific challenge.</p>
+<h3 id='5-decrypt-challenge'>5. Decrypt challenge</h3>
+<blockquote>
+<p>(5) Result of decryption:</p>
+</blockquote>
+<pre class="highlight shell"><code><span class="gp">~$ </span>gpg --output decrypted.asc --decrypt message.asc
+</code></pre><pre class="highlight plaintext"><code>gpg: encrypted with 4096-bit RSA key, ID XXXXXXXXXXXXXXXX, created XXXX-XX-XX
+      "xxxxxxxxxxx (xxxxxxxxxxxxx) &lt;xxxxxxxxxxx@xxxx.xxx&gt;"
 </code></pre>
-<ol start="7">
-<li>Check schema again to see changes:</li>
-</ol>
-<p><code>~$ python jormungand.py reduced schema</code></p>
-<pre><code class="json language-json">{
-  "schema": {
-    "models": {
-      "Payment": {
-        "methods": {
-          "get": {
-            "is_open": null,
-            "id": null
-          }
-        },
-        "instances": null
-      },
-      "Subscription": {
-        "methods": {
-          "activate": {
-            "subscription_id": null
-          },
-          "get": {
-            "id": null,
-            "is_active": null
-          },
-          "create": {
-            "activation_date": null,
-            "duration_in_days": null
-          }
-        },
-        "instances": null
-      },
-      "Challenge": {
-        "methods": {
-          "respond": {
-            "armor": null,
-            "challenge_id": null,
-            "plaintext": null
-          },
-          "get": {
-            "is_open": null
-          }
-        },
-        "instances": null
-      },
-      "Account": {
-        "methods": {
-          "delete": null,
-          "verify": null
-        }
-      }
-    }
-  }
-}
+<p>This step must be done outside Jormungand. For security, it is recommended to perform this operation on an air-gapped computer. The GPG private key corresponding to the public key used to create the account is required.</p>
+
+<p>A. Having used the <code>get challenge</code> command with the <code>save</code> argument, the challenge text can be found in the <code>challenge_path/{challenge_id}/message.asc</code> file, where <code>challenge_path</code> is that specified in the <code>env.json</code> configuration file.
+B. Assuming your private key has been imported into GPG, run <code>~$ gpg --output decrypted.asc --decrypt message.asc</code> to decrypt the <code>message.asc</code> file and to place the output into the <code>decrypted.asc</code> file.
+C. Preserve <code>decrypted.asc</code> for step 7. No data should leave the air-gapped environment until step 7 is complete.</p>
+<h3 id='6-get-system'>6. Get <code>System</code></h3>
+<blockquote>
+<p>(6) Result of <code>system get</code>:</p>
+</blockquote>
+<pre class="highlight shell"><code><span class="gp">~(jormungand)$ </span>python jormungand.py system get
+</code></pre><pre class="highlight plaintext"><code>System ID:  6503d4615774441085bff7fdc1b4dc4f
+
+PUBLIC KEY:
+
+&lt;PUBLIC KEY OMITTED&gt;
+
+--------
+GUARANTEE
+&lt;GUARANTEE OMITTED&gt;
+
+--------
+GUARANTEE SIGNATURE
+&lt;GUARANTEE SIGNATURE OMITTED&gt;
+
+--------
+DISCLAIMER
+&lt;DISCLAIMER OMITTED&gt;
+
+--------
+DISCLAIMER SIGNATURE
+&lt;DISCLAIMER SIGNATURE OMITTED&gt;
+
+--------
 </code></pre>
-<ol start="8">
-<li>Create subscription:</li>
-</ol>
-<p><code>~$ python jormungand.py create subscription</code></p>
-<p>Run initially without arguments until a challenge has been solved.</p>
-<pre><code class="json language-json">{
-  "create_complete": false,
-  "open_challenge_id": "dea4dc47bad74a85aeda4fca47cdf3ab"
-}
-</code></pre>
-<ol start="9">
-<li>Repeat steps 4 and 5, then run the command again:</li>
-</ol>
-<p><code>~$ python jormungand.py create subscription</code></p>
-<pre><code>Enter the number of days the subscription will be active: 10
-Enter the activation date: 2/12/2018
-</code></pre>
-<pre><code class="json language-json">{
-  "create_complete": true
-}
-{
-  "051daa7553134f2db5aa1f8178d6e2af": {
-    "attributes": {
-      "activation_date": "2018-02-12 00:00:00+00:00",
-      "origin": "dd495ee2-581c-4382-b7d5-8dc33a48aced",
-      "is_payment_confirmed": false,
-      "is_valid_until": "None",
-      "has_been_activated": false,
-      "duration_in_days": 10,
-      "is_active": false
-    }
-  }
-}
-</code></pre>
-<ol start="10">
-<li>Activate the subscription</li>
-</ol>
-<p><code>~$ python jormungand.py activate subscription</code></p>
-<pre><code>Enter a subscription ID: 051daa7553134f2db5aa1f8178d6e2af
-</code></pre>
-<pre><code class="json language-json">{
-  "open_payment_id": "f741940a260d4241832fb080727a4f8c",
-  "activation_complete": false
-}
-</code></pre>
-<p>A payment functions like a challenge, but there is no respond function.</p>
-<ol start="11">
-<li>View the payment to get the relevant details</li>
-</ol>
-<p><code>~$ python jormungand.py get payment</code></p>
-<pre><code class="json language-json">{
-  "f741940a260d4241832fb080727a4f8c": {
-    "attributes": {
-      "address": "example_address",
-      "origin": "dd495ee2-581c-4382-b7d5-8dc33a48aced",
-      "full_btc_amount": 406734
-    }
-  }
-}
-</code></pre>
-<p>The amount shown is a combination of a base amount, in this case <code>40000</code> satoshi, and <code>6734</code> satoshi, the randomly generated amount meant to identify the payment.</p>
-<p>Create a transaction with this amount to the address specified at the top of this document. Once the transaction has been added to a block, the payment will be closed, and any action blocked by the payment can be run successfully.</p>
-<ol start="12">
-<li>The payment can also be checked by running the get subscription command with inactive:</li>
-</ol>
-<p><code>~$ python jormungand.py get subscription inactive</code></p>
-<pre><code class="json language-json">{
-  "051daa7553134f2db5aa1f8178d6e2af": {
-    "attributes": {
-      "activation_date": "2018-02-12 00:00:00+00:00",
-      "is_active": false,
-      "duration_in_days": 10,
-      "is_payment_confirmed": true,
-      "has_been_activated": false,
-      "origin": "dd495ee2-581c-4382-b7d5-8dc33a48aced",
-      "is_valid_until": "None"
-    }
-  }
-}
-</code></pre>
-<p><code>is_payment_confirmed</code> will read <code>true</code> when the payment has gone through.</p>
-<ol start="13">
-<li>Once the payment has been closed, activate the subscription.</li>
-</ol>
-<p><code>~$ python jormungand.py activate subscription</code></p>
-<pre><code class="json language-json">{
-  "activation_complete": true
-}
-</code></pre>
-<ol start="14">
-<li>Check the subscription again:</li>
-</ol>
-<p><code>~$ python jormungand.py get subscription</code></p>
-<pre><code class="json language-json">{
-  "051daa7553134f2db5aa1f8178d6e2af": {
-    "attributes": {
-      "activation_date": "2018-12-02 20:59:59.559503+00:00",
-      "is_active": true,
-      "duration_in_days": 10,
-      "is_payment_confirmed": true,
-      "has_been_activated": true,
-      "origin": "dd495ee2-581c-4382-b7d5-8dc33a48aced",
-      "is_valid_until": "2018-12-12 20:59:59.559503+00:00"
-    }
-  }
-}
-</code></pre>
-<p>Note that <code>is_active</code> is set to <code>true</code>. It will now possible to create a Fee report.</p>
-<ol start="15">
-<li>Check the available schema again:</li>
-</ol>
-<p><code>~$ python jormungand.py reduced schema</code></p>
-<pre><code class="json language-json">{
-  "schema": {
-    "models": {
-      "Account": {
-        "methods": {
-          "lock": null
-        }
-      },
-      "Subscription": {
-        "instances": null,
-        "methods": {
-          "get": {
-            "is_active": null,
-            "id": null
-          },
-          "activate": {
-            "subscription_id": null
-          },
-          "create": {
-            "activation_date": null,
-            "duration_in_days": null
-          }
-        }
-      },
-      "FeeReport": {
-        "instances": null,
-        "methods": {
-          "get": {
-            "is_active": null,
-            "id": null
-          },
-          "activate": {
-            "fee_report_id": null,
-            "is_active": null
-          },
-          "create": {
-            "blocks_to_include": null,
-            "is_active": null
-          },
-          "delete": null
-        }
-      },
-      "Challenge": {
-        "instances": null,
-        "methods": {
-          "respond": {
-            "armor": null,
-            "challenge_id": null,
-            "plaintext": null
-          },
-          "get": {
-            "is_open": null
-          }
-        }
-      },
-      "IP": {
-        "instances": null,
-        "methods": {
-          "get": null,
-          "create": {
-            "value": null
-          },
-          "delete": null
-        }
-      },
-      "Payment": {
-        "instances": null,
-        "methods": {
-          "get": {
-            "is_open": null,
-            "id": null
-          }
-        }
-      }
-    }
-  }
-}
-</code></pre>
-<p>Fee report methods are now available.</p>
-<ol start="16">
-<li>Create a Fee report</li>
-</ol>
-<p><code>~$ python jormungand.py create fee_report</code></p>
-<p>Run initially without arguments until a challenge has been solved.</p>
-<pre><code class="json language-json">{
-  "create_complete": false,
-  "open_challenge_id": "20e2f57049ad439787d061a76ac3499a"
-}
-</code></pre>
-<p>Complete the challenge following steps 4 and 5. Finally:</p>
-<pre><code>Enter the number of blocks to include in the report: 1
-</code></pre>
-<pre><code class="json language-json">{
-  "create_complete": true,
-}
-</code></pre>
-<ol start="16">
-<li>The fee report will begin processing immediately. Run the get method to check it's status.</li>
-</ol>
-<p><code>~$ python jormungand.py get fee_report</code></p>
-<pre><code class="json language-json">Enter fee report ID or leave blank for all:
-{
-  "45977183ea644ad4969d50e24c4400d1": {
-    "attributes": {
-      "is_active": true,
-      "date_created": "2018-12-02 21:09:54.379962+00:00",
-      "last_update_end_time": "None",
-      "average_tx_fee_density": 0.0,
-      "latest_block_hash": "0000000000000000001aa23222738c5213183ed0f6ae44dae3fbcb821ec817ab",
-      "blocks_to_include": 1,
-      "average_tx_fee": 0.0
-    }
-  }
-}
-</code></pre>
-<p>Finally, the result should be similar to:</p>
-<pre><code class="json language-json">Enter fee report ID or leave blank for all:
-{
-  "45977183ea644ad4969d50e24c4400d1": {
-    "attributes": {
-      "is_active": true,
-      "date_created": "2018-12-02 21:09:54.379962+00:00",
-      "last_update_end_time": "2018-12-02 21:16:16.901939+00:00",
-      "average_tx_fee_density": 216.140251362626,
-      "latest_block_hash": "00000000000000000024f408b05838d9f5f3cbb0da9b7fe776d99a79558613bd",
-      "blocks_to_include": 1,
-      "average_tx_fee": 92225.4427454978
-    }
-  }
-}
-</code></pre>
+<p>The active <code>System</code> object contains the public key to which you should encrypt the content of any challenge. An <code>Announcement</code> object will become active if this <code>System</code> object becomes inactive or is replaced by another with a different public key, but until then, the public key only needs to be fetched once.</p>
+<h3 id='7-re-encrypt-challenge'>7. Re-encrypt challenge</h3>
+<p>This step should be done within the air-gapped environment to ensure security.</p>
+
+<p>A. Import the system public key into GPG: <code>~$ gpg --import system_public_key.asc</code>. Remember to make a note of the LONG KEY ID for use in the <code>--encrypt</code> command.
+B. Encrypt the challenge content in <code>decrypted.asc</code>: <code>~$ gpg --encrypt --output encrytped.asc --recipient $LONG_KEY_ID --armor decrypted.asc</code>. Substitute the LONG KEY ID for <code>$LONG_KEY_ID</code> and make a note of the output filename; in this case, <code>encrypted.asc</code>. This file can now leave the air-gapped environment.</p>
+<h3 id='8-respond-to-challenge'>8. Respond to challenge</h3>
+<blockquote>
+<p>(8) Result of <code>challenge respond read</code>:</p>
+</blockquote>
+<pre class="highlight shell"><code><span class="gp">~(jormungand)$ </span>python jormungand.py challenge respond <span class="nb">read
+</span>Enter the Challenge ID to respond to: 1a159673c3a84e8a9299f1037726b871
+</code></pre><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"challenge_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1a159673c3a84e8a9299f1037726b871"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"is_verified"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>If the output file from the previous step is named correctly (<code>encrypted.asc</code>), Jormungand is configured to read it from the <code>challenge_path/{challenge_id}</code> directory simply by using the <code>read</code> argument with the command <code>challenge respond</code>.</p>
+
+<p>If you choose not to use the <code>read</code> argument, the <code>challenge respond</code> method will prompt you for the re-encrypted content of the challenge. In this case, newlines (<code>\n</code>) in the armor text must be replaced with escaped newlines (<code>\\n</code>).</p>
+<h3 id='9-verify-the-account'>9. Verify the account</h3>
+<blockquote>
+<p>(9) Result of <code>account verify</code>:</p>
+</blockquote>
+<pre class="highlight shell"><code><span class="gp">~(jormungand)$ </span>python jormungand.py account verify
+</code></pre><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"challenge_complete"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>The solved <code>Challenge</code> will allow the <code>account verify</code> method to be run. This method takes no arguments and will complete directly.</p>
+<h3 id='10-create-a-subscription'>10. Create a <code>Subscription</code></h3>
+<blockquote>
+<p>(10) Result of <code>subscription create</code> returns a challenge ID:</p>
+</blockquote>
+<pre class="highlight shell"><code><span class="gp">~(jormungand)$ </span>python jormungand.py subscription create
+INFO: Run this method leaving arguments blank to generate a Challenge <span class="k">for </span>this method
+Enter the activation date:
+Enter the number of days the Subscription will be active:
+</code></pre><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"challenge_complete"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"open_challenge_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"a2f353e65cd74544b1a9c2bc61c55756"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>Creating a <code>Subscription</code> will allow the user to access the full offering of the application. It requires a challenge to be solved, and the user should follow the same process outlined in steps 4-8.</p>
+
+<p>Once a challenge has been solved, create a subscription using the <code>subscription create</code> method and specify the <code>duration_in_days</code> and <code>activation_date</code> parameters. Refer to the <code>subscription create</code> documentation for more information.</p>
+<h3 id='11-attempt-to-activate-the-subscription'>11. Attempt to activate the subscription</h3><pre class="highlight shell"><code><span class="gp">~(jormungand)$ </span>python jormungand.py subscription get inactive
+</code></pre><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"415a57638ee54745bcf6f6498840ccbd"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"attributes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"origin"</span><span class="p">:</span><span class="w"> </span><span class="s2">"63bc4b94-5997-42c8-82e9-253374343fd0"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"duration_in_days"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"activation_date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2019-06-06 23:00:00+00:00"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"is_valid_until"</span><span class="p">:</span><span class="w"> </span><span class="s2">"__null"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"has_been_activated"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"is_active"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre><pre class="highlight shell"><code><span class="gp">~(jormungand)$ </span>python jormungand.py subscription activate
+Enter the Subscription ID to activate: 415a57638ee54745bcf6f6498840ccbd
+</code></pre><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"payment_complete"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"open_payment_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"4214fa1e2f1c4396bf4a716403172e90"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>Running the <code>subscription activate</code> method requires a payment to be made. This is similar to the process of solving a challenge. The <code>Payment</code> ID will be specified in the response when the <code>subscription activate</code> method fails.</p>
+<h3 id='12-get-payment'>12. Get <code>Payment</code></h3><pre class="highlight shell"><code><span class="gp">~(jormungand)$ </span>python jormungand.py payment get
+Enter the Payment ID or leave blank <span class="k">for </span>all:
+</code></pre><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"4214fa1e2f1c4396bf4a716403172e90"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"attributes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"origin"</span><span class="p">:</span><span class="w"> </span><span class="s2">"63bc4b94-5997-42c8-82e9-253374343fd0"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"is_open"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"time_confirmed"</span><span class="p">:</span><span class="w"> </span><span class="s2">"__null"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"full_btc_amount"</span><span class="p">:</span><span class="w"> </span><span class="mi">48297</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"block_hash"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"txid"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"relationships"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Address.045fbda176534b678b3e6bd48f9592d9"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>Each method blocked by a <code>Payment</code> object will include the <code>Payment</code> ID. Enter this ID when prompted to fetch this specific payment.</p>
+<h3 id='13-get-address'>13. Get <code>Address</code></h3><pre class="highlight shell"><code><span class="gp">~(jormungand)$ </span>python jormungand.py address get
+Enter an Address ID: 045fbda176534b678b3e6bd48f9592d9
+</code></pre><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"045fbda176534b678b3e6bd48f9592d9"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"attributes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"16FzUdcw2HVnwXhT73ZbRm57ZqELSTyz2v"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>The <code>Payment</code> object includes a reference to the <code>Address</code> object that contains the value needed to make a payment. Enter the ID of the <code>Address</code> to fetch its data.</p>
+<h3 id='14-make-payment'>14. Make payment</h3>
+<p>Completing a payment requires the submission of a transaction to the Bitcoin blockchain. The transaction should be made taking account of the <code>address</code> value specified in the <code>Address</code> object and the integer Satoshi value specified in the <code>Payment</code> object. A successfully verified transaction will be matched based on these parameters, after which the <code>Payment</code> object will be closed by the system. Once the <code>Payment</code> has been closed, the action originally blocked by the payment can be completed.</p>
+<h3 id='15-activate-the-subscription'>15. Activate the subscription</h3>
+<p>Once the relevant <code>Payment</code> object has been closed, this method can be run successfully. Be careful to check the <code>origin</code> value of the <code>Payment</code> object matches that of the <code>Subscription</code> object. Only a <code>Subscription</code> with a closed <code>Payment</code> with a matching <code>origin</code> property can be activated.</p>
+<h3 id='16-get-subscription'>16. Get subscription</h3>
+<p>Run the <code>subscription get</code> method to fetch details about the recently activated <code>Subscription</code>. Please allow up to two minutes for the system to verify the active status of the <code>Subscription</code>.</p>
+<h2 id='walkthrough-from-active-subscriber-to-feereport-with-data-returned'>Walkthrough from active subscriber to FeeReport with data returned</h2>
+<p>As an active subscriber, the full offering of the application will be available, so check the schema again using <code>schema reduced</code>. A fee report gathers data on the latest bitcoin transactions and summarises them in the form of average transaction fee and average transaction fee density, or fee per byte. This allows decisions about optimal fees to be made with a new transaction.</p>
+<h3 id='1-create-a-feereport'>1. Create a <code>FeeReport</code></h3>
+<blockquote>
+<p>(1) Result to <code>fee_report create</code> returns a challenge ID:</p>
+</blockquote>
+<pre class="highlight shell"><code><span class="gp">~(jormungand)$ </span>python jormungand.py fee_report create
+INFO: Run this method leaving arguments blank to generate a Challenge <span class="k">for </span>this method
+Enter the number of blocks to include <span class="k">in </span>the FeeReport:
+</code></pre><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"challenge_complete"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"open_challenge_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"914761d0597a44c7833da3b82b727bc1"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>Once the challenge has been solved, run the method again to create the <code>FeeReport</code>.</p>
+<h3 id='2-get-the-fee-report-until-the-first-update-has-been-made'>2. Get the fee report until the first update has been made</h3>
+<blockquote>
+<p>(2) Before populating</p>
+</blockquote>
+<pre class="highlight shell"><code><span class="gp">~(jormungand)$ </span>python jormungand.py fee_report get
+Enter the FeeReport ID or leave blank <span class="k">for </span>all:
+Enter the active status of the FeeReport <span class="o">(</span>T/F<span class="o">)</span>:
+</code></pre><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"6a5cc43d81504d369e90b4e102ac66af"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"attributes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"is_active"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"blocks_to_include"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"latest_block_hash"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"is_processing"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"average_tx_fee"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"average_tx_fee_density"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"last_update_end_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"__null"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>(2) After populating</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"6a5cc43d81504d369e90b4e102ac66af"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"attributes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"is_active"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"blocks_to_include"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"latest_block_hash"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0000000000000000000bd68725f1ec180cc40f6ab3292ae468af6fb0c02f5de4"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"is_processing"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"average_tx_fee"</span><span class="p">:</span><span class="w"> </span><span class="mf">3800.26508447305</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"average_tx_fee_density"</span><span class="p">:</span><span class="w"> </span><span class="mf">10.0123897643769</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"last_update_end_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2019-06-12 20:49:42.757694+00:00"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>Running <code>fee_report get</code> shows the status of the <code>FeeReport</code>. When it is first created, it contains no data and must run calculations before it is first populated.</p>
+<h2 id='walkthrough-from-active-subscriber-to-transactionreport-with-data-returned'>Walkthrough from active subscriber to TransactionReport with data returned</h2>
+<p>A <code>TransactionReport</code> allows an address to be watched for transaction outputs that match certain details, such as a value range.</p>
+<h3 id='1-create-a-transactionreport'>1. Create a <code>TransactionReport</code></h3>
+<blockquote>
+<p>(1) Result to <code>transaction_report create</code> returns a challenge ID:</p>
+</blockquote>
+<pre class="highlight shell"><code><span class="gp">~(jormungand)$ </span>python jormungand.py transaction_report create
+INFO: Run this method leaving arguments blank to generate a Challenge <span class="k">for </span>this method
+Enter the number of blocks to include <span class="k">in </span>the TransactionReport:
+</code></pre><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"challenge_complete"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"open_challenge_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"01d4e60bf23048768e087c54a68a8b0d"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>Once the challenge has been solved, run the method again to create the <code>TransactionReport</code>.</p>
+<h3 id='2-get-the-transaction-report'>2. Get the transaction report</h3>
+<blockquote>
+<p>(2) Result of <code>transaction_report get</code>:</p>
+</blockquote>
+<pre class="highlight shell"><code><span class="gp">~(jormungand)$ </span>python jormungand.py transaction_report get
+Enter the TransactionReport ID or leave blank <span class="k">for </span>all:
+Enter the active status of the TransactionReport <span class="o">(</span>T/F<span class="o">)</span>:
+</code></pre><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"31916b98b0734aff8286615dd923131c"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"attributes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"is_active"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"target_address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"value_equal_to"</span><span class="p">:</span><span class="w"> </span><span class="s2">"__null"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"value_greater_than"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"value_less_than"</span><span class="p">:</span><span class="w"> </span><span class="s2">"__null"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"latest_block_hash"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre><h3 id='3-get-associated-transactionmatch-objects'>3. Get associated <code>TransactionMatch</code> objects</h3>
+<blockquote>
+<p>(3) Result of <code>transaction_match get</code>:</p>
+</blockquote>
+<pre class="highlight shell"><code><span class="gp">~(jormungand)$ </span>python jormungand.py transaction_match get
+Enter transaction match ID or leave blank <span class="k">for </span>all:
+Enter the ID of the parent TransactionReport:
+Enter the target address of the parent TransactionReport:
+Enter the active status of the parent TransactionReport <span class="o">(</span>T/F<span class="o">)</span>:
+Enter the new status of the TransactionMatch <span class="o">(</span>T/F<span class="o">)</span>:
+Enter the block <span class="nb">hash </span>of the TransactionMatch:
+</code></pre><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"beca869fe937466ca564d8c7b30aa3c8"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"attributes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"block_hash"</span><span class="p">:</span><span class="w"> </span><span class="s2">"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"txid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"index"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="mi">1100000</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"is_new"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"relationships"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"transaction_report"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TransactionReport.31916b98b0734aff8286615dd923131c"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"ec0f889fd80d4631a3ac888930e91988"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"attributes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"block_hash"</span><span class="p">:</span><span class="w"> </span><span class="s2">"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"txid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"index"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="mi">1232374</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"is_new"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"relationships"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"transaction_report"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TransactionReport.31916b98b0734aff8286615dd923131c"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"8f0445691a2e4466a3210347b4fe2f79"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"attributes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"block_hash"</span><span class="p">:</span><span class="w"> </span><span class="s2">"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"txid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"index"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="mi">1965160</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"is_new"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"relationships"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"transaction_report"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TransactionReport.31916b98b0734aff8286615dd923131c"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"7e638851197849aeb37e123500794721"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"attributes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"block_hash"</span><span class="p">:</span><span class="w"> </span><span class="s2">"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"txid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"index"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="mi">2500000</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"is_new"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"relationships"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"transaction_report"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TransactionReport.31916b98b0734aff8286615dd923131c"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>Once a match has been found, it can be fetched using the <code>transaction_match get</code> method and will appear in this form. Various filters can be applied to control which matches are returned. Also, refer to the <code>transaction_match dismiss</code> method to permanently dismiss results that are no longer relevant.</p>
+
+      </div>
+      <div class="dark-box">
+      </div>
+    </div>
+  </body>
+</html>

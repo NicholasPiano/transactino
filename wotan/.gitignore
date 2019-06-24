@@ -18,3 +18,4 @@ nosetests.json
 # Django
 db/
 *.sqlite3
+static/

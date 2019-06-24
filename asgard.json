@@ -92,8 +92,27 @@
       "20190613": {
         "description": "Working on docs walkthroughs for Jormungand",
         "children": {
-          "mistakes": "Every now and then, I encounter a horrible mistake or omission from wotan or jormungand. Quite incredible.",
-          ""
+          "mistakes": "Every now and then, I encounter a horrible mistake or omission from wotan or jormungand. Quite incredible."
+        }
+      },
+      "20190624": {
+        "description": "Readying things for deployment",
+        "children": {
+          "templates": {
+            "description": "Annoyingly, I have to modify the template to point the files in the django assets folder. I will record here what I do.",
+            "children": {
+              "jormungand.html": {
+                "description": "Modifications made to jormungand",
+                "children": {
+                  "load static": "{% load static %}",
+                  "links": "replace all instances of 'images', 'stylesheets', and 'javascripts' with {% static '...' %}",
+                  "remove logo": "For now"
+                }
+              },
+              "stylesheets": "Should not need changing as they contain relative links"
+            }
+          },
+          "deploy 1.4 of jormungand": "",
         }
       }
     }
