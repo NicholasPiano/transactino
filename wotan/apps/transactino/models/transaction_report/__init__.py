@@ -105,6 +105,8 @@ class TransactionReport(Model):
       return
 
     self.latest_block_hash = block.hash
+    self.save()
+
     deltas = block.find_deltas_with_address(self.target_address)
 
     for delta in deltas:
@@ -118,8 +120,8 @@ class TransactionReport(Model):
 
 def transaction_report_task():
   if scheduler is not None:
-    # latest_block_hash = get_latest_block_hash()
-    block = Block('0000000000000000000218ee3e7ed66c0c4344cd03b97dfac84c5546f66e7b88')
+    latest_block_hash = get_latest_block_hash()
+    block = Block(latest_block_hash)
     if block.has_failed:
       return
 

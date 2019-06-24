@@ -54,6 +54,9 @@ if settings.DEBUG:
     }
 
 def get_block(hash):
+  if hash is None:
+    return None
+
   if hash in get_block_hashes:
     return get_block_hashes.get(hash)
 

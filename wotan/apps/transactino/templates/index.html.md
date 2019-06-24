@@ -853,4 +853,95 @@ Enter the number of blocks to include in the TransactionReport:
 Once the challenge has been solved, run the method again to create the `TransactionReport`.
 
 ### 2. Get the transaction report
+
+> (2) Result of `transaction_report get`:
+
+```bash
+~(jormungand)$ python jormungand.py transaction_report get
+Enter the TransactionReport ID or leave blank for all:
+Enter the active status of the TransactionReport (T/F):
+```
+
+```json
+{
+  "31916b98b0734aff8286615dd923131c": {
+    "attributes": {
+      "is_active": true,
+      "target_address": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "value_equal_to": "__null",
+      "value_greater_than": 0,
+      "value_less_than": "__null",
+      "latest_block_hash": ""
+    }
+  }
+}
+```
+
 ### 3. Get associated `TransactionMatch` objects
+
+> (3) Result of `transaction_match get`:
+
+```bash
+~(jormungand)$ python jormungand.py transaction_match get
+Enter transaction match ID or leave blank for all:
+Enter the ID of the parent TransactionReport:
+Enter the target address of the parent TransactionReport:
+Enter the active status of the parent TransactionReport (T/F):
+Enter the new status of the TransactionMatch (T/F):
+Enter the block hash of the TransactionMatch:
+```
+
+```json
+{
+  "beca869fe937466ca564d8c7b30aa3c8": {
+    "attributes": {
+      "block_hash": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "txid": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "index": 1,
+      "value": 1100000,
+      "is_new": true
+    },
+    "relationships": {
+      "transaction_report": "TransactionReport.31916b98b0734aff8286615dd923131c"
+    }
+  },
+  "ec0f889fd80d4631a3ac888930e91988": {
+    "attributes": {
+      "block_hash": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "txid": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "index": 1,
+      "value": 1232374,
+      "is_new": true
+    },
+    "relationships": {
+      "transaction_report": "TransactionReport.31916b98b0734aff8286615dd923131c"
+    }
+  },
+  "8f0445691a2e4466a3210347b4fe2f79": {
+    "attributes": {
+      "block_hash": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "txid": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "index": 1,
+      "value": 1965160,
+      "is_new": true
+    },
+    "relationships": {
+      "transaction_report": "TransactionReport.31916b98b0734aff8286615dd923131c"
+    }
+  },
+  "7e638851197849aeb37e123500794721": {
+    "attributes": {
+      "block_hash": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "txid": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "index": 1,
+      "value": 2500000,
+      "is_new": true
+    },
+    "relationships": {
+      "transaction_report": "TransactionReport.31916b98b0734aff8286615dd923131c"
+    }
+  }
+}
+```
+
+Once a match has been found, it can be fetched using the `transaction_match get` method and will appear in this form. Various filters can be applied to control which matches are returned. Also, refer to the `transaction_match dismiss` method to permanently dismiss results that are no longer relevant.

@@ -35,4 +35,17 @@ def dismiss(args):
 
   check_for_announcements(response)
 
-  print(json.dumps(json.loads(response.text), indent=2))
+  response_json = json.loads(response.text)
+  dismiss_json = get_path(response_json, [
+    transactino_constants.SCHEMA,
+    model_constants.MODELS,
+    model_constants.TRANSACTION_MATCH,
+    method_constants.METHODS,
+    transaction_match_constants.DISMISS,
+  ])
+
+  if dismiss_json is None:
+    print(json.dumps(response_json, indent=2))
+    return
+
+  print(json.dumps(dismiss_json, indent=2))
