@@ -17,7 +17,7 @@ A more detailed guide to the API can be found here: [API]
 
 ## Latest release
 
-[1.4.0](www.transactino.com/releases/jormungand_1.4.0.zip)
+[1.4.0](/static/jormungand_1.4.0.zip)
 
 # Setup
 

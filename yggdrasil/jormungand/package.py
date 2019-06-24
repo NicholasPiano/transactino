@@ -48,7 +48,7 @@ make_archive(
   wotan_abspath,
   'zip',
   root_dir=abspath(WOTAN_ASSETS),
-  base_dir=wotan_abspath,
+  base_dir=jormungand_directory,
 )
 
 # 5. Remove copied directory

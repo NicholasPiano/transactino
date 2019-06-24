@@ -106,13 +106,14 @@
                 "children": {
                   "load static": "{% load static %}",
                   "links": "replace all instances of 'images', 'stylesheets', and 'javascripts' with {% static '...' %}",
-                  "remove logo": "For now"
+                  "remove logo": "For now",
+                  "replace jormungand zip link": "same static url"
                 }
               },
               "stylesheets": "Should not need changing as they contain relative links"
             }
           },
-          "deploy 1.4 of jormungand": "",
+          "deploy 1.4 of jormungand": "done"
         }
       }
     }
