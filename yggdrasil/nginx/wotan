@@ -1,5 +1,5 @@
 upstream app_server {
-  server unix:/home/ubuntu/thor/wotan/wotan.sock fail_timeout=0;
+  server unix:/home/ubuntu/asgard/wotan/wotan.sock fail_timeout=0;
 }
 
 server {
@@ -9,7 +9,7 @@ server {
 
 server {
   listen 80;
-  server_name 35.178.206.19;
+  server_name 18.130.90.221;
 
   location = /favicon.ico {
     access_log off;
@@ -17,7 +17,7 @@ server {
   }
 
   location /static {
-    alias /home/ubuntu/thor/wotan/woot/static;
+    alias /home/ubuntu/asgard/wotan/woot/static;
   }
 
   location / {

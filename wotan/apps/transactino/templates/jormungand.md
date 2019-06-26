@@ -7,7 +7,7 @@ Named for the Norse World-serpent that brings about Ragnarok, Jormungand is the 
 ## ACCESS DETAILS
 
 ```
-URL: http://35.178.206.19/api/
+URL: http://18.130.90.221/api/
 ```
 
 ## LATEST RELEASE
@@ -22,7 +22,7 @@ URL: http://35.178.206.19/api/
 
 ```json
 {
-  "url": "http://35.178.206.19/api/",
+  "url": "http://18.130.90.221/api/",
   "public_key": "/path/to/public_key.asc",
   "challenge_path": "/path/to/dump/challenge/messages"
 }

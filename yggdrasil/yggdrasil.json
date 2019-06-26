@@ -175,6 +175,80 @@
           "ip methods for jormungand": "",
           "payment get should allow id": "copy challenge get"
         }
+      },
+      "20190626": {
+        "description": "Updating deployment again",
+        "children": {
+          "starting dir": "/home/ubuntu/asgard"
+          "update apt-get": "sudo apt-get update",
+          "redis": {
+            "description": "Redis configuration",
+            "children": {
+              "install": "sudo apt install redis-server",
+              "start": "redis-server",
+              "check ports for redis": "sudo lsof -i -P -n | grep LISTEN"
+            }
+          },
+          "nginx": {
+            "description": "nginx configuration",
+            "children": {
+              "install": "sudo apt-get install nginx",
+              "update config": "change thor to asgard",
+              "update server_name": "IP address from AWS",
+              "copy configuration": "sudo cp yggdrasil/nginx/wotan /etc/nginx/sites-available/",
+              "link": "sudo ln -s /etc/nginx/sites-available/wotan /etc/nginx/sites-enabled",
+              "remove default config": "sudo rm /etc/nginx/sites-available/default",
+              "remove default link": "sudo rm /etc/nginx/sites-enabled/default",
+              "test nginx": "sudo nginx -t",
+              "restart nginx": "sudo systemctl restart nginx",
+              "check status": "sudo systemctl status nginx"
+            }
+          },
+          "postgres": {
+            "description": "postgres configuration",
+            "children": {
+              "install": "sudo apt install postgresql postgresql-contrib",
+              "test": "sudo -u postgres psql",
+              "create superuser 'db'": "sudo -u postgres createuser --interactive",
+              "enter shell and create transactino user": "create user transactino with password '7737d16e80d744b984b17c1918b81cee';",
+              "set encoding": "alter role transactino set client_encoding TO 'utf8';",
+              "set transaction isolation": "alter role transactino set default_transaction_isolation TO 'read committed';",
+              "set timezone": "alter role transactino set timezone TO 'UTC';",
+              "create database": "create database db;",
+              "create test database": "create database test_db;",
+              "grant privileges": "grant all privileges on database db to transactino;",
+              "allow test database creation": "alter role transactino createdb;",
+              "prevent public connections": "revoke connect on database db from public;",
+              "prevent test connections": "revoke connect on database test_db from public;"
+            }
+          },
+          "gunicorn": {
+            "description": "gunicorn configuration",
+            "children": {
+              "install python": "sudo apt-get install python3",
+              "install venv": "sudo apt-get install python3-venv",
+              "change to wotan": "cd wotan/",
+              "create virtualenv": "python3.6 -m venv .",
+              "activate virtualenv": "source bin/activate",
+              "create env.json": "nano env.json",
+              "get gpg path": "/usr/bin/gpg",
+              "install dependencies": "pip install -r requirements/staging.txt",
+              "run tests": "sh scripts/test.sh",
+              "run database migrations": "sh scripts/migrate.sh",
+              "collectstatic": "sh scripts/collectstatic.sh",
+              "add aws host to ALLOWED_HOSTS": "18.130.90.221",
+              "test server": "gunicorn --bind 0.0.0.0:8000 woot.wsgi",
+              "copy configuration (parent dir)": "sudo cp yggdrasil/gunicorn/gunicorn.service /etc/systemd/system/",
+              "start": "sudo systemctl start gunicorn",
+              "enable": "sudo systemctl enable gunicorn",
+              "status": "sudo systemctl status gunicorn",
+              "reread daemon config": "sudo systemctl daemon-reload",
+              "restart": "sudo systemctl restart gunicorn",
+              "log messages from gunicorn": "journalctl -u gunicorn",
+            }
+          },
+          "matching host": "host in nginx/wotan and django settings must match: 18.130.90.221. Also must use this in browser to get through nginx."
+        }
       }
     }
   }

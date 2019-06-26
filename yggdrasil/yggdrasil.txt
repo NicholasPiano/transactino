@@ -1,66 +1,72 @@
 This file contains a summary of the Yggdrasil deployment process. It is not a log.
 
 1. Create a new instance: Ubuntu 18.04, 4GB RAM, t2.medium, peanuts4.pem
-2. ssh -i "peanuts4.pem" ubuntu@ec2-35-178-206-19.eu-west-2.compute.amazonaws.com
-3. Public IP: 35.178.206.19
+2. ssh -i "peanuts4.pem" ubuntu@ec2-18-130-90-221.eu-west-2.compute.amazonaws.com
+3. Public IP: 18.130.90.221
 
 Update apt-get packages
 4. ~$ sudo apt-get update
 
 This will install and start redis-server by default and on boot.
 5. ~$ sudo apt install redis-server
+6. ~$ redis-server (start, probably done by install anyway)
+7. ~$ sudo lsof -i -P -n | grep LISTEN (check redis on port)
 
 Upload source files
-6. Change IP in scripts/sync.sh to 35.178.206.19
-7. [Local/thor] ~$ sh scripts/sync.sh
+8. Change IP in scripts/rsync.sh to 18.130.90.221
+9. Add 18.130.90.221 to ALLOWED_HOSTS in settings and server_name in nginx/wotan. Hosts must match and be referenced in the same way in the browser. If this is 'www.transactino.com', then this would be the string used instead of the IP address.
+10. [Local/asgard] ~$ sh scripts/rsync.sh
 
 Install and configure nginx
-8. ~$ sudo apt-get install nginx
-9. ~$ sudo ufw allow 8000 (allows port 8000 for testing)
-10. ~$ cd thor
-11. ~$ sudo cp yggdrasil/nginx/wotan /etc/nginx/sites-available/
-12. ~$ sudo rm -rf /etc/nginx/sites-enabled/default (remove default configuration)
-13. ~$ sudo ln -s /etc/nginx/sites-available/wotan /etc/nginx/sites-enabled
-14. ~$ sudo nginx -t (test nginx configuration)
+11. ~$ sudo apt-get install nginx
+12. ~$ sudo ufw allow 8000 (allows port 8000 for testing)
+13. ~$ cd asgard
+14. ~$ sudo cp yggdrasil/nginx/wotan /etc/nginx/sites-available/
+15. ~$ sudo rm /etc/nginx/sites-enabled/default (remove default configuration)
+16. ~$ sudo ln -s /etc/nginx/sites-available/wotan /etc/nginx/sites-enabled
+17. ~$ sudo nginx -t (test nginx configuration)
 
 nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
 nginx: configuration file /etc/nginx/nginx.conf test is successful
 
-15. ~$ sudo systemctl restart nginx
-16. ~$ sudo systemctl status nginx
+18. ~$ sudo systemctl restart nginx
+19. ~$ sudo systemctl status nginx
 
 Install and configure postgres
-17. ~$ sudo apt-get install postgresql postgresql-contrib
-18. ~$ sudo -u postgres psql
-19. =# create user transactino with password '7737d16e80d744b984b17c1918b81cee';
-20. =# alter role transactino set client_encoding TO 'utf8';
-21. =# alter role transactino set default_transaction_isolation TO 'read committed';
-22. =# alter role transactino set timezone TO 'UTC';
-23. =# create database db;
-24. =# grant all privileges on database db to transactino;
-25. =# alter role transactino createdb;
-26. =# revoke connect on database db from public;
-27. =# create database test_db;
-28. =# revoke connect on database test_db from public;
+20. ~$ sudo apt-get install postgresql postgresql-contrib
+21. ~$ sudo -u postgres psql (test, ctrl+D to exit)
+22. =# create user transactino with password '7737d16e80d744b984b17c1918b81cee';
+23. =# alter role transactino set client_encoding TO 'utf8';
+24. =# alter role transactino set default_transaction_isolation TO 'read committed';
+25. =# alter role transactino set timezone TO 'UTC';
+26. =# create database db;
+27. =# grant all privileges on database db to transactino;
+28. =# alter role transactino createdb;
+29. =# revoke connect on database db from public;
+30. =# create database test_db;
+31. =# revoke connect on database test_db from public;
+32. =# drop database test_db; (allow it to be created by test script)
 
 Install and configure gunicorn
-29. ~$ sudo apt-get install python3 python3-venv
-30. ~$ cd wotan
-31. ~$ python3.6 -m venv .
-32. ~$ source bin/activate
-33. ~$ pip install -r requirements/staging.txt
-34. ~$ nano env.json
+33. ~$ sudo apt-get install python3 python3-venv
+34. ~$ cd wotan
+35. ~$ python3.6 -m venv .
+36. ~$ source bin/activate
+37. ~$ pip install -r requirements/staging.txt
+38. ~$ nano env.json
 
 {
   "settings": "woot.settings.production",
   "gpg_binary": "/usr/bin/gpg"
 }
 
-35. ~$ sh scripts/test.sh
-36. ~$ sh scripts/migrate.sh
-37. ~$ gunicorn --bind 0.0.0.0:8000 woot.wsgi (test server)
-38. ~$ cd ..
-39. ~$ sudo cp yggdrasil/gunicorn/gunicorn.service /etc/systemd/system/
-40. ~$ sudo systemctl start gunicorn
-41. ~$ sudo systemctl enable gunicorn
-42. ~$ sudo systemctl status gunicorn
+39. ~$ sh scripts/test.sh
+40. ~$ sh scripts/migrate.sh
+41. ~$ sh scripts/collectstatic.sh
+42. ~$ gunicorn --bind 0.0.0.0:8000 woot.wsgi (test server)
+43. ~$ cd .. (back to asgard)
+44. ~$ sudo cp yggdrasil/gunicorn/gunicorn.service /etc/systemd/system/
+45. ~$ sudo systemctl start gunicorn
+46. ~$ sudo systemctl enable gunicorn
+47. ~$ sudo systemctl daemon-reload
+48. ~$ sudo systemctl status gunicorn

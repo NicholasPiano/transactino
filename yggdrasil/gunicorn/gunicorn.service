@@ -5,8 +5,8 @@ After=network.target
 [Service]
 User=ubuntu
 Group=ubuntu
-WorkingDirectory=/home/ubuntu/thor/wotan
-ExecStart=/home/ubuntu/thor/wotan/bin/gunicorn --access-logfile - --workers 1 --bind unix:/home/ubuntu/thor/wotan/wotan.sock --preload woot.wsgi:application
+WorkingDirectory=/home/ubuntu/asgard/wotan
+ExecStart=/home/ubuntu/asgard/wotan/bin/gunicorn --access-logfile - --workers 1 --bind unix:/home/ubuntu/asgard/wotan/wotan.sock --preload woot.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
