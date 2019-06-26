@@ -32,9 +32,7 @@ if settings.DEBUG:
 
 def get_latest_block_hash():
   if settings.DEBUG:
-    return {
-      blockchaininfo_constants.BEST_BLOCK_HASH: block_hash,
-    }
+    return block_hash
 
   get_response = requests.get(join(blockchaininfo_constants.URL, blockchaininfo_constants.LATEST_BLOCK))
 

@@ -113,7 +113,14 @@
               "stylesheets": "Should not need changing as they contain relative links"
             }
           },
-          "deploy 1.4 of jormungand": "done"
+          "deploy 1.4 of jormungand": "done",
+          "fix block issues": {
+            "description": "some issues that have arisen from the fee and transaction tasks",
+            "children": {
+              "fee_report": "Some value is apparently too long for the database",
+              "blockchaininfo": "Some problem with None values returned from methods"
+            }
+          }
         }
       }
     }
