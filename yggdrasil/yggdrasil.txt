@@ -68,5 +68,5 @@ Install and configure gunicorn
 44. ~$ sudo cp yggdrasil/gunicorn/gunicorn.service /etc/systemd/system/
 45. ~$ sudo systemctl start gunicorn
 46. ~$ sudo systemctl enable gunicorn
-47. ~$ sudo systemctl daemon-reload
+47. ~$ sudo systemctl daemon-reload (if changes are made to the gunicorn config)
 48. ~$ sudo systemctl status gunicorn

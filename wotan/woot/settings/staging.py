@@ -70,5 +70,6 @@ LOGGING = {
 }
 
 ALLOWED_HOSTS = (
-  '18.130.90.221',
+  'transactino.com',
+  'www.transactino.com',
 )

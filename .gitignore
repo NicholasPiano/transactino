@@ -8,3 +8,4 @@
 *.pem
 gpg/
 scripts/rsync.sh
+scripts/ssh.sh

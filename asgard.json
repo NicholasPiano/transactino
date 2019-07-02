@@ -122,6 +122,18 @@
             }
           }
         }
+      },
+      "20190701": {
+        "description": "Complete deployment by linking website",
+        "children": {
+          "redirecting to start page": "redirect view with permanent for 301 response",
+          "google domains": {
+            "description": "add DNS A to Elastic IP and CNAME for www subdomain.",
+            "children": {
+              "guide": "http://www.brianhoshi.com/blog/pointing-your-domain-to-an-aws-ec2-instance-with-google-domains/"
+            }
+          }
+        }
       }
     }
   }
