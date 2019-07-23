@@ -1,0 +1,8 @@
+{
+  "20190723": {
+    "description": "Starting Brigitte as a bitcoin blockchain data miner. Information will be gathered here continuously by polling nodes. A message will be sent to Wotan when a new block is available.",
+    "children": {
+      
+    }
+  }
+}

@@ -134,6 +134,24 @@
             }
           }
         }
+      },
+      "20190701": {
+        "description": "Things I have to do before contacting people.",
+        "children": {
+          "remove readme reference from api page": "done",
+          "remove readme from api": "done",
+          "add disclaimer and guarantee signed": "",
+          "add simple logo": "done",
+          "update jormungand version number": "done",
+          "remember collectstatic on redeploy": "",
+          "deploy system with real keys not test ones": ""
+        }
+      },
+      "20190723": {
+        "description": "Separating Wotan into Wotan and Brigitte. Brigitte will handle the connection to blockchain nodes.",
+        "children": {
+          "incongruency": "How do I handle a situation where the Wotan server has been down for a while and has missed several Brigitte updates?"
+        }
       }
     }
   }

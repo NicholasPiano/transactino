@@ -1,0 +1,21 @@
+# Environment file
+env.json
+
+# Python
+__pycache__/
+
+# venv
+bin/
+include/
+lib/
+pip-selfcheck.json
+pyvenv.cfg
+
+# Nose
+man/
+nosetests.json
+
+# Django
+db/
+*.sqlite3
+static/
