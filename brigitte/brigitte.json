@@ -1,8 +1,10 @@
 {
-  "20190723": {
-    "description": "Starting Brigitte as a bitcoin blockchain data miner. Information will be gathered here continuously by polling nodes. A message will be sent to Wotan when a new block is available.",
+  "20190723": "Starting Brigitte as a bitcoin blockchain data miner. Information will be gathered here continuously by polling nodes. A message will be sent to Wotan when a new block is available.",
+  "20190726": {
+    "description": "Some notes on how Brigitte will work with Wotan.",
     "children": {
-      
+      "redis scheduling": "Every two minutes, as before, the system will attempt to gather Information from the bitcoin node or API. The process with run and every Wotan record will be contacted with the data.",
+      "contacting Wotan": "The Brigitte instance needs an account on each Wotan instance and an appropriate set of permissions. The request sent at the end of the block process is signed by the Brigitte instance and encrypted to the public key of the Wotan instance."
     }
   }
 }

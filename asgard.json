@@ -150,7 +150,8 @@
       "20190723": {
         "description": "Separating Wotan into Wotan and Brigitte. Brigitte will handle the connection to blockchain nodes.",
         "children": {
-          "incongruency": "How do I handle a situation where the Wotan server has been down for a while and has missed several Brigitte updates?"
+          "incongruency": "How do I handle a situation where the Wotan server has been down for a while and has missed several Brigitte updates? There should be a loop of requests from Brigitte. Each one should check if the last block hash exists on Wotan. If not, if will send it. This should continue until no blocks are missing. This process should be initiated every two minutes from Brigitte.",
+          "permissions": "How should Brigitte be granted permission to send the block data? Surely not every requester should have the permission to do this."
         }
       }
     }
